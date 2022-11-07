@@ -88,15 +88,6 @@ Route::group(['prefix' => 'v1', 'middleware' => ['signature']], function(){
     Route::post('login', [UserController::class, 'login']);
     Route::post('admin/login', [AdminController::class, 'login']);
 
-    Route::get('/tester', function(){
-        Http::post(env('VFD_HOOK_URL'),[
-            'text' => 'Test',
-            'username' => 'UserController - Verify BVN method (api.transave.com.ng) ',
-            'icon_emoji' => ':boom:',
-            'channel' => 'transactions'
-        ]);
-    });
-//    Route::post('commission', [\App\Http\Controllers\CommissionController::class, 'store']);
 
 // all routes that needs the cors middlewares added
     Route::middleware(['cors'])->group(function () {
@@ -104,181 +95,42 @@ Route::group(['prefix' => 'v1', 'middleware' => ['signature']], function(){
         Route::post('users/{user}', [UserController::class, 'update']);
 //        Route::get('users', [UserController::class, 'index']);
         Route::get('users/{user}', [UserController::class, 'show']);
-        Route::post('request-loan', [ApisUserController::class, 'RequestLoan']);
-        Route::post('request-physicalcard', [ApisUserController::class, 'RequestPhysicalCard']);
-        Route::post('request-virtuallcard', [ApisUserController::class, 'RequestVirtualCard']);
-        Route::post('pos-request', [ApisUserController::class, 'PosRequest']);
-        Route::get('pos-request/{user_id}', [ApisUserController::class, 'usersPosRequest']);
         Route::get('notifications', [UserController::class, 'Notification']);
         Route::get('admins', [UserController::class, 'Admin']);
         Route::get('states', 'Apis\UtilityController@getStates');
         Route::get('lga', 'Apis\UtilityController@getLga');
         Route::post('verify_bvn', [UserController::class, 'verifyBVN']);
+    });
 
-        Route::post('update-info', function (Request $request) {
-            $transfer = new App\Classes\BankRegistrationHook();
 
-            return $transfer->updateUserInfo($request);
-        });
-
-        Route::group(['prefix' => 'pos'],function() {
-            Route::get('unmapped/terminal', [\App\Http\Controllers\POSController::class,'fetchUnLinkPosTerminal']);
-            Route::get('mapped/terminal', [\App\Http\Controllers\POSController::class,'fetchLinkPosTerminal']);
-            Route::get('merchant/terminal/{id}', [\App\Http\Controllers\POSController::class,'merchantTerminals']);
-            Route::get('requests', [\App\Http\Controllers\POSController::class,'fetchAllPOSRequest']);
-            Route::get('/', [\App\Http\Controllers\POSController::class,'fetchAllPosTerminal']);
-            Route::get('statistics', [\App\Http\Controllers\POSController::class,'fetchTerminalStatistics']);
-            Route::get('merchant/transaction', [\App\Http\Controllers\POSController::class,'fetchSingleMerchantTransactions']);
-            Route::get('transactions', [\App\Http\Controllers\POSController::class,'fetchMerchantTransactions']);
-            Route::post('callback', [\App\Http\Controllers\POSController::class,'terminalTransactionHook']);
-            Route::post('create/terminal', [\App\Http\Controllers\POSController::class,'createPosTerminal']);
-            Route::post('create/vendor', [\App\Http\Controllers\POSController::class,'posVendor']);
-            Route::put('assign', [\App\Http\Controllers\POSController::class,'assignUserToPos']);
-            Route::put('status', [\App\Http\Controllers\POSController::class,'posStatus']);
-        });
-
-        Route::middleware(['authorizer','bvn'])->group(function () {
-            Route::post('bank-transfer', function (Request $request) {
-                $transfer = new App\Classes\BankRegistrationHook();
-                return $transfer->bankTransfer($request);
-            });
-//            Route::post('bank-transfer', [TransactionController::class,'outwardTransfer']);
-
-            Route::post('fund_user_wallet/card', [ApisUserController::class, 'fund_user_wallet_card'])->name('fund_user_wallet');
-            Route::post('fund_user_wallet/transfer', [ApisUserController::class, 'fund_user_wallet_transfer']);
-            Route::post('wallet/transfer', [ApisUserController::class, 'walletToWalletTransfer'])->middleware('bvn');
-            Route::post('wallet/multiple_transfer', [ApisUserController::class, 'multiWalletToWalletTransfer'])->middleware('bvn');
-
-            Route::prefix('business')->group(function() {
-                Route::post('fund/card', [BusinessController::class, 'fund_business_wallet_card']);
-                Route::post('fund/transfer', [BusinessController::class, 'fund_business_wallet_transfer']);
-                Route::post('wallet/transfer', [BusinessController::class, 'walletTransfer']);
-                Route::post('transfer_to_bank_acc', [BusinessController::class, 'transferToBankAcc']);
+        Route::prefix('bills')->group( function() {
+            // all airtime routes group
+            Route::prefix('airtime')->name('airtime.')->group(function () {
+                Route::post('request', [AirtimeController::class, 'request'])->name('request');
             });
 
-            Route::prefix('savings')->group( function() {
-
-                Route::prefix('rotational')->group( function() {
-                    Route::post('fund/card', [RotationalSavingController::class, 'fundSavingsAccountFromCard']);
-                    Route::post('fund/wallet', [RotationalSavingController::class, 'fundSavingsAccountFromWallet']);
-                    Route::post('fund/transfer', [RotationalSavingController::class, 'fund_user_wallet_transfer']);
-
-                });
-
-                Route::prefix('personal')->group( function() {
-                    Route::post('account/close', [SavingController::class, 'closeAccount']);
-                    Route::post('account/withdraw', [SavingController::class, 'withdrawAccount']);
-                    Route::post('fund/card', [SavingController::class, 'fundSavingsAccountFromCard']);
-                    Route::post('fund/wallet', [SavingController::class, 'fundSavingsAccountFromWallet']);
-                    Route::post('fund/transfer', [SavingController::class, 'fundSavingsAccountFromTransfer']);
-                });
-
-                Route::prefix('group')->group(function() {
-                    Route::post('fund/card', [GroupSavingController::class, 'fundSavingsAccountFromCard']);
-                    Route::post('fund/wallet', [GroupSavingController::class, 'fundSavingsAccountFromWallet']);
-                    Route::post('fund/transfer', [GroupSavingController::class, 'fund_user_wallet_transfer']);
-                    Route::post('disburse', [GroupSavingController::class, 'disburseSavings']);
-                });
-
-                Route::prefix('agent')->group( function() {
-                    Route::post('user_fund/card', [AgentSavingsController::class, 'fundSavingsAccountFromCard']);
-                    Route::post('user_fund/wallet', [AgentSavingsController::class, 'fundSavingsAccountFromWallet']);
-                    Route::post('user_fund/transfer', [AgentSavingsController::class, 'fund_user_wallet_transfer']);
-                    Route::post('agent_fund/card', [AgentSavingsController::class, 'agentFundSavingsAccountFromCard']);
-                    Route::post('agent_fund/wallet', [AgentSavingsController::class, 'agentFundUserFromWallet']);
-                    Route::post('agent_fund/transfer', [AgentSavingsController::class, 'agent_fund_user_wallet_transfer']);
-                    Route::post('withdrawal_request/accept', [AgentSavingsController::class, 'approveWithdrawalRequest']);
-                    Route::post('withdraw', [AgentSavingsController::class, 'withdrawFromFunds']);
-                    Route::post('break', [AgentSavingsController::class, 'closeAccount']);
-                    Route::post('withdraw_commission', [AgentSavingsController::class, 'withdrawCommission']);
-                });
+            // all data routes group
+            Route::prefix('data')->name('data.')->group(function () {
+                Route::get('bundles/{networkID}', [DataController::class, 'getBundles'])->name('bundles.get');
+                Route::post('request', [DataController::class, 'request'])->name('bundles.get');
             });
 
-
-            Route::prefix('bills')->group( function() {
-                // all airtime routes group
-                Route::prefix('airtime')->name('airtime.')->group(function () {
-                    Route::post('request', [AirtimeController::class, 'request'])->name('request');
-                });
-
-                // all data routes group
-                Route::prefix('data')->name('data.')->group(function () {
-                    Route::get('bundles/{networkID}', [DataController::class, 'getBundles'])->name('bundles.get');
-                    Route::post('request', [DataController::class, 'request'])->name('bundles.get');
-                });
-
-                // all power routes group
-                Route::prefix('power')->name('power.')->group(function () {
-                    Route::post('meter-info', [PowerController::class, 'getMeterInfo'])->name('get-meter-info');
-                    Route::post('request', [PowerController::class, 'request'])->name('request');
-                });
-
-                // all tv routes group
-                Route::prefix('tv')->name('tv.')->group(function () {
-                    Route::get('info/{providerID}', [TVController::class, 'getTVInfo'])->name('get-tv-info');
-                    Route::post('info', [TVController::class, 'getCardInfo'])->name('get-card-info');
-                    Route::post('request', [TVController::class, 'request'])->name('request');
-                });
-
+            // all power routes group
+            Route::prefix('power')->name('power.')->group(function () {
+                Route::post('meter-info', [PowerController::class, 'getMeterInfo'])->name('get-meter-info');
+                Route::post('request', [PowerController::class, 'request'])->name('request');
             });
+
+            // all tv routes group
+            Route::prefix('tv')->name('tv.')->group(function () {
+                Route::get('info/{providerID}', [TVController::class, 'getTVInfo'])->name('get-tv-info');
+                Route::post('info', [TVController::class, 'getCardInfo'])->name('get-card-info');
+                Route::post('request', [TVController::class, 'request'])->name('request');
+            });
+
         });
 
 
-        //Business endpoints
-        Route::group(['prefix' => 'business'], function() {
-            Route::post('register', [BusinessController::class, 'register']);
-            //Route::post('transfer_status', [BusinessController::class, 'transferStatus'])->middleware('bvn');
-            Route::get('list/{user_id}', [BusinessController::class, 'listUserBusinesses']);
-            Route::get('{business_id}', [BusinessController::class, 'getBusiness']);
-            Route::get('transfer_history/{business_id}', [BusinessController::class, 'getTransferHistory']);
-            Route::get('sent_transfer_history/{business_id}', [BusinessController::class, 'getSentTransferHistory']);
-            Route::get('received_transfer_history/{business_id}', [BusinessController::class, 'getReceivedTransferHistory']);
-            /* Route::get('airtime_history/{business_id}', [BusinessController::class, 'getAirtimeHistory']);
-            Route::get('data_history/{business_id}', [BusinessController::class, 'getDataHistory']);
-            Route::get('tv_history/{business_id}', [BusinessController::class, 'getTVHistory']);
-            Route::get('power_history/{business_id}', [BusinessController::class, 'getPowerHistory']); */
-
-//            Transaction
-//            Route::post('fund/card', [BusinessController::class, 'fund_business_wallet_card']);
-//            Route::post('fund/transfer', [BusinessController::class, 'fund_business_wallet_transfer']);
-//            Route::post('wallet/transfer', [BusinessController::class, 'walletTransfer'])->middleware('bvn');
-//            Route::post('transfer_to_bank_acc', [BusinessController::class, 'transferToBankAcc'])->middleware('bvn');
-            //end
-
-            /* Route::group(['prefix' => 'staff'],function(){
-                Route::get('staff/{business_id}', [BusinessController::class, 'getBusinessStaff']);
-
-                //Transaction
-                Route::post('staff/pay', [BusinessController::class, 'payStaffSalary']);
-                Route::post('staff/payroll', [BusinessController::class, 'payMultiStaffSalary']);
-                //End
-
-                Route::post('staff/pay_setup', [BusinessController::class, 'updateStaffInfo']);
-                Route::post('staff/on_payroll', [BusinessController::class, 'onPayroll']);
-                Route::post('staff/suspend', [BusinessController::class, 'suspendStaff']);
-                Route::post('staff/deactivate', [BusinessController::class, 'deactivateStaff']);
-                Route::post('onboard', [BusinessController::class, 'addStaff']);
-            }); */
-
-           /*  Route::group(['prefix' => 'role'],function() {
-                Route::post('create', [BusinessController::class, 'createRole']);
-                Route::post('delete', [BusinessController::class, 'deleteRole']);
-                Route::get('{business_id}', [BusinessController::class, 'getAllRoles']);
-            }); */
-
-            Route::post('request-physicalcard', [BusinessController::class, 'RequestPhysicalCard']);
-            Route::post('request-virtuallcard', [BusinessController::class, 'RequestVirtualCard']);
-            Route::post('kyc-one', [BusinessController::class, 'kycUpdateOne']);
-            Route::post('kyc-two', [BusinessController::class, 'kycUpdateTwo']);
-            Route::post('save/beneficiary', [BusinessController::class, 'saveBeneficiary']);
-            Route::post('remove/beneficiary', [BusinessController::class, 'removeBeneficiary']);
-            Route::get('beneficiaries/{business_id}', [BusinessController::class, 'getBeneficiaries']);
-        });
-
-        Route::get('get-virtualcard-details', [ApisUserController::class, 'GetvirtualcardDetails']);
-        Route::get('get-physical-details', [ApisUserController::class, 'GetphysicalDetails']);
-        Route::get('get_user_loan_history', [ApisUserController::class, 'LoanHistory']);
-        Route::get('loan-offer', [ApisUserController::class, 'LoanOffer']);
         Route::get('faqs', [UserController::class, 'FAQ']);
         Route::post('contact-us', [UserController::class, 'ContactUs']);
         Route::post('logout', [UserController::class, 'logout']);

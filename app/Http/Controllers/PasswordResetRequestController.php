@@ -7,6 +7,8 @@ use App\Models\User;
 use App\Mail\SendMail;
 use Illuminate\Support\Facades\Mail;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Hash;
@@ -18,7 +20,7 @@ class PasswordResetRequestController extends Controller {
     public function forgotPassword (Request $request)
     {
         $access_token = 0;
-        for ($i = 0; $i < 3; $i++) 
+        for ($i = 0; $i < 3; $i++)
         {
             $access_token .= mt_rand(0,9);
         }
@@ -27,7 +29,7 @@ class PasswordResetRequestController extends Controller {
             return response()->json([
                 "status" => false,
                 "message"=> "User account does not exist"
-            ]);
+            ], 404);
         }
         $data['user'] = $user;
         $data['verified_otp'] = $access_token;
@@ -36,19 +38,19 @@ class PasswordResetRequestController extends Controller {
             $user->update(['verified_otp' => $data['verified_otp']]);
             return response()->json([
                 "status" => true,
-                "message"=> "Successful"
-            ]);           
+                "message"=> "OPT sent to your email address"
+            ], 200);
             } catch (\Throwable $th) {
-            \Log::info($th);
+            Log::info($th);
             return response()->json([
                 "status" => true,
                 "message"=> "Could not send mail at this moment"
-            ]);            
+            ], 500);
         }
     }
 
     public function verifyToken(Request $request){
-        $validator = \Validator::make($request->all(), [
+        $validator = Validator::make($request->all(), [
             'email' => 'required|email',
             'otp_token' => 'required|string|min:4'
         ]);
@@ -57,30 +59,30 @@ class PasswordResetRequestController extends Controller {
             return response()->json([
                 'status' => false,
                 'message' => $validator->errors()->first()
-            ]);
+            ], 413);
         }
         $user = User::on('mysql::read')->where('email', $request->email)->first();
         if (!$user) {
             return response()->json([
                 "status" => false,
                 "message"=> "User account does not exist"
-            ]);
+            ], 404);
         }
         if ($user->verified_otp == $request->otp_token) {
             return response()->json([
                 "status" => true,
                 "message"=> "Successful. Provide new password"
-            ]);
+            ], 200);
         }
         // access token provided does not match generated token
         return response()->json([
             "status" => false,
             "message"=> "Invalid access token"
-        ]);
+        ], 419);
     }
 
     public function resetPassword(Request $request){
-        $validator = \Validator::make($request->all(), [
+        $validator = Validator::make($request->all(), [
             'email' => 'required|email',
             'password' => 'required|string|min:6|confirmed',
         ]);
@@ -89,23 +91,23 @@ class PasswordResetRequestController extends Controller {
             return response()->json([
                 'status' => false,
                 'message' => $validator->errors()->first()
-            ]);
+            ], 413);
         }
         $user = User::on('mysql::read')->where('email', $request->email)->first();
         if (!$user) {
-            return response()->json([   
+            return response()->json([
                 "status" => false,
                 "message"=> "User account does not exist"
-            ]);
+            ], 404);
         }
         $user->password = Hash::make($request->password);
         $user->save();
         return response()->json([
             "status" => true,
             "message"=> "Successful, Pasword reset completed."
-        ]);
+        ], 200);
     }
-  
+
 
     public function sendPasswordResetEmail(Request $request){
         // If email does not exist
