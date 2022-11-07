@@ -216,14 +216,6 @@ Route::group(['prefix' => 'v1', 'middleware' => ['signature']], function(){
             Route::post('search-transactions', [AdminController::class, 'searchTransactions']);
             Route::post('export-transactions', [AdminController::class, 'exportTransactions']);
             Route::post('logout', [AdminController::class, 'logout']);
-            Route::get('bills-transactions', [AdminController::class,'allBillPayments']);
-            Route::get('all-savings', [AdminController::class,'allSavings']);
-            Route::get('savings-info/{savings_id}', [AdminController::class,'savingsInfo']);
-            Route::get('all-loans', [AdminController::class,'allLoans']);
-            Route::get('all-business', [AdminController::class,'allBusiness']);
-            Route::get('business-info/{business_id}', [AdminController::class,'businessInfo']);
-            Route::get('all/card-requests', [AdminController::class,'allCardRequests']);
-            Route::get('all-pos', [AdminController::class,'allPOS']);
             Route::get('user-info/{user_id}', [AdminController::class,'userInfo']);
             Route::get('users', [AdminController::class, 'index']);
             Route::get('wallet-transactions', [AdminController::class, 'allTransactions']);
@@ -231,13 +223,6 @@ Route::group(['prefix' => 'v1', 'middleware' => ['signature']], function(){
             Route::get('staffs', [AdminController::class, 'fetchStaffs']);
             Route::post('create/staff', [AdminController::class, 'createStaff']);
 
-            //Commissions
-            Route::get('commission', [\App\Http\Controllers\CommissionController::class, 'index']);
-            Route::post('commission', [\App\Http\Controllers\CommissionController::class, 'store']);
-
-
-            //Accounting
-            Route::get('accounting',[\App\Http\Controllers\CommissionController::class, 'transactionOnPlatform']);
 
             //Permissions
             Route::post('permissions', [PermissionController::class, 'grantRoleMultiplePermission']);
