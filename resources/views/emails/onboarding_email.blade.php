@@ -10,9 +10,7 @@ TranSave is the solution to easy transactions. From our budget-friendly rates to
 Start transacting today and experience revolutionized financial services in:
 
  Transactions
- POS operations
- Loan Services
- Business accounts
+
  Savings
  Bill Payments
  Card Services
