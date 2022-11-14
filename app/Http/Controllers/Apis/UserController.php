@@ -281,7 +281,7 @@ class UserController extends Controller
 
     public function getBanksList(){
         $response = Http::withHeaders([
-            'Authorization' => 'Bearer '.env('PAYSTACK_SECRET_KEY')
+            'Authorization' => 'Bearer '.env('PAYSTACK_PUBLIC_KEY')
         ])->get(env('PAYSTACK_BASE_URL').'banks');
 
         return response()->json(['banks'=>$response['data']]);
