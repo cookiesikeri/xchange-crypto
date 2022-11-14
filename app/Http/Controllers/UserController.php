@@ -226,7 +226,8 @@ class UserController extends Controller
     {
         try{
             $validator = Validator::make($request->all(), [
-                'phone' => 'required|string',
+                'phone' => 'string',
+                'email' => 'string|email',
                 'password' => 'nullable|string|min:6',
             ]);
 
@@ -234,7 +235,7 @@ class UserController extends Controller
             if ($validator->fails()) {
                 return response()->json($validator->errors(), 422);
             }
-            $credentials = $request->only(['phone', 'password']);
+            $credentials = $request->only(['phone', 'password', 'email']);
 
             if (!$token = Auth::attempt($credentials)) {
                 return response()->json([

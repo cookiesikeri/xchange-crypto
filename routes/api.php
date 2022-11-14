@@ -41,7 +41,7 @@ use Tymon\JWTAuth\Facades\JWTAuth;
 | Loan Routes are loaded from ../api/loans.php
 |
 */
-Route::get('banks', [ApisUserController::class, 'getBanksList']);
+
 
 
 Route::group(['prefix' => 'v1', 'middleware' => ['signature']], function(){
@@ -74,6 +74,7 @@ Route::group(['prefix' => 'v1', 'middleware' => ['signature']], function(){
         Route::get('countries', [ApiController::class, 'Country']);
         Route::get('lgas', [ApiController::class, 'LGA']);
         Route::get('faqs', [ApiController::class, 'FAQs']);
+        Route::get('banks', [ApisUserController::class, 'getBanksList']);
 
         Route::post('request-physicalcard', [ApisUserController::class, 'RequestPhysicalCard']);
         Route::post('request-virtuallcard', [ApisUserController::class, 'RequestVirtualCard']);

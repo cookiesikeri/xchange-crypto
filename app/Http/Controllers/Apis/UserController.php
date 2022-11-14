@@ -356,7 +356,7 @@ class UserController extends Controller
             'otp' => $otp,
             'expires_at' => Carbon::now()->addMinutes($validity)
         ]);
-        $message = "Hello! Your TranSave Verification Code is $otp. Code is valid for the next ".$validity."minutes.";
+        $message = "Hello! Your TaheerXchange Verification Code is $otp. Code is valid for the next ".$validity."minutes.";
 
         $this->sendSms($user->phone,$message);
         Mail::to($user->email)->send(new OtpMail($user->name, $otp));
