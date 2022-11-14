@@ -1,7 +1,6 @@
 <?php
 
-use App\Http\Controllers\AdminController;
-use App\Http\Controllers\Savings\AgentSavingsController;
+
 use App\Http\Controllers\Apis\AirtimeController;
 use App\Http\Controllers\Apis\DataController;
 use App\Http\Controllers\Apis\PowerController;
@@ -11,7 +10,6 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\PasswordResetRequestController;
 use App\Http\Controllers\Apis\UserController as ApisUserController;
 use App\Http\Controllers\PermissionController;
-use App\Models\PosTransaction;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 
@@ -60,10 +58,11 @@ Route::group(['prefix' => 'v1', 'middleware' => ['signature']], function(){
     Route::post('login', [UserController::class, 'login']);
     Route::post('logout', [UserController::class, 'logout']);
 
+});
 
+Route::group(['prefix' => 'v1', 'middleware' => ['cors']], function(){
 
 // all routes that needs the cors middlewares added
-    Route::middleware(['cors'])->group(function () {
         Route::post('users/{user}', [UserController::class, 'update']);
 
         Route::post('verify_bvn', [UserController::class, 'verifyBVN']);
@@ -78,7 +77,12 @@ Route::group(['prefix' => 'v1', 'middleware' => ['signature']], function(){
 
         Route::post('request-physicalcard', [ApisUserController::class, 'RequestPhysicalCard']);
         Route::post('request-virtuallcard', [ApisUserController::class, 'RequestVirtualCard']);
-    });
+
+
+        //users
+        Route::post('/user/secret_question_and_answer', [ApisUserController::class, 'setSecretQandA']);
+        Route::post('user/set_transaction_pin', [ApisUserController::class, 'setTransactionPin']);
+});
 
 
         Route::prefix('bills')->group( function() {
@@ -122,13 +126,10 @@ Route::group(['prefix' => 'v1', 'middleware' => ['signature']], function(){
             Route::post('edit_logon', [ApisUserController::class, 'edit_logon'])->name('edit_logon');
 
 
-            Route::post('set_transaction_pin', [ApisUserController::class, 'setTransactionPin']);
+
             Route::post('update_transaction_pin', [ApisUserController::class, 'updateTransactionPin']);
             Route::post('verify_account_number', [ApisUserController::class, 'verifyAccountNumber']);
 
-
-
-//            Route::post('repay-loan', [ApisUserController::class, 'RepayLoan'])->name('repay-loan');
 
             Route::get('get_user_loan_balance/{user_id}', [ApisUserController::class, 'get_user_loan_balance'])->name('get_user_loan_balance');
             Route::get('get_user_wallet_balance/{user_id}', [ApisUserController::class, 'get_user_wallet_balance'])->name('get_user_wallet_balance');
@@ -145,7 +146,7 @@ Route::group(['prefix' => 'v1', 'middleware' => ['signature']], function(){
             Route::get('user/all/bill-transactions/{user_id}/{bill}', [ApisUserController::class, 'allUsersBillTransaction'])->name('get_user_all_bill_transactions');
             Route::get('generate_transaction_reference', [ApisUserController::class, 'generate_transaction_reference'])->name('generate_transaction_reference');
             Route::get('secret_question_and_answer/{user_id}', [ApisUserController::class, 'getUserSecretQuestion']);
-            Route::post('secret_question_and_answer', [ApisUserController::class, 'setSecretQandA']);
+
             Route::post('change_pin/get_otp', [ApisUserController::class, 'initChangePin']);
             Route::post('save/beneficiary', [ApisUserController::class, 'saveBeneficiary']);
             Route::post('remove/beneficiary', [ApisUserController::class, 'removeBeneficiary']);
@@ -167,7 +168,7 @@ Route::group(['prefix' => 'v1', 'middleware' => ['signature']], function(){
         });
 
 //    Route::webhooks('paystack-webhook');
-});
+
 
 Route::fallback(function(Request $request){
     return $response = [

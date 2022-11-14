@@ -71,7 +71,7 @@ class Kernel extends HttpKernel
         'signature' => \App\Http\Middleware\DevManager::class,
         'suspend' => \App\Http\Middleware\SuspensionMiddleware::class,
         'authorizer' => \App\Http\Middleware\CustomerAuthorizer::class,
-        'limit' => \App\Http\Middleware\TransactionLimit::class,
+        // 'limit' => \App\Http\Middleware\TransactionLimit::class,
         'settings' => \App\Http\Middleware\SettingsMiddleware::class,
         'itexAuth' => \App\Http\Middleware\ItexBasicAuth::class,
         'admin' => \App\Http\Middleware\AdminRoleMiddleware::class,

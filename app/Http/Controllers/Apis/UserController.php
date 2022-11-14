@@ -56,7 +56,6 @@ class UserController extends Controller
     {
         $this->user = $user;
         $this->utility = new Functions();
-        $this->middleware('limit');
     }
 
     public function is_user($user_id)
@@ -316,10 +315,16 @@ class UserController extends Controller
 
     public function setTransactionPin(Request $request){
         try{
-            $request->validate([
+
+            $validator = Validator::make($request->all(), [
                 'user_id'=>'required',
                 'transaction_pin'=>'required|digits:4'
             ]);
+
+            if ($validator->fails()) {
+                return response()->json($validator->errors(), 422);
+            }
+
             $pin = strval($request->transaction_pin);
             $user = User::on('mysql::write')->findOrFail($request->user_id);
 
@@ -360,7 +365,7 @@ class UserController extends Controller
         ]);
         $message = "Hello! Your TaheerXchange Verification Code is $otp. Code is valid for the next ".$validity."minutes.";
 
-        $this->sendSms($user->phone,$message);
+        // $this->sendSms($user->phone,$message);
         Mail::to($user->email)->send(new OtpMail($user->name, $otp));
 
         return "OTP successfully generated";
@@ -384,7 +389,6 @@ class UserController extends Controller
         }
     }
 
-
     public function getUserSecretQuestion($user_id){
         try{
 
@@ -400,11 +404,16 @@ class UserController extends Controller
 
     public function setSecretQandA(Request $request){
         try{
-            $request->validate( [
+
+            $validator = Validator::make($request->all(), [
                 'user_id' => 'required|uuid',
                 'question'=>'required',
                 'answer'=>'required',
             ]);
+
+            if ($validator->fails()) {
+                return response()->json($validator->errors(), 422);
+            }
 
             $user_id = $request->input('user_id');
             $user = User::on('mysql::read')->findOrFail($user_id);

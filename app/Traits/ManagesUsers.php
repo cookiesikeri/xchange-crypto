@@ -44,8 +44,6 @@ trait ManagesUsers
     }
 
 
-
-
     public function isAdminShutdownStatus()
     {
         if (auth()->check()) {

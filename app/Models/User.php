@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-use App\Traits\ManagesTransactions;
 use Illuminate\Notifications\Notifiable;
 use Tymon\JWTAuth\Contracts\JWTSubject;
 use Illuminate\Foundation\Auth\User as Authenticatable;
