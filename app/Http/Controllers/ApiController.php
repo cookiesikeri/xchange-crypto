@@ -41,7 +41,7 @@ class ApiController extends Controller
     {
         try {
 
-            $data = State::orderBy('name')->paginate(50);
+            $data = State::orderBy('state')->paginate(50);
             $message = 'states successfully fetched';
 
             return $this->sendResponse($data,$message);
@@ -70,7 +70,7 @@ class ApiController extends Controller
     {
         try {
 
-            $data = LGA::first();
+            $data = LGA::orderBy('state')->paginate(50);
             $message = 'General details successfully fetched';
 
             return $this->sendResponse($data,$message);

@@ -9,7 +9,7 @@ use App\Http\Controllers\Apis\UtilityController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\PasswordResetRequestController;
 use App\Http\Controllers\Apis\UserController as ApisUserController;
-use App\Http\Controllers\PermissionController;
+use App\Http\Controllers\ApiController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 
@@ -56,32 +56,36 @@ Route::group(['prefix' => 'v1', 'middleware' => ['signature']], function(){
     Route::post('resend-otp', [UserController::class, 'resendOtp']);
 
     Route::post('login', [UserController::class, 'login']);
-    Route::post('logout', [UserController::class, 'logout']);
+
 
 });
 
 Route::group(['prefix' => 'v1', 'middleware' => ['cors']], function(){
 
 // all routes that needs the cors middlewares added
-        Route::post('users/{user}', [UserController::class, 'update']);
+    Route::post('logout', [UserController::class, 'logout']);
 
-        Route::post('verify_bvn', [UserController::class, 'verifyBVN']);
-        Route::post('/contact-us', [ApiController::class, 'ContactUs']);
-        Route::get('general_details', [ApiController::class, 'GeneralDetail']);
-        Route::get('site_settings', [ApiController::class, 'SiteSetting']);
-        Route::get('states', [ApiController::class, 'States']);
-        Route::get('countries', [ApiController::class, 'Country']);
-        Route::get('lgas', [ApiController::class, 'LGA']);
-        Route::get('faqs', [ApiController::class, 'FAQs']);
-        Route::get('banks', [ApisUserController::class, 'getBanksList']);
+    Route::post('users/{user}', [UserController::class, 'update']);
 
-        Route::post('request-physicalcard', [ApisUserController::class, 'RequestPhysicalCard']);
-        Route::post('request-virtuallcard', [ApisUserController::class, 'RequestVirtualCard']);
+    Route::post('verify_bvn', [UserController::class, 'verifyBVN']);
+    Route::post('/contact-us', [ApiController::class, 'ContactUs']);
+    Route::get('general_details', [ApiController::class, 'GeneralDetail']);
+    Route::get('site_settings', [ApiController::class, 'SiteSetting']);
+    Route::get('states', [ApiController::class, 'States']);
+    Route::get('countries', [ApiController::class, 'Country']);
+    Route::get('lgas', [ApiController::class, 'LGA']);
+    Route::get('faqs', [ApiController::class, 'FAQs']);
+    Route::get('banks', [ApisUserController::class, 'getBanksList']);
+
+    Route::post('request-physicalcard', [ApisUserController::class, 'RequestPhysicalCard']);
+    Route::post('request-virtuallcard', [ApisUserController::class, 'RequestVirtualCard']);
 
 
-        //users
-        Route::post('/user/secret_question_and_answer', [ApisUserController::class, 'setSecretQandA']);
-        Route::post('user/set_transaction_pin', [ApisUserController::class, 'setTransactionPin']);
+    //users
+    Route::post('/user/secret_question_and_answer', [ApisUserController::class, 'setSecretQandA']);
+    Route::post('user/set_transaction_pin', [ApisUserController::class, 'setTransactionPin']);
+    Route::post('update_transaction_pin', [ApisUserController::class, 'updateTransactionPin']);
+    Route::post('verify_account_number', [ApisUserController::class, 'verifyAccountNumber']);
 });
 
 
@@ -127,8 +131,7 @@ Route::group(['prefix' => 'v1', 'middleware' => ['cors']], function(){
 
 
 
-            Route::post('update_transaction_pin', [ApisUserController::class, 'updateTransactionPin']);
-            Route::post('verify_account_number', [ApisUserController::class, 'verifyAccountNumber']);
+
 
 
             Route::get('get_user_loan_balance/{user_id}', [ApisUserController::class, 'get_user_loan_balance'])->name('get_user_loan_balance');

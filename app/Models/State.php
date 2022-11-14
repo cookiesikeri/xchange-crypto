@@ -8,6 +8,8 @@ use App\Traits\UsesUuid;
 class State extends Model
 {
     use UsesUuid;
+
+    protected $table ="states";
     protected $guarded = [
         'id'
     ];

@@ -434,13 +434,18 @@ class UserController extends Controller
 
     public function updateTransactionPin(Request $request){
         try{
-            $request->validate([
+
+            $validator = Validator::make($request->all(), [
                 'user_id'=>'required',
                 'secret_answer'=>'required',
                 'otp'=>'required',
                 'old_pin'=>'required|digits:4',
                 'transaction_pin'=>'required|digits:4',
             ]);
+
+            if ($validator->fails()) {
+                return response()->json($validator->errors(), 422);
+            }
 
             $user = Auth::user();
 
