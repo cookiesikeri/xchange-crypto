@@ -222,36 +222,6 @@ class UserController extends Controller
         }
     }
 
-
-    public function retryAccountCreation(Request $request){
-        try{
-            $request->validate([
-                'user_id'=>'require|uuid'
-            ]);
-
-            $user = User::on('mysql::read')->findOrFail($request->user_id);
-            $status = $this->bankRegistrationHook->registerUserWithoutBvn($user,$user->wallet->id);
-            if($status === 200){
-                return response()->json(['message'=>'Account Created Successfully.']);
-            }else{
-                return response()->json(['message'=>'Account Creation Failed!.'], 420);
-            }
-        } catch (\Exception $e) {
-            //return error message
-            Http::post(env('VFD_HOOK_URL'),[
-                'text' => $e->getMessage(),
-                'username' => 'UserController - retry account creation method (api.transave.com.ng) ',
-                'icon_emoji' => ':ghost:',
-                'channel' => env('SLACK_CHANNEL')
-            ]);
-            return response()->json([
-                'errors'  => $e->getMessage(),
-                'message' => 'Account Creation Failed!',
-            ], 409);
-
-        }
-    }
-
     public function login(Request $request)
     {
         try{

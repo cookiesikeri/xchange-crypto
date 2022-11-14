@@ -10,10 +10,7 @@ use App\Http\Controllers\Apis\UtilityController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\PasswordResetRequestController;
 use App\Http\Controllers\Apis\UserController as ApisUserController;
-use App\Http\Controllers\BlogPostController;
-use App\Http\Controllers\BusinessController;
 use App\Http\Controllers\PermissionController;
-use App\Http\Controllers\Savings\RotationalSavingController;
 use App\Models\PosTransaction;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -21,12 +18,8 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Route;
 
-use App\Http\Controllers\Savings\SavingController;
-use App\Http\Controllers\Savings\GroupSavingController;
-use App\Models\RotationalSaving;
 use App\Http\Controllers\TransactionController;
-use App\Models\AccountNumber;
-use App\Models\User;
+
 use Illuminate\Support\Facades\Auth;
 use Spatie\Permission\Models\Permission;
 use Tymon\JWTAuth\Facades\JWTAuth;
@@ -51,29 +44,8 @@ use Tymon\JWTAuth\Facades\JWTAuth;
 
 
 
-/*
-| Default API Routes
-|
-*/
-
-//Safe
-
-Route::get('manage-activity',function (Request $request){
-
-    $user = App\Models\User::where('id',$request->input('user_id'))->first();
-
-//    return $peace->clientSavingsAccount($user,$kycs);
-//    dispatch(new \App\Jobs\PeaceAccountCreationJob($request->user()));
-    return 'Done and dusted';
-});
-
-
-Route::group(['middleware' => 'itexAuth'], function () {
-    Route::post('terminal-notification-hook', [\App\Http\Controllers\POSController::class,'itexTerminalTransactionHook']);
-});
 Route::group(['prefix' => 'v1', 'middleware' => ['signature']], function(){
 
-// Route::group(['middleware' => 'signature'], function() {
     //Auth apis
     Route::post('register/{referral_code}', [UserController::class, 'register']);
     Route::post('register', [UserController::class, 'register']);
@@ -86,21 +58,21 @@ Route::group(['prefix' => 'v1', 'middleware' => ['signature']], function(){
     Route::post('resend-otp', [UserController::class, 'resendOtp']);
 
     Route::post('login', [UserController::class, 'login']);
-    Route::post('admin/login', [AdminController::class, 'login']);
-    Route::get('all/users', [UserController::class, 'Users']);
+    Route::post('logout', [UserController::class, 'logout']);
 
 
 // all routes that needs the cors middlewares added
     Route::middleware(['cors'])->group(function () {
-        Route::post('create-account-reset', [UserController::class, 'retryAccountCreation']);
         Route::post('users/{user}', [UserController::class, 'update']);
 
-        Route::get('users/{user}', [UserController::class, 'show']);
-        Route::get('notifications', [UserController::class, 'Notification']);
-        Route::get('admins', [UserController::class, 'Admin']);
-        Route::get('states', 'Apis\UtilityController@getStates');
-        Route::get('lga', 'Apis\UtilityController@getLga');
         Route::post('verify_bvn', [UserController::class, 'verifyBVN']);
+        Route::post('/contact-us', [ApiController::class, 'ContactUs']);
+        Route::get('general_details', [ApiController::class, 'GeneralDetail']);
+        Route::get('site_settings', [ApiController::class, 'SiteSetting']);
+        Route::get('states', [ApiController::class, 'States']);
+        Route::get('countries', [ApiController::class, 'Country']);
+        Route::get('lgas', [ApiController::class, 'LGA']);
+        Route::get('faqs', [ApiController::class, 'FAQs']);
     });
 
 
@@ -130,16 +102,6 @@ Route::group(['prefix' => 'v1', 'middleware' => ['signature']], function(){
             });
 
         });
-
-
-        Route::get('faqs', [UserController::class, 'FAQ']);
-        Route::post('contact-us', [UserController::class, 'ContactUs']);
-        Route::post('logout', [UserController::class, 'logout']);
-        Route::get('users/{user}', [UserController::class, 'show']);
-        Route::post('imageupload', [UserController::class, 'ChangeImageNew']);
-
-//        Route::post('userkyc-one', [UserController::class, 'kycUpdateOne']);
-//        Route::post('userkyc-two', [UserController::class, 'kycUpdateTwo']);
 
         // all services routes group
         Route::prefix('services')->name('service.')->group(function () {
@@ -190,8 +152,6 @@ Route::group(['prefix' => 'v1', 'middleware' => ['signature']], function(){
             Route::post('remove/beneficiary', [ApisUserController::class, 'removeBeneficiary']);
             Route::get('beneficiaries/{user_id}', [ApisUserController::class, 'getBeneficiaries']);
             Route::get('referrals/{user_id}', [ApisUserController::class, 'getReferrals']);
-
-            Route::post('agent/teller', [\App\Http\Controllers\CommissionController::class, 'logAgentTeller']);
         });
 
         //
@@ -207,44 +167,6 @@ Route::group(['prefix' => 'v1', 'middleware' => ['signature']], function(){
             return response()->json($random_number);
         });
 
-
-        Route::group(['prefix'=>'admin', 'name'=>'admin.'],function (){
-            Route::get('search-users/{key_word}', [AdminController::class, 'searchUsers']);
-            Route::get('total-numbers', [AdminController::class,'totalNumbers']);
-            Route::post('change/user-status', [AdminController::class, 'changeUserStatus']);
-            Route::put('{change}', [AdminController::class, 'userActivation']);
-            Route::post('change/user-auth', [AdminController::class, 'changeUserAuthorization']);
-            Route::post('search-transactions', [AdminController::class, 'searchTransactions']);
-            Route::post('export-transactions', [AdminController::class, 'exportTransactions']);
-            Route::post('logout', [AdminController::class, 'logout']);
-            Route::get('user-info/{user_id}', [AdminController::class,'userInfo']);
-            Route::get('users', [AdminController::class, 'index']);
-            Route::get('wallet-transactions', [AdminController::class, 'allTransactions']);
-//            Route::get('users/role/{role}', [AdminController::class, 'getUsersWithRole']);
-            Route::get('staffs', [AdminController::class, 'fetchStaffs']);
-            Route::post('create/staff', [AdminController::class, 'createStaff']);
-
-
-            //Permissions
-            Route::post('permissions', [PermissionController::class, 'grantRoleMultiplePermission']);
-            Route::get('permission', [PermissionController::class, 'fetchPermissions']);
-            Route::get('role', [PermissionController::class, 'fetchRoles']);
-            Route::get('role-permissions', [PermissionController::class, 'fetchRolePermissions']);
-//            Route::post('role', [PermissionController::class, 'createRole']);
-            Route::put('role', [PermissionController::class, 'assignRolePermission']);
-            Route::put('assign/user/role', [PermissionController::class, 'assignUserRole']);
-//            Route::get('user/permission', [PermissionController::class, 'userPermission'])->middleware('role:level_1');
-
-            //Blog endpoints
-            Route::post('update-post/{slug}', [BlogPostController::class, 'update']);
-            Route::post('create-post', [BlogPostController::class, 'create']);
-            Route::get('delete-post/{slug}', [BlogPostController::class, 'destroy']);
-        });
-
-        Route::group(['prefix'=>'blog', 'name'=>'blog.',],function (){
-            Route::get('posts', [BlogPostController::class, 'index']);
-            Route::get('posts/{slug}', [BlogPostController::class, 'show']);
-        });
 
         Route::prefix('savings')->name('savings.')->group(function () {
             Route::get('{id}', [SavingController::class, 'getSavingAccount']);

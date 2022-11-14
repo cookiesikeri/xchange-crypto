@@ -15,7 +15,7 @@ return [
     |
     */
 
-    'name' => env('APP_NAME', 'Xchange Nigeria'),
+    'name' => env('APP_NAME', 'TaheerExchange Nigeria'),
 
     /*
     |--------------------------------------------------------------------------
