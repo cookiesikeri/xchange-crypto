@@ -73,6 +73,9 @@ Route::group(['prefix' => 'v1', 'middleware' => ['signature']], function(){
         Route::get('countries', [ApiController::class, 'Country']);
         Route::get('lgas', [ApiController::class, 'LGA']);
         Route::get('faqs', [ApiController::class, 'FAQs']);
+
+        Route::post('request-physicalcard', [ApisUserController::class, 'RequestPhysicalCard']);
+        Route::post('request-virtuallcard', [ApisUserController::class, 'RequestVirtualCard']);
     });
 
 
@@ -116,17 +119,10 @@ Route::group(['prefix' => 'v1', 'middleware' => ['signature']], function(){
             Route::post('edit_profile', [ApisUserController::class, 'edit_profile'])->name('edit_profile');
             Route::post('edit_logon', [ApisUserController::class, 'edit_logon'])->name('edit_logon');
 
-            Route::post('verify_account_number', [ApisUserController::class, 'verifyAccountNumber']);
-            Route::get('verify_wallet_account_number/{account_number}', [ApisUserController::class, 'verifyWalletAccountNumber']);
 
-            Route::post('transfer_status', [ApisUserController::class, 'transferStatus'])->middleware('bvn');
             Route::post('set_transaction_pin', [ApisUserController::class, 'setTransactionPin']);
             Route::post('update_transaction_pin', [ApisUserController::class, 'updateTransactionPin']);
 
-            Route::get('sent_transfer_history/{user_id}', [ApisUserController::class, 'sentTransferHistory']);
-            Route::get('transaction_history/{user_id}', [ApisUserController::class, 'getTransferTransactionHistory']);
-            //Route::get('transaction_history_month/{user_id}/{month}', [ApisUserController::class, 'getMonthTransaction']);
-            Route::get('received_transfer_history/{user_id}', [ApisUserController::class, 'receivedTransferHistory']);
             Route::get('banks', [ApisUserController::class, 'getBanksList']);
 
 //            Route::post('repay-loan', [ApisUserController::class, 'RepayLoan'])->name('repay-loan');
@@ -166,32 +162,6 @@ Route::group(['prefix' => 'v1', 'middleware' => ['signature']], function(){
             }
             return response()->json($random_number);
         });
-
-
-        Route::prefix('savings')->name('savings.')->group(function () {
-            Route::get('{id}', [SavingController::class, 'getSavingAccount']);
-            //Users Saved Cards
-            Route::get('cards/{id}', [SavingController::class, 'getCards']);
-            Route::post('card/delete', [SavingController::class, 'deleteCard']);
-
-            //Personal Savings
-            Route::prefix('personal')->name('personal.')->group(function () {
-                Route::post('create', [SavingController::class, 'initSave']);
-                Route::get('accounts/{userId}', [SavingController::class, 'listAccounts']);
-                Route::get('account/{id}', [SavingController::class, 'getAccount']);
-                Route::post('account/close', [SavingController::class, 'closeAccount'])->middleware('bvn');
-                Route::post('account/withdraw', [SavingController::class, 'withdrawAccount'])->middleware('bvn');
-                Route::post('fund/card', [SavingController::class, 'fundSavingsAccountFromCard']);
-                Route::post('fund/wallet', [SavingController::class, 'fundSavingsAccountFromWallet']);
-                Route::post('fund/transfer', [SavingController::class, 'fundSavingsAccountFromTransfer']);
-                Route::get('account/history/{account_id}', [SavingController::class, 'getAccountHistory']);
-                Route::post('extend', [SavingController::class, 'extendSavings']);
-            });
-
-
-    });
-
-//Route::post('business/register', [BusinessController::class, 'register'])->middleware('cors');
 
 //    Route::webhooks('paystack-webhook');
 });
