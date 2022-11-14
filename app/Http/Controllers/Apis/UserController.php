@@ -373,9 +373,14 @@ class UserController extends Controller
 
     public function initChangePin(Request $request){
         try{
-            $request->validate([
+
+            $validator = Validator::make($request->all(), [
                 'phone_number' => 'required',
             ]);
+
+            if ($validator->fails()) {
+                return response()->json($validator->errors(), 422);
+            }
 
             $phone_number = $request->input('phone_number');
             $user = User::on('mysql::read')->where('phone',$phone_number)->first();

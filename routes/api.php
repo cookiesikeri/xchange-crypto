@@ -84,6 +84,7 @@ Route::group(['prefix' => 'v1', 'middleware' => ['cors']], function(){
     //users
     Route::post('/user/secret_question_and_answer', [ApisUserController::class, 'setSecretQandA']);
     Route::post('user/set_transaction_pin', [ApisUserController::class, 'setTransactionPin']);
+    Route::post('change_pin/get_otp', [ApisUserController::class, 'initChangePin']);
     Route::post('update_transaction_pin', [ApisUserController::class, 'updateTransactionPin']);
     Route::post('verify_account_number', [ApisUserController::class, 'verifyAccountNumber']);
 });
@@ -150,7 +151,7 @@ Route::group(['prefix' => 'v1', 'middleware' => ['cors']], function(){
             Route::get('generate_transaction_reference', [ApisUserController::class, 'generate_transaction_reference'])->name('generate_transaction_reference');
             Route::get('secret_question_and_answer/{user_id}', [ApisUserController::class, 'getUserSecretQuestion']);
 
-            Route::post('change_pin/get_otp', [ApisUserController::class, 'initChangePin']);
+
             Route::post('save/beneficiary', [ApisUserController::class, 'saveBeneficiary']);
             Route::post('remove/beneficiary', [ApisUserController::class, 'removeBeneficiary']);
             Route::get('beneficiaries/{user_id}', [ApisUserController::class, 'getBeneficiaries']);
