@@ -290,10 +290,15 @@ class UserController extends Controller
     public function verifyAccountNumber(Request $request)
     {
         try{
-            $request->validate([
+
+            $validator = Validator::make($request->all(), [
                 'account_number'=>'required',
                 'bank_code' => 'required'
             ]);
+
+            if ($validator->fails()) {
+                return response()->json($validator->errors(), 422);
+            }
 
             $account_number = $request->account_number;
             $bank_code = $request->bank_code;
