@@ -41,7 +41,7 @@ use Tymon\JWTAuth\Facades\JWTAuth;
 | Loan Routes are loaded from ../api/loans.php
 |
 */
-
+Route::get('banks', [ApisUserController::class, 'getBanksList']);
 
 
 Route::group(['prefix' => 'v1', 'middleware' => ['signature']], function(){
@@ -59,7 +59,7 @@ Route::group(['prefix' => 'v1', 'middleware' => ['signature']], function(){
 
     Route::post('login', [UserController::class, 'login']);
     Route::post('logout', [UserController::class, 'logout']);
-    Route::get('banks', [ApisUserController::class, 'getBanksList']);
+
 
 
 // all routes that needs the cors middlewares added
