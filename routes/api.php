@@ -59,6 +59,7 @@ Route::group(['prefix' => 'v1', 'middleware' => ['signature']], function(){
 
     Route::post('login', [UserController::class, 'login']);
     Route::post('logout', [UserController::class, 'logout']);
+    Route::get('banks', [ApisUserController::class, 'getBanksList']);
 
 
 // all routes that needs the cors middlewares added
@@ -123,7 +124,7 @@ Route::group(['prefix' => 'v1', 'middleware' => ['signature']], function(){
             Route::post('set_transaction_pin', [ApisUserController::class, 'setTransactionPin']);
             Route::post('update_transaction_pin', [ApisUserController::class, 'updateTransactionPin']);
 
-            Route::get('banks', [ApisUserController::class, 'getBanksList']);
+
 
 //            Route::post('repay-loan', [ApisUserController::class, 'RepayLoan'])->name('repay-loan');
 
