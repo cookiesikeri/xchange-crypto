@@ -124,6 +124,7 @@ Route::group(['prefix' => 'v1', 'middleware' => ['signature']], function(){
 
             Route::post('set_transaction_pin', [ApisUserController::class, 'setTransactionPin']);
             Route::post('update_transaction_pin', [ApisUserController::class, 'updateTransactionPin']);
+            Route::post('verify_account_number', [ApisUserController::class, 'verifyAccountNumber']);
 
 
 

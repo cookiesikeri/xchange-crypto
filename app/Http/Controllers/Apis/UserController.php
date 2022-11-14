@@ -282,10 +282,11 @@ class UserController extends Controller
     public function getBanksList(){
         $response = Http::withHeaders([
             'Authorization' => 'Bearer '.env('PAYSTACK_SECRET_KEY')
-        ])->get(env('PAYSTACK_BASE_URL').'banks');
+        ])->get(env('PAYSTACK_BASE_URL').'bank');
 
         return response()->json(['banks'=>$response['data']]);
     }
+
 
     public function verifyAccountNumber(Request $request)
     {
@@ -301,8 +302,9 @@ class UserController extends Controller
             $transfer_type = $request->input('bank_code')  == 999999 ? 'intra' : 'inter';
 
             $response = Http::withHeaders([
-                'Authorization' => 'Bearer '.env('VFD_KEY')
-            ])->get(env('VFD_URL')."transfer/recipient?accountNo=$account_number&transfer_type=$transfer_type&bank=$bank_code&wallet-credentials=".env('VFD_WALLET_ID'));
+                'Authorization' => 'Bearer '.env('PAYSTACK_SECRET_KEY'),
+                'Content-Type' => "application/json"
+            ])->get(env('PAYSTACK_SECRET_KEY')."bank/resolve?account_number=$account_number&bank=$bank_code");
 
             return response()->json(['account'=> $response['data']]);
         }catch(Exception $e){
