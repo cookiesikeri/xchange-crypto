@@ -362,7 +362,20 @@ class UserController extends Controller
         return $this->createNewToken(auth()->refresh());
     }
 
+    public function Users()
+    {
+        try {
 
+            $data = User::orderBy('id', 'desc')->get();
+            $message = 'data successfully fetched';
+
+            return $this->sendResponse($data,$message);
+        }catch (ModelNotFoundException $e) {
+            return response()->json(['message' => $e->getMessage()],404);
+        } catch(\Exception $e) {
+            return response()->json(['message' => $e->getMessage()],500);
+        }
+    }
 
 
     /**

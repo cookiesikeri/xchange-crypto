@@ -87,13 +87,14 @@ Route::group(['prefix' => 'v1', 'middleware' => ['signature']], function(){
 
     Route::post('login', [UserController::class, 'login']);
     Route::post('admin/login', [AdminController::class, 'login']);
+    Route::get('all/users', [UserController::class, 'Users']);
 
 
 // all routes that needs the cors middlewares added
     Route::middleware(['cors'])->group(function () {
         Route::post('create-account-reset', [UserController::class, 'retryAccountCreation']);
         Route::post('users/{user}', [UserController::class, 'update']);
-//        Route::get('users', [UserController::class, 'index']);
+
         Route::get('users/{user}', [UserController::class, 'show']);
         Route::get('notifications', [UserController::class, 'Notification']);
         Route::get('admins', [UserController::class, 'Admin']);
