@@ -298,12 +298,11 @@ class UserController extends Controller
             $account_number = $request->account_number;
             $bank_code = $request->bank_code;
 
-            $transfer_type = $request->input('bank_code')  == 999999 ? 'intra' : 'inter';
 
             $response = Http::withHeaders([
                 'Authorization' => 'Bearer '.env('PAYSTACK_SECRET_KEY'),
                 'Content-Type' => "application/json"
-            ])->get(env('PAYSTACK_SECRET_KEY')."bank/resolve?account_number=$account_number&bank=$bank_code");
+            ])->get(env('PAYSTACK_SECRET_KEY')."/bank/resolve?account_number=$account_number&bank=$bank_code");
 
             return response()->json(['account'=> $response['data']]);
         }catch(Exception $e){

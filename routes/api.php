@@ -86,6 +86,8 @@ Route::group(['prefix' => 'v1', 'middleware' => ['cors']], function(){
     Route::post('user/set_transaction_pin', [ApisUserController::class, 'setTransactionPin']);
     Route::post('change_pin/get_otp', [ApisUserController::class, 'initChangePin']);
     Route::post('update_transaction_pin', [ApisUserController::class, 'updateTransactionPin']);
+
+    //finance
     Route::post('verify_account_number', [ApisUserController::class, 'verifyAccountNumber']);
 });
 
