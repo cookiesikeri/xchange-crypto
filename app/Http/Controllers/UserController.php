@@ -123,7 +123,7 @@ class UserController extends Controller
         ]);
         $message = "Hello! Your Xchange Verification Code is $otp. Code is valid for the next ".env('OTP_VALIDITY')."minutes.";
         // $this->sendSms($user->phone,$message);
-        // Mail::to($user->email)->send(new OtpMail($user->name, $otp));
+        Mail::to($user->email)->send(new OtpMail($user->name, $otp));
 
         return "OTP successfully generated";
     }
