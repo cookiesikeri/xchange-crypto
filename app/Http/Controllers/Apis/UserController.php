@@ -307,7 +307,7 @@ class UserController extends Controller
             $response = Http::withHeaders([
                 'Authorization' => 'Bearer '.env('PAYSTACK_SECRET_KEY'),
                 'Cache-Control' => 'no-cache'
-            ])->get(env('PAYSTACK_BASE_URL')."/bank/resolve?account_number=$account_number&bank=$bank_code");
+            ])->get(env('PAYSTACK_BASE_URL')."/bank/resolve?account_number=$account_number&bank_code=$bank_code");
 
 
             return response()->json([

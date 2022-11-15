@@ -15,6 +15,8 @@ final class ActivityType extends Enum
     const LOGIN =   'Auth-login';
     const REGISTER =   'Auth-register';
     const AIRTIME = 'Airtime';
-    const ELECTRICITY = 'Electricity Bills';
-    const BANK_TRANSFER = 'Bank Transfer';
+    const BTC = 'Buy Bitcoin';
+    const FUND_WALLET = 'Fund Wallet';
+    const CARD_TRANSFER = 'Card Transfer';
+    const DATA = 'Data';
 }
