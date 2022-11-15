@@ -269,7 +269,7 @@ class UserController extends Controller
                 ->send(new TransactionMail($user->name,$amount));
         }
 
-        return response()->json(['message'=>$msg, 'wallet'=>$wallet,]);
+        return response()->json(['message'=>$msg, 'wallet'=>$wallet]);
     }
 
     public function fund_user_wallet_transfer(Request $request)
@@ -301,7 +301,7 @@ class UserController extends Controller
 
          //$reference ='WALLET-'. $this->user->generate_transaction_reference();
 
-         $verification_status = $this->utility->verifyMonifyPayment($paystack_payment_reference);
+         $verification_status = $this->utility->verifyPaystackPayment($paystack_payment_reference);
 
          //return $verification_status;
 
