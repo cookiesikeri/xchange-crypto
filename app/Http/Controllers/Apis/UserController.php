@@ -299,6 +299,16 @@ class UserController extends Controller
             return response()->json(['message'=>'Could not find User.'], 404);
         }
 
+        $checkRef = PaystackRefRecord::where('ref', $paystack_payment_reference)->first();
+
+        if($checkRef && $checkRef->status == 'success'){
+            return response()->json(['message'=>'Already processed this transaction.']);
+        }elseif (!$checkRef){
+            $checkRef = PaystackRefRecord::create([
+                'ref'=>$paystack_payment_reference,
+                'status'=>'pending',
+            ]);
+        }
          //$reference ='WALLET-'. $this->user->generate_transaction_reference();
 
          $verification_status = $this->utility->verifyPaystackPayment($paystack_payment_reference);
