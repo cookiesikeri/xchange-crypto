@@ -311,7 +311,7 @@ class UserController extends Controller
 
 
             return response()->json([
-                "message" => " Account number  fetched succesfully",
+                "message" => " Account number fetched succesfully",
                 'account' => $response,
                 'status' => 'success',
             ], 201);
