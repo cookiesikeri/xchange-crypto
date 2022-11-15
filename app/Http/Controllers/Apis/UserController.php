@@ -309,7 +309,12 @@ class UserController extends Controller
             ])->get(env('PAYSTACK_BASE_URL')."/bank/resolve?account_number=$account_number&bank=$bank_code");
 
 
-            return response()->json(['account'=> $response['data']]);
+            return response()->json([
+                "message" => " Account number  fetched succesfully",
+                'account' => $response,
+                'status' => 'success',
+            ], 201);
+
         }catch(Exception $e){
             return response()->json(['message'=>$e->getMessage()], 422);
         }
