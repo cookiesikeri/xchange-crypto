@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\Apis;
 
-use App\Jobs\PeaceAccountCreationJob;
+
 use App\Mail\TransactionMail;
 use App\Models\AccountNumber;
 use App\Models\BankTransfer;
@@ -16,14 +16,8 @@ use App\Mail\OtpMail;
 
 use App\Models\AirtimeTransaction;
 use App\Models\DataTransaction;
-use App\Models\LoanBalance;
-//use App\Models\LoanTransaction;
 use App\Models\Models\OtpVerify;
 use App\Models\PaystackRefRecord;
-use App\Models\PosLocation;
-use App\Models\PosRequest;
-use App\Models\PowerTransaction;
-use App\Models\TVTransaction;
 use App\Models\User;
 use App\Models\UserSecretQAndA;
 use App\Models\Wallet;
@@ -276,44 +270,6 @@ class UserController extends Controller
         }
 
         return response()->json(['message'=>$msg, 'wallet'=>$wallet,]);
-    }
-
-    public function getBanksList(){
-        $response = Http::withHeaders([
-            'Authorization' => 'Bearer '.env('PAYSTACK_SECRET_KEY')
-        ])->get(env('PAYSTACK_BASE_URL').'/bank');
-
-        return response()->json(['banks'=>$response['data']]);
-    }
-
-
-    public function verifyAccountNumber(Request $request)
-    {
-        try{
-
-            $validator = Validator::make($request->all(), [
-                'account_number'=>'required',
-                'bank_code' => 'required'
-            ]);
-
-            if ($validator->fails()) {
-                return response()->json($validator->errors(), 422);
-            }
-
-            $account_number = $request->account_number;
-            $bank_code = $request->bank_code;
-
-
-            $response = Http::withHeaders([
-                'Authorization' => 'Bearer '.env('PAYSTACK_SECRET_KEY')
-            ])->get(env('PAYSTACK_BASE_URL')."/bank/resolve?account_number=$account_number&bank_code=$bank_code");
-
-            return response()->json(['banks'=>$response['data']]);
-
-        }catch(Exception $e){
-            return response()->json(['message'=>$e->getMessage()], 422);
-        }
-
     }
 
 

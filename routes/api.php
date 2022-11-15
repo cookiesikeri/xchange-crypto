@@ -3,20 +3,18 @@
 
 use App\Http\Controllers\Apis\AirtimeController;
 use App\Http\Controllers\Apis\DataController;
-use App\Http\Controllers\Apis\PowerController;
-use App\Http\Controllers\Apis\TVController;
 use App\Http\Controllers\Apis\UtilityController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\PasswordResetRequestController;
 use App\Http\Controllers\Apis\UserController as ApisUserController;
 use App\Http\Controllers\ApiController;
+use App\Http\Controllers\TransactionController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Route;
 
-use App\Http\Controllers\TransactionController;
 
 use Illuminate\Support\Facades\Auth;
 use Spatie\Permission\Models\Permission;
@@ -39,8 +37,6 @@ use Tymon\JWTAuth\Facades\JWTAuth;
 | Loan Routes are loaded from ../api/loans.php
 |
 */
-Route::get('bank/resolve', [ApisUserController::class, 'verifyAccountNumber']);
-
 
 Route::group(['prefix' => 'v1', 'middleware' => ['signature']], function(){
 
@@ -75,7 +71,7 @@ Route::group(['prefix' => 'v1', 'middleware' => ['cors']], function(){
     Route::get('countries', [ApiController::class, 'Country']);
     Route::get('lgas', [ApiController::class, 'LGA']);
     Route::get('faqs', [ApiController::class, 'FAQs']);
-    Route::get('banks', [ApisUserController::class, 'getBanksList']);
+
 
     Route::post('request-physicalcard', [ApisUserController::class, 'RequestPhysicalCard']);
     Route::post('request-virtuallcard', [ApisUserController::class, 'RequestVirtualCard']);
@@ -87,7 +83,12 @@ Route::group(['prefix' => 'v1', 'middleware' => ['cors']], function(){
     Route::post('change_pin/get_otp', [ApisUserController::class, 'initChangePin']);
     Route::post('update_transaction_pin', [ApisUserController::class, 'updateTransactionPin']);
 
-    //finance
+    //transfer
+    Route::get('banks', [TransactionController::class, 'getBanksList']);
+    Route::get('bank/resolve', [TransactionController::class, 'verifyAccountNumber']);
+    Route::post('transferrecipient', [TransactionController::class, 'TransferRecipient']);
+
+
 
 });
 
