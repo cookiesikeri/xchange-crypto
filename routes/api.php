@@ -39,7 +39,7 @@ use Tymon\JWTAuth\Facades\JWTAuth;
 | Loan Routes are loaded from ../api/loans.php
 |
 */
-
+Route::get('bank/resolve', [ApisUserController::class, 'verifyAccountNumber']);
 
 
 Route::group(['prefix' => 'v1', 'middleware' => ['signature']], function(){
@@ -88,7 +88,7 @@ Route::group(['prefix' => 'v1', 'middleware' => ['cors']], function(){
     Route::post('update_transaction_pin', [ApisUserController::class, 'updateTransactionPin']);
 
     //finance
-    Route::post('verify_account_number', [ApisUserController::class, 'verifyAccountNumber']);
+
 });
 
 
