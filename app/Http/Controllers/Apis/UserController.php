@@ -272,6 +272,64 @@ class UserController extends Controller
         return response()->json(['message'=>$msg, 'wallet'=>$wallet,]);
     }
 
+    public function fund_user_wallet_transfer(Request $request)
+    {
+        try{
+            $request->validate([
+                'reference'=>'required',
+                'user_id'=>'required',
+
+            ]);
+        }catch(ValidationException $exception){
+            return response()->json(['errors'=>$exception->errors(), 'message'=>$exception->getMessage()]);
+        }
+        $paystack_payment_reference = $request->reference;
+        //$amount = $request->amount;
+        $userId = $request->user_id;
+        //$key = config('app.paystack');
+        $msg = '';
+
+        // verify the payment
+        try{
+            $user = User::on('mysql::write')->findOrFail($userId);
+        }catch(ModelNotFoundException $e){
+            return response()->json(['message'=>'Could not find User.'], 404);
+        }
+        if(!$user){
+            return response()->json(['message'=>'Could not find User.'], 404);
+        }
+
+         //$reference ='WALLET-'. $this->user->generate_transaction_reference();
+
+         $verification_status = $this->utility->verifyMonifyPayment($paystack_payment_reference);
+
+         //return $verification_status;
+
+         $amount = intval($verification_status['amount']);
+        if ($verification_status['status'] == -1) {
+            // cURL error
+            // log as failed transaction
+            $msg = 'Transfer failed to verify wallet funding.';
+        } else if ($verification_status['status'] == 503) {
+            $msg = 'Transfer was unable to be confirm.';
+        } else if ($verification_status['status'] == 404) {
+            $msg = 'Unfortunately, transaction reference not found.';
+        }else if ($verification_status['status'] == 400) {
+            $msg = 'Unfortunately, transaction is pending.';
+        } else if ($verification_status['status'] == 100) {
+            $msg = 'Transfer verification successful.';
+            //return $user->wallet->id;
+            //$this->user->update_user_wallet_balance(($user->wallet->balance + $amount));
+            $newBal = intval($user->wallet->balance) + intval($amount);
+            $user->wallet()->update(['balance' => $newBal]);
+            $walTransaction = WalletTransaction::on('mysql::write')->create(['wallet_id'=>$user->wallet->id, 'type'=>'Credit', 'amount'=>$amount]);
+            Mail::to($user->email)
+                ->send(new TransactionMail($user->name,$amount));
+        }
+
+        return response()->json(['message'=>$msg]);
+    }
+
 
     public function setTransactionPin(Request $request){
         try{

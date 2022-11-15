@@ -307,17 +307,6 @@ class UserController extends Controller
     }
 
 
-    //find current user
-    public function getAuthUser(Request $request)
-    {
-        return response()->json(auth()->user());
-    }
-    //show all users
-    public function show(User $user)
-    {
-        return response()->json($user, 200);
-    }
-
     public function logout()
     {
         auth()->logout();
@@ -398,48 +387,6 @@ class UserController extends Controller
             }
         }
     }
-
-    public function verifyBVN(Request $request){
-        try{
-            $validator = Validator::make($request->all(), [
-                'bvn'=>'required|numeric|unique:users',
-            ]);
-
-            if ($validator->fails()) {
-                return response()->json($validator->errors(), 400);
-            }
-
-            if($request->filled('bvn')){
-                $bvn = $request->input('bvn');
-                $response = Http::withHeaders([
-                    'Authorization' => 'Bearer '.env('VFD_KEY')
-                ])->get(env('VFD_URL')."client?bvn=$bvn&wallet-credentials=".env('VFD_WALLET_ID'));
-
-                if($response->getStatusCode() !== 200){
-                    return response()->json(['message'=>'Invalid BVN or Could Not Reach BVN Service', 'valid_bvn'=>false], 403);
-                }
-
-                $user = User::on('mysql::write')->find(Auth::id());
-                $name = $response['data']['firstName'] . ' ' . $response['data']['middleName'] . ' ' .$response['data']['lastName'];
-                $user->update([
-                    'bvn'=>$bvn,
-                    'name'=>$name,
-                    'dob'=>$response['data']['dateOfBirth'],
-                ]);
-
-                return response()->json(['message'=>'BVN successfully verified', 'valid_bvn'=>true]);
-            }
-        }catch(Exception $e){
-            Http::post(env('VFD_HOOK_URL'),[
-                'text' => $e->getMessage(),
-                'username' => 'UserController - Verify BVN method (api.transave.com.ng) ',
-                'icon_emoji' => ':ghost:',
-                'channel' => env('SLACK_CHANNEL')
-            ]);
-            return response()->json(['message'=>$e->getMessage()], 420);
-        }
-    }
-
     public function update(Request $request, User $user)
     {
         $user = Auth::user();
@@ -540,11 +487,7 @@ class UserController extends Controller
                     'transaction_pin_set' => $user->transaction_pin ? true : false,
                 ],
 
-                'referral_link'=> $user->referral_code->referral_link,
                 'walletBalance'   =>   $user->wallet->balance,
-                'LoanBalance' => $user->loanbalance ? $user->loanbalance->balance : 0,
-                //'access_token' => $token,
-                //"expires" => auth()->factory()->getTTL() * 60 * 2,
             ]);
         }
         return response()->json(['message' => 'you are not the owner of this account']);
@@ -552,20 +495,7 @@ class UserController extends Controller
 
 
 
-    public function Notification()
-    {
-        return response()->json(\App\Models\Notification::orderBy('id', 'desc')->get());
-    }
 
-    public function Admin()
-    {
-        return response()->json(\App\Models\Admin::orderBy('id', 'desc')->get());
-    }
-
-    public function FAQ()
-    {
-        return response()->json(\App\Models\FAQ::orderBy('id', 'desc')->get());
-    }
 
 
     public function shutdown($id, $value = ShutdownLevel::USER_SHUTDOWN)
@@ -584,51 +514,6 @@ class UserController extends Controller
             'status' => $type,
         ]);
         return $this->sendResponse(AccountRequest::find($id), 'account request acted upon successfully');
-    }
-
-
-    public function customers()
-    {
-        $filter = request()->query('filter');
-        $state = request()->query('state');
-        $builder = CustomerValidation::on('mysql::read')->select('users.id', 'customer_validations.authorized_stat', 'customer_validations.support_id', 'users.name', 'users.email', 'users.phone', 'users.image', 'users.dob', 'users.sex', 'users.withdrawal_limit', 'users.shutdown_level', 'account_types.name as account_type', 'customer_validations.updated_at AS verified_at', 'users.created_at', 'users.updated_at')
-            ->join('users', 'customer_validations.user_id', '=', 'users.id')->join('account_types', 'users.account_type_id', 'account_types.id');
-
-        if ($filter || $filter == '0') {
-            $builder = $builder->where('customer_validations.authorized_stat', $filter);
-        }
-
-        if ($state || $state == '0') {
-            $builder = $builder->where('users.shutdown_level', $state);
-        }
-
-        if (request()->query('search')) {
-            $search = request()->query('search');
-            $resources = $builder->where(function ($query) use ($search) {
-                $query->where('users.name', 'like', '%'.$search.'%')
-                    ->orWhere('account_types.name', 'like', '%'.$search.'%')
-                    ->orWhere('users.phone', 'like', '%'.$search.'%')
-                    ->orWhere('users.email', 'like', '%'.$search.'%');
-            })->orderBy('customer_validations.created_at', 'desc')->paginate(10);
-        }elseif (request()->query('start') && !request()->query('end')) {
-            $startDate = Carbon::parse(request()->query('start'));
-            $resources = $builder->where('customer_validations.created_at', '>=', $startDate)
-                ->orderBy('customer_validations.created_at', 'desc')->paginate(10);
-        }elseif(!request()->query('start') && request()->query('end')) {
-            $endDate = Carbon::parse(request()->query('end'));
-            $resources = $builder->where('customer_validations.created_at', '<=', $endDate)
-                ->orderBy('customer_validations.created_at', 'desc')->paginate(10);
-        }elseif (request()->query('start') && request()->query('end')) {
-            $startDate = Carbon::parse(request()->query('start'));
-            $endDate = Carbon::parse(request()->query('end'));
-            $resources = $builder->where('customer_validations.created_at', '>=', $startDate)
-                ->where('customer_validations.created_at', '<=', $endDate)
-                ->orderBy('customer_validations.created_at', 'desc')->paginate(10);
-        }else {
-            $resources = $builder->orderBy('customer_validations.created_at', 'desc')->paginate(10);
-        }
-
-        return $this->sendResponse($resources, 'all customer validations requests fetched successfully');
     }
 
     public function verification(Request $request, $id)

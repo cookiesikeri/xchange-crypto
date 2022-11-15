@@ -88,6 +88,9 @@ Route::group(['prefix' => 'v1', 'middleware' => ['cors']], function(){
     Route::get('bank/resolve', [TransactionController::class, 'verifyAccountNumber']);
     Route::post('transferrecipient', [TransactionController::class, 'TransferRecipient']);
 
+    Route::post('fund_user_wallet/card', [ApisUserController::class, 'fund_user_wallet_card'])->name('fund_user_wallet');
+    Route::post('fund_user_wallet/transfer', [ApisUserController::class, 'fund_user_wallet_transfer']);
+
 
 
 });

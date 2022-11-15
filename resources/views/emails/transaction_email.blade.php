@@ -4,11 +4,11 @@
    Your wallet/bank transfer was successful.<br>
 
 
-    N,{{ $amount }} has been credited to your account and received by Chigozie.
+    N,{{ $amount }} has been credited to your account and received by Eben.
     Please find the transaction summary below.
 
 
-@component('mail::button', ['url' => 'https://transave.com.ng'])
+@component('mail::button', ['url' => 'https://taheerxchange.com'])
 Go to Dashboard
 @endcomponent
 
