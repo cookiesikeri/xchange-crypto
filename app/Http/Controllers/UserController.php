@@ -390,12 +390,6 @@ class UserController extends Controller
     public function update(Request $request, User $user)
     {
         $user = Auth::user();
-        Http::post(env('VFD_HOOK_URL'),[
-            'text' => "$user->name with phone $user->phone and id $user->id is trying to update profile",
-            'username' => 'UserController - Profile',
-            'icon_emoji' => ':boom:',
-            'channel' => env('SLACK_CHANNEL')
-        ]);
 
         $validator = Validator::make($request->all(),[
             'email'         => 'string|unique:users',
@@ -407,11 +401,20 @@ class UserController extends Controller
         }
         $input = array();
 
-        if ($request->filled('dob')) {
-            $input['dob'] = $request->dob;
+        if ($request->filled('email')) {
+            $input['email'] = $request->email;
+        }
+        if ($request->filled('phone')) {
+            $input['phone'] = $request->phone;
+        }
+        if ($request->filled('name')) {
+            $input['name'] = $request->name;
         }
         if ($request->filled('sex')) {
             $input['sex'] = $request->sex;
+        }
+        if ($request->filled('address')) {
+            $input['address'] = $request->address;
         }
 
         if ($request->filled('password')) {
@@ -419,42 +422,15 @@ class UserController extends Controller
                 'password' => bcrypt($request->input('password'))
             ]);
         }
-        /* if($request->filled('pin')){
-            $input['transaction_pin'] = Hash::make($input['pin']);
-        } */
-//        return "success";
-
-        if($request->hasFile('profile_image')){
-
-            $file = $request->file('profile_image');
-            $disk = 's3';
-            $ext = $file->getClientOriginalExtension();
-            $path = 'cover-image'.time().'.'.$ext;
-
-            $storage = Storage::disk($disk)->putFileAs('transave/profile',$file,$path);
-            // $input['profile_image'] = $storage;
-            $exists = Storage::disk('s3')->get($storage);
-            $store = '';
-            if($exists){
-                $store = Storage::disk('s3')->url($storage);
-            }
-
-            //return $store;
-            $input['image'] = $store;
-
-        }
+        $this->saveUserActivity(ActivityType::UPDATEPROFILE, '', $user->id);
 
         if ($this->ownsRecord($user->id)) {
 
             $user->update($input);
 
-            $this->bankRegistrationHook->updateUserInfo($user);
             $response = [
                 'status'   =>   1,
                 'message'  =>   'Account updated succesfully',
-//                'walletBalance'   =>   $user->wallet->balance,
-//                'loanBalance'   =>   $user->loanbalance->balance,
-//                'referral_link' => $user->referral_code,
             ];
 
             $accs = array();

@@ -34,14 +34,6 @@ class UserRepository implements UserInterface {
         return $wallet_balance;
     }
 
-    public function get_user_loan_balance($user_id) {
-        $loan_balance = 0.00;
-        $user = $this->is_user($user_id);
-        if(!is_int($user)) {
-            $loan_balance = $user->loanbalance->balance;
-        }
-        return $loan_balance;
-    }
 
     public function user_has_sufficient_wallet_balance($user_id, $amount) {
         $has_sufficient_balance = false;
@@ -72,45 +64,7 @@ class UserRepository implements UserInterface {
         return $debit;
     }
 
-    public function get_user_power_transactions($user_id, $paginate = 20, $status = 'all') {
-        $power_transactions;
-        $user = $this->is_user($user_id);
-        if(!is_int($user)) {
-            switch($status) {
-                case '0':
-                case '1':
-                case '2':
-                case '3':
-                case '4':
-                    $power_transactions = \App\Models\PowerTransaction::on('mysql::read')->where('status', $status)->where('user_id', $user->id)->paginate($paginate);
-                    break;
-                case 'all':
-                    $power_transactions = \App\Models\PowerTransaction::on('mysql::read')->where('user_id', $user->id)->paginate($paginate);
-                    break;
-            }
-        }
-        return $power_transactions;
-    }
 
-    public function get_user_all_power_transactions($user_id, $status) {
-        $power_transactions;
-        $user = $this->is_user($user_id);
-        if(!is_int($user)) {
-            switch($status) {
-                case '0':
-                case '1':
-                case '2':
-                case '3':
-                case '4':
-                    $power_transactions = \App\Models\PowerTransaction::on('mysql::read')->where('status', $status)->where('user_id', $user->id)->get();
-                    break;
-                case 'all':
-                    $power_transactions = \App\Models\PowerTransaction::on('mysql::read')->where('user_id', $user->id)->get();
-                    break;
-            }
-        }
-        return $power_transactions;
-    }
 
     public function get_user_airtime_transactions($user_id, $paginate = 20, $status = 'all') {
         $airtime_transactions;
@@ -192,45 +146,7 @@ class UserRepository implements UserInterface {
         return $data_transactions;
     }
 
-    public function get_user_tv_transactions($user_id, $paginate = 20, $status = 'all') {
-        $tv_transactions;
-        $user = $this->is_vendor($user_id);
-        if(!is_int($user)) {
-            switch($status) {
-                case '0':
-                case '1':
-                case '2':
-                case '3':
-                case '4':
-                    $tv_transactions = \App\Models\TVTransaction::on('mysql::read')->where('status', $status)->where('user_id', $user->id)->paginate($paginate);
-                    break;
-                case 'all':
-                    $tv_transactions = \App\Models\TVTransaction::on('mysql::read')->where('user_id', $user->id)->paginate($paginate);
-                    break;
-            }
-        }
-        return $tv_transactions;
-    }
 
-    public function get_user_all_tv_transactions($user_id, $status) {
-        $tv_transactions;
-        $user = $this->is_user($user_id);
-        if(!is_int($vendor)) {
-            switch($status) {
-                case '0':
-                case '1':
-                case '2':
-                case '3':
-                case '4':
-                    $tv_transactions = \App\Models\TVTransaction::on('mysql::read')->where('status', $status)->where('user_id', $user->id)->get();
-                    break;
-                case 'all':
-                    $tv_transactions = \App\Models\TVTransaction::on('mysql::read')->where('user_id', $user->id)->get();
-                    break;
-            }
-        }
-        return $tv_transactions;
-    }
 
     public function log_wallet_transaction($user, $amount_entered, $new_balance, $transaction_type, $description, $transaction_status, $transaction_reference)
     {

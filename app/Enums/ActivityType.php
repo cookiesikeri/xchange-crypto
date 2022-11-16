@@ -19,4 +19,6 @@ final class ActivityType extends Enum
     const FUND_WALLET = 'Fund Wallet';
     const CARD_TRANSFER = 'Card Transfer';
     const DATA = 'Data';
+    const UPDATEPROFILE = 'Update-Profile';
+    const UPDATEPIN = 'Update-User-Pin';
 }

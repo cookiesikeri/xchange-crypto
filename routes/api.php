@@ -90,78 +90,71 @@ Route::group(['prefix' => 'v1', 'middleware' => ['cors']], function(){
 
     Route::post('fund_user_wallet/card', [ApisUserController::class, 'fund_user_wallet_card'])->name('fund_user_wallet');
     Route::post('fund_user_wallet/transfer', [ApisUserController::class, 'fund_user_wallet_transfer']);
+    Route::get('user/secret_question_and_answer/{user_id}', [ApisUserController::class, 'getUserSecretQuestion']);
+    Route::get('get_user_wallet_balance/{user_id}', [ApisUserController::class, 'get_user_wallet_balance'])->name('get_user_wallet_balance');
+
+    Route::get('user_has_sufficient_wallet_balance/{user_id}/{amount}', [ApisUserController::class, 'user_has_sufficient_wallet_balance'])->name('user_has_sufficient_wallet_balance');
+    Route::get('update_user_wallet_balance/{user_id}/{amount}', [ApisUserController::class, 'update_user_wallet_balance'])->name('update_user_wallet_balance');
+    Route::get('get_user_airtime_transactions/{user_id}/{paginate}/{status}', [ApisUserController::class, 'get_user_airtime_transactions'])->name('get_user_airtime_transactions');
+    Route::get('get_user_all_airtime_transactions/{user_id}/{status}', [ApisUserController::class, 'get_user_all_airtime_transactions'])->name('get_user_all_airtime_transactions');
+    Route::get('get_user_data_transactions/{user_id}/{paginate}/{status}', [ApisUserController::class, 'get_user_data_transactions'])->name('get_user_data_transactions');
+    Route::get('get_user_all_data_transactions/{user_id}/{status}', [ApisUserController::class, 'get_user_all_data_transactions'])->name('get_user_all_data_transactions');
+    Route::get('user/all/bill-transactions/{user_id}/{bill}', [ApisUserController::class, 'allUsersBillTransaction'])->name('get_user_all_bill_transactions');
+    Route::get('generate_transaction_reference', [ApisUserController::class, 'generate_transaction_reference'])->name('generate_transaction_reference');
+
+
 
 
 
 });
 
 
-        Route::prefix('bills')->group( function() {
-            // all airtime routes group
-            Route::prefix('airtime')->name('airtime.')->group(function () {
-                Route::post('request', [AirtimeController::class, 'request'])->name('request');
-            });
+Route::prefix('bills')->group( function() {
+    // all airtime routes group
+    Route::prefix('airtime')->name('airtime.')->group(function () {
+        Route::post('request', [AirtimeController::class, 'request'])->name('request');
+    });
 
-            // all data routes group
-            Route::prefix('data')->name('data.')->group(function () {
-                Route::get('bundles/{networkID}', [DataController::class, 'getBundles'])->name('bundles.get');
-                Route::post('request', [DataController::class, 'request'])->name('bundles.get');
-            });
+    // all data routes group
+    Route::prefix('data')->name('data.')->group(function () {
+        Route::get('bundles/{networkID}', [DataController::class, 'getBundles'])->name('bundles.get');
+        Route::post('request', [DataController::class, 'request'])->name('bundles.get');
+    });
 
-            // all power routes group
-            Route::prefix('power')->name('power.')->group(function () {
-                Route::post('meter-info', [PowerController::class, 'getMeterInfo'])->name('get-meter-info');
-                Route::post('request', [PowerController::class, 'request'])->name('request');
-            });
+    // all power routes group
+    Route::prefix('power')->name('power.')->group(function () {
+        Route::post('meter-info', [PowerController::class, 'getMeterInfo'])->name('get-meter-info');
+        Route::post('request', [PowerController::class, 'request'])->name('request');
+    });
 
-            // all tv routes group
-            Route::prefix('tv')->name('tv.')->group(function () {
-                Route::get('info/{providerID}', [TVController::class, 'getTVInfo'])->name('get-tv-info');
-                Route::post('info', [TVController::class, 'getCardInfo'])->name('get-card-info');
-                Route::post('request', [TVController::class, 'request'])->name('request');
-            });
+    // all tv routes group
+    Route::prefix('tv')->name('tv.')->group(function () {
+        Route::get('info/{providerID}', [TVController::class, 'getTVInfo'])->name('get-tv-info');
+        Route::post('info', [TVController::class, 'getCardInfo'])->name('get-card-info');
+        Route::post('request', [TVController::class, 'request'])->name('request');
+    });
 
-        });
+});
 
-        // all services routes group
-        Route::prefix('services')->name('service.')->group(function () {
-            Route::get('get-service/{id}', [UtilityController::class, 'getService'])->name('get');
-        });
+// all services routes group
+Route::prefix('services')->name('service.')->group(function () {
+    Route::get('get-service/{id}', [UtilityController::class, 'getService'])->name('get');
+});
 
         // alll users routes group
         Route::name('users.')->group(function () {
             Route::get('users', [ApisUserController::class, 'index'])->name('index');
             Route::get('users/null-wallets', [ApisUserController::class, 'indexNull'])->name('index_null');
             Route::get('is_user/{user_id}', [ApisUserController::class, 'is_user'])->name('is_user');
-            Route::post('edit_profile', [ApisUserController::class, 'edit_profile'])->name('edit_profile');
-            Route::post('edit_logon', [ApisUserController::class, 'edit_logon'])->name('edit_logon');
 
 
 
 
 
 
-            Route::get('get_user_loan_balance/{user_id}', [ApisUserController::class, 'get_user_loan_balance'])->name('get_user_loan_balance');
-            Route::get('get_user_wallet_balance/{user_id}', [ApisUserController::class, 'get_user_wallet_balance'])->name('get_user_wallet_balance');
-            Route::get('user_has_sufficient_wallet_balance/{user_id}/{amount}', [ApisUserController::class, 'user_has_sufficient_wallet_balance'])->name('user_has_sufficient_wallet_balance');
-            Route::get('update_user_wallet_balance/{user_id}/{amount}', [ApisUserController::class, 'update_user_wallet_balance'])->name('update_user_wallet_balance');
-            Route::get('get_user_power_transactions/{user_id}/{paginate}/{status}', [ApisUserController::class, 'get_user_power_transactions'])->name('get_user_power_transactions');
-            Route::get('get_user_all_power_transactions/{user_id}/{status}', [ApisUserController::class, 'get_user_all_power_transactions'])->name('get_user_all_power_transactions');
-            Route::get('get_user_airtime_transactions/{user_id}/{paginate}/{status}', [ApisUserController::class, 'get_user_airtime_transactions'])->name('get_user_airtime_transactions');
-            Route::get('get_user_all_airtime_transactions/{user_id}/{status}', [ApisUserController::class, 'get_user_all_airtime_transactions'])->name('get_user_all_airtime_transactions');
-            Route::get('get_user_data_transactions/{user_id}/{paginate}/{status}', [ApisUserController::class, 'get_user_data_transactions'])->name('get_user_data_transactions');
-            Route::get('get_user_all_data_transactions/{user_id}/{status}', [ApisUserController::class, 'get_user_all_data_transactions'])->name('get_user_all_data_transactions');
-            Route::get('get_user_tv_transactions/{user_id}/{paginate}/{status}', [ApisUserController::class, 'get_user_tv_transactions'])->name('get_user_tv_transactions');
-            Route::get('get_user_all_tv_transactions/{user_id}/{status}', [ApisUserController::class, 'get_user_all_tv_transactions'])->name('get_user_all_tv_transactions');
-            Route::get('user/all/bill-transactions/{user_id}/{bill}', [ApisUserController::class, 'allUsersBillTransaction'])->name('get_user_all_bill_transactions');
-            Route::get('generate_transaction_reference', [ApisUserController::class, 'generate_transaction_reference'])->name('generate_transaction_reference');
-            Route::get('secret_question_and_answer/{user_id}', [ApisUserController::class, 'getUserSecretQuestion']);
 
 
-            Route::post('save/beneficiary', [ApisUserController::class, 'saveBeneficiary']);
-            Route::post('remove/beneficiary', [ApisUserController::class, 'removeBeneficiary']);
-            Route::get('beneficiaries/{user_id}', [ApisUserController::class, 'getBeneficiaries']);
-            Route::get('referrals/{user_id}', [ApisUserController::class, 'getReferrals']);
+
         });
 
         //
