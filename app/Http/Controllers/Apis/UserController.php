@@ -18,6 +18,7 @@ use App\Models\AirtimeTransaction;
 use App\Models\DataTransaction;
 use App\Models\Models\OtpVerify;
 use App\Models\PaystackRefRecord;
+use App\Models\TVTransaction;
 use App\Models\User;
 use App\Models\UserSecretQAndA;
 use App\Models\Wallet;
@@ -532,23 +533,13 @@ class UserController extends Controller
                 case 'data':
                     $history = DataTransaction::on('mysql::read')->where('user_id', $user_id)->get();
                     break;
-                case 'power':
-                    $history = PowerTransaction::on('mysql::read')->where('user_id', $user_id)->get();
-                    break;
-                case 'tv':
-                    $history = TVTransaction::on('mysql::read')->where('user_id', $user_id)->get();
-                    break;
                 default:
 
             }
 
             return response()->json(['message'=> $bill.' transaction history retrieved.', 'transactions'=>$history]);
         }catch(Exception $e){
-            Http::post(env('VFD_HOOK_URL'),[
-                'text' => $e->getMessage(),
-                'username' => 'UserController - Get user airtime transaction history method (api.transave.com.ng) ',
-                'icon_emoji' => ':boom:'
-            ]);
+
             return response()->json(['message'=>$e->getMessage()], 420);
         }
     }
@@ -564,22 +555,12 @@ class UserController extends Controller
             $history = AirtimeTransaction::on('mysql::read')->where([['user_id', $user_id], ['status', $status]])->get();
             return response()->json(['message'=>'Airtime transaction history retrieved.', 'transactions'=>$history]);
         }catch(Exception $e){
-            Http::post(env('VFD_HOOK_URL'),[
-                'text' => $e->getMessage(),
-                'username' => 'UserController - Get user airtime transaction history method (api.transave.com.ng) ',
-                'icon_emoji' => ':boom:'
-            ]);
-            return response()->json(['message'=>$e->getMessage()], 420);
-        }
     }
+}
 
     public function get_user_data_transactions($user_id, $paginate, $status)
     {
         return response()->json($this->user->get_user_data_transactions($user_id, $paginate, $status));
-    }
-
-    public function tst($data){
-
     }
 
     public function get_user_all_data_transactions($user_id, $status)
@@ -588,41 +569,6 @@ class UserController extends Controller
             $history = DataTransaction::on('mysql::read')->where([['user_id', $user_id], ['status', $status]])->get();
             return response()->json(['message'=>'Data transaction history retrieved.', 'transactions'=>$history]);
         }catch(Exception $e){
-            Http::post(env('VFD_HOOK_URL'),[
-                'text' => $e->getMessage(),
-                'username' => 'UserController - Get user data transaction history method (api.transave.com.ng) ',
-                'icon_emoji' => ':boom:'
-            ]);
-            return response()->json(['message'=>$e->getMessage()], 420);
-        }
-    }
-
-    public function get_user_all_power_transactions($user_id, $status)
-    {
-        try{
-            $history = PowerTransaction::on('mysql::read')->where([['user_id', $user_id], ['status', $status]])->get();
-            return response()->json(['message'=>'Power transaction history retrieved.', 'transactions'=>$history]);
-        }catch(Exception $e){
-            Http::post(env('VFD_HOOK_URL'),[
-                'text' => $e->getMessage(),
-                'username' => 'UserController - Get user power transaction history method (api.transave.com.ng) ',
-                'icon_emoji' => ':boom:'
-            ]);
-            return response()->json(['message'=>$e->getMessage()], 420);
-        }
-    }
-
-    public function get_user_all_tv_transactions($user_id, $status)
-    {
-        try{
-            $history = TVTransaction::on('mysql::read')->where([['user_id', $user_id], ['status', $status]])->get();
-            return response()->json(['message'=>'TV transaction history retrieved.', 'transactions'=>$history]);
-        }catch(Exception $e){
-            Http::post(env('VFD_HOOK_URL'),[
-                'text' => $e->getMessage(),
-                'username' => 'UserController - Get user tv transaction history method (api.transave.com.ng) ',
-                'icon_emoji' => ':boom:'
-            ]);
             return response()->json(['message'=>$e->getMessage()], 420);
         }
     }
@@ -701,151 +647,6 @@ class UserController extends Controller
         ], 201);
     }
 
-    public function PosRequest(Request $request)
-    {
-        try{
-            $validator = Validator::make($request->all(), [
-                'pos_locations'=>'required',
-                'no_of_pos' => 'required|gt:0',
-                'means_of_id' => 'required',
-                'id_number' => 'required',
-                'nearest_bus_stop'=>'required',
-                'occupation' => 'required',
-                'has_business' => 'required|boolean',
-                'business_name' => 'exclude_unless:has_business,true|required|string',
-                'business_license' => 'exclude_unless:has_business,true|required|file',
-                'business_type'=>'exclude_unless:has_business,true|required',
-                'business_reg_num'=>'exclude_unless:has_business,true|required',
-                'other_doc' => 'nullable|file',
-            ]);
-
-            if ($validator->fails()) {
-                return response()->json($validator->errors());
-            }
-
-            if($request->has_business && ($request->business_name == null || $request->business_license == null || $request->business_type == null || $request->business_reg_num == null)){
-                return response()->json(['message'=>'Missing Information! Business Name or Business License or Business Type or Business Reg Number.'], 422);
-            }
-
-            $user_id = Auth::id();
-            $idPhoto = '';
-            $blPhoto = '';
-            $utilityPhoto = '';
-            $otherPhoto = '';
-            $dob = date('Y-m-d', strtotime($request->dob));
-
-            if(!$user_id || $user_id == null){
-                return response()->json(['message'=>'Unauthenticated User! Kindly login.'], 422);
-            }
-
-            $user = User::find($user_id);
-
-            if($user->account_type_id != 3)
-            {
-                return response()->json(['message'=>'Kindly update your KYC.'], 422);
-            }
-
-            $exists = PosRequest::on('mysql::read')->where('user_id', $user_id)->first();
-
-            /* if($exists){
-                return response()->json(['message'=>'Request already Sent.'], 422);
-            } */
-
-            if($request->hasFile('business_license')){
-                $blPhoto = $this->utility->saveFile($request->file('business_license'), 'pos_request/users', 'business-license-photo');
-            }
-
-            if($request->hasFile('other_doc')){
-                $otherPhoto = $this->utility->saveFile($request->file('other_doc'), 'pos_request/users', 'other-doc-photo');
-            }
-
-            $data = \App\Models\PosRequest::on('mysql::write')->create([
-                'no_of_pos' => $request->no_of_pos,
-                'status' => 'processing',
-                'account_number' => 0,
-                'bank_name' => '',
-                'other_doc' => $otherPhoto,
-                'utility_billdoc' => $utilityPhoto,
-                'country' => '',
-                'state' => $request->state,
-                'lga' => $request->lga,
-                'city' => $request->city,
-                'means_of_id' => $request->means_of_id,
-                'identification_doc' => $idPhoto,
-                'id_number' => $request->id_number,
-                'passport' => '',
-                'occupation' => $request->occupation,
-                'job_title' => '',
-                'business_licence' => $blPhoto,
-                'user_id'=> $user_id,
-                'nearest_bus_stop'=>$request->nearest_bus_stop,
-                'has_business'=>$request->has_busisness,
-                'business_name'=>$request->business_name,
-                'business_type'=>$request->business_type,
-                'business_reg_num'=>$request->business_reg_num,
-            ]);
-
-            $pos_locs = json_decode($request->input('pos_locations'), true);
-
-            foreach($pos_locs as $pos_loc)
-            {
-                PosLocation::on('mysql::write')->create([
-                    'pos_request_id'=>$data->id,
-                    'state'=> $pos_loc['state'],
-                    'address'=> $pos_loc['address'],
-                    'city'=> $pos_loc['city'],
-                ]);
-            }
-            $data->pos_locations;
-
-            return response()->json([
-                "message" => "Your application has been submitted successfully",
-                'response' => $data,
-                'status' => 'success',
-            ], 201);
-
-        }catch(ValidationException $ve){
-            Http::post(env('VFD_HOOK_URL'),[
-                'text' => $ve->getMessage().' '.$ve->errors(),
-                'username' => 'User Controller - POS request method (api.transave.com.ng) ',
-                'icon_emoji' => ':boom:'
-            ]);
-            return response()->json(['message'=>$ve->getMessage(), 'errors'=>$ve->errors()], 420);
-        }
-        catch(Exception $e){
-            Http::post(env('VFD_HOOK_URL'),[
-                'text' => $e->getMessage(),
-                'username' => 'User Controller - POS request method (api.transave.com.ng) ',
-                'icon_emoji' => ':boom:'
-            ]);
-            return response()->json(['message'=>$e->getMessage()], 420);
-        }
-    }
-
-    public function usersPosRequest($user_id)
-    {
-        try{
-            $posReqs = PosRequest::on('mysql::read')->where('user_id', $user_id)->get();
-            if(!$posReqs){
-                return response()->json(['message'=>'No requests found for this user!'], 404);
-            }
-            return response()->json(['message'=>'Users POS Requests', 'requests'=>$posReqs]);
-        }catch(Exception $e){
-            Http::post(env('VFD_HOOK_URL'),[
-                'text' => $e->getMessage(),
-                'username' => 'User Controller - Users sent POS requests method (api.transave.com.ng) ',
-                'icon_emoji' => ':boom:'
-            ]);
-            return response()->json(['message'=>$e->getMessage()], 420);
-        }
-    }
-
-    public function LoanHistory(Request $request)
-    {
-
-        return response()->json($request->user()->loans);
-    }
-
     public function GetvirtualcardDetails(Request $request)
     {
 
@@ -856,91 +657,6 @@ class UserController extends Controller
     {
 
         return response()->json($request->user()->card_request_physical);
-    }
-
-    public function LoanOffer()
-    {
-        return response()->json(\App\Models\LoanOffer::orderBy('id', 'desc')->get());
-    }
-
-    public function saveBeneficiary(Request $request){
-        try{
-            $request->validate([
-                'user_id'=>'required|uuid',
-                'account_number'=>'required|numeric',
-                'account_type'=>'required|string',
-            ]);
-
-            $exists = Beneficiaries::on('mysql::read')->where([['user_id', $request->user_id], ['beneficiary_account_number', $request->account_number], ['account_type',$request->account_type]])->first();
-
-            if($exists){
-                return response()->json(['message'=>'Beneficiary Already Saved.']);
-            }
-
-            $ben = Beneficiaries::on('mysql::write')->create([
-                'user_id'=>$request->user_id,
-                'beneficiary_account_number'=>$request->account_number,
-                'account_type'=>$request->account_type,
-            ]);
-
-            return response()->json(['message'=>'Beneficairy Saved Successfully', 'beneficiary'=>$ben], 200);
-        }catch(ModelNotFoundException $me){
-            return response()->json(['message'=>''], 404);
-        }catch(Exception $e){
-            return response()->json(['message'=>$e->getMessage()], 404);
-        }
-
-    }
-
-    public function removeBeneficiary(Request $request){
-        try{
-            $request->validate([
-                'user_id'=>'required|uuid',
-                'account_number'=>'required|numeric',
-            ]);
-
-            $exists = Beneficiaries::on('mysql::read')->where([['user_id', $request->user_id], ['beneficiary_account_number', $request->account_number]])->first();
-
-            if(!$exists){
-                return response()->json(['message'=>'Beneficiary Not Found.'], 404);
-            }
-
-            $check = $exists->delete();
-
-            return response()->json(['message'=>'Beneficairy Removed Successfully', 'removed'=>$check], 200);
-        }catch(ModelNotFoundException $me){
-            return response()->json(['message'=>''], 404);
-        }catch(Exception $e){
-            return response()->json(['message'=>$e->getMessage()], 404);
-        }
-
-    }
-
-    public function getBeneficiaries($user_id){
-        try{
-            $user = User::on('mysql::read')->findOrFail($user_id);
-            $accounts = array();
-
-            foreach($user->beneficiaries as $ben){
-
-                $acc = AccountNumber::on('mysql::read')->where('account_number', $ben['beneficiary_account_number'])->first();
-                $user = User::on('mysql::read')->find($acc->wallet->user_id);
-                if(!$user){
-                    $user = Business::on('mysql::read')->find($acc->wallet->user_id);
-                }
-                $acc['owner_name'] = $user->name;
-                $ben['account_details'] = $acc;
-
-                $accounts[] = $ben;
-            }
-
-            return response()->json(['message'=>'Beneficairies Retrieved Successfully', 'beneficiaries'=>$accounts], 200);
-        }catch(ModelNotFoundException $me){
-            return response()->json(['message'=>'User not found.'], 404);
-        }catch(Exception $e){
-            return response()->json(['message'=>$e->getMessage()], 404);
-        }
-
     }
 
     public function getReferrals($user_id){
@@ -981,11 +697,6 @@ class UserController extends Controller
 //            dispatch(new PeaceAccountCreationJob($user));
             return response()->json(['message'=>'Todays Transactions Retrieved Successfully', 'transactions'=>$wallTr], 200);
         }catch(Exception $e){
-            Http::post(env('VFD_HOOK_URL'), [
-                'text' => $e->getMessage(),
-                'username' => 'UserController - Get transaction history method (api.transave.com.ng) ',
-                'icon_emoji' => ':boom:'
-            ]);
             return response()->json(['message'=>$e->getMessage()], 420);
         }
     }
@@ -996,23 +707,11 @@ class UserController extends Controller
             $transactions = array();
 
             $wallTr = WalletTransaction::on('mysql::read')->where([['wallet_id', $user->wallet->id], ['created_at', Carbon::today()]])->get();
-            /* foreach($wallTr as $trans){
-                $tDay = Carbon::parse($trans['created_at']);
-                $today = Carbon::now();
-                if($tDay == $today){
-                    $transactions[] = $trans;
-                }
-            } */
+
             return response()->json(['message'=>'Todays Transactions Retrieved Successfully', 'transactions'=>$wallTr], 200);
         }catch(Exception $e){
-            Http::post(env('VFD_HOOK_URL'),[
-                'text' => $e->getMessage(),
-                'username' => 'UserController - Get Todays transactions method (api.transave.com.ng) ',
-                'icon_emoji' => ':boom:'
-            ]);
-            return response()->json(['message'=>$e->getMessage()], 420);
-        }
     }
+}
 
     public function getMonthTransaction($user_id, $month){
         try{
@@ -1030,11 +729,7 @@ class UserController extends Controller
             }
             return response()->json(['message'=>'Todays Transactions Retrieved Successfully', 'transactions'=>$wallTr], 200);
         }catch(Exception $e){
-            Http::post(env('VFD_HOOK_URL'),[
-                'text' => $e->getMessage(),
-                'username' => 'UserController - Get Todays transactions method (api.transave.com.ng) ',
-                'icon_emoji' => ':boom:'
-            ]);
+
             return response()->json(['message'=>$e->getMessage()], 420);
         }
     }
@@ -1052,5 +747,6 @@ class UserController extends Controller
             ->join('wallets', 'users.id', '=', 'wallets.user_id')->join('account_numbers', 'wallets.id', '=', 'account_numbers.wallet_id')->whereNull('Wallet ID')->paginate(10);
         return response()->json(['success'=>true, 'data' =>$users, 'message' => 'users fetched successfully']);
     }
+
 
 }
