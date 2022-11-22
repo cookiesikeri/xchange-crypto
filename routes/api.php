@@ -9,6 +9,7 @@ use App\Http\Controllers\PasswordResetRequestController;
 use App\Http\Controllers\Apis\UserController as ApisUserController;
 use App\Http\Controllers\ApiController;
 use App\Http\Controllers\TransactionController;
+use App\Http\Controllers\CryptoController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 

@@ -84,41 +84,6 @@ class TransactionController extends Controller
 
     }
 
-    public function TransferRecipient1(Request $request)
-    {
-        try{
-
-            $validator = Validator::make($request->all(), [
-                'account_number'=>'required',
-                'bank_code' => 'required'
-            ]);
-
-            if ($validator->fails()) {
-                return response()->json($validator->errors(), 422);
-            }
-
-            $data = array(
-                $account_number = $request->account_number,
-                $bank_code = $request->bank_code,
-                $type = "nuban"
-            );
-
-
-            $response = Http::withHeaders([
-                'Authorization' => 'Bearer '.env('PAYSTACK_SECRET_KEY'),
-                'Content-Type' =>  'application/json'
-            // ])->post(env('PAYSTACK_BASE_URL')."/transferrecipient?account_number=$account_number&bank_code=$bank_code");
-            ])->post(env('PAYSTACK_BASE_URL') . '/transferrecipient', $data);
-            $response = $response->getBody()->getContents();
-
-            return $response;
-
-        }catch(Exception $e){
-            return response()->json(['message'=>$e->getMessage()], 422);
-        }
-
-    }
-
     public function TransferRecipient(Request $request) {
 
         $data = array(
@@ -138,7 +103,6 @@ class TransactionController extends Controller
             // dd($res);
             return $res;
         }
-
 
     }
 
