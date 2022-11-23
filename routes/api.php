@@ -9,7 +9,7 @@ use App\Http\Controllers\PasswordResetRequestController;
 use App\Http\Controllers\Apis\UserController as ApisUserController;
 use App\Http\Controllers\ApiController;
 use App\Http\Controllers\TransactionController;
-use App\Http\Controllers\CryptoController;
+use App\Http\Controllers\BitconWalletController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 
@@ -103,7 +103,10 @@ Route::group(['prefix' => 'v1', 'middleware' => ['cors']], function(){
     Route::get('user/all/bill-transactions/{user_id}/{bill}', [ApisUserController::class, 'allUsersBillTransaction'])->name('get_user_all_bill_transactions');
     Route::get('generate_transaction_reference', [ApisUserController::class, 'generate_transaction_reference'])->name('generate_transaction_reference');
 
-
+     //crypto
+    Route::get('create/bitcoin/wallet', [BitconWalletController::class, 'CreateBitcoinWallet']);
+    Route::get('generate/bitcoin/address', [BitconWalletController::class, 'CreateBitcoinAddress']);
+    Route::post('bitcoin/create/privatekey', [BitconWalletController::class, 'CreateBitcoinPrivateKey']);
 
 
 

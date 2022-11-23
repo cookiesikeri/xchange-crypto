@@ -502,63 +502,6 @@ class UserController extends Controller
         return response()->json($this->user->generate_transaction_reference());
     }
 
-    public function RequestPhysicalCard(Request $request)
-    {
-        $this->validate($request, [
-            'name' => 'required',
-            'address' =>  'nullable|string',
-            'phone_number' =>  'nullable|string|max:11'
-        ]);
-
-
-        $response = \App\Models\CardRequestPhysical::on('mysql::write')->create([
-
-            'user_id' => auth()->user()->id,
-            'name' => $request->name,
-            'address' => $request->address,
-            'phone_number' => $request->phone_number,
-            'state' => $request->state,
-            'lga' => $request->lga,
-
-
-        ]);
-
-        return response()->json([
-            "message" => "Request sent successfully",
-            'response' => $response,
-            'status' => 'success',
-        ], 201);
-    }
-
-    public function RequestVirtualCard(Request $request)
-    {
-        $this->validate($request, [
-            'name' => 'required',
-            'address' =>  'nullable|string',
-            'currency' =>  'nullable|string',
-            'card_type' =>  'nullable|string',
-            'amount' =>  'nullable|numeric|gt:0'
-        ]);
-
-
-        $response = \App\Models\CardRequestVirtual::on('mysql::write')->create([
-
-            'user_id' => auth()->user()->id,
-            'name' => $request->name,
-            'address' => $request->address,
-            'currency' => $request->currency,
-            'card_type' => $request->card_type,
-            'amount' => $request->amount,
-
-
-        ]);
-
-        return response()->json([
-            "message" => "Request sent successfully",
-            'response' => $response,
-            'status' => 'success',
-        ], 201);
-    }
 
     public function GetvirtualcardDetails(Request $request)
     {
