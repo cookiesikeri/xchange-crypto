@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\BitcoinPrivateKey;
 use App\Models\BitcoinWalletPass;
 use App\Models\BitconWallet;
 use Exception;
@@ -48,11 +49,7 @@ class BitconWalletController extends Controller
                 ]);
             }
 
-            return response()->json([
-                'status' => true,
-                'message' => 'wallet created successfully ',
-                'data' => $response
-            ]);
+            return $response;
 
         }
     }
@@ -60,26 +57,21 @@ class BitconWalletController extends Controller
 
     public function CreateBitcoinPrivateKey(Request $request){
 
-        // $payload = array(
-        //     'index'      =>  0,
-        //     'bank_code'     =>  $request->mnemonic,
-        // );
-
         $curl = curl_init();
 
-        $fields = [
-            'index'      =>  0,
-            'bank_code'     =>  $request->mnemonic,
-        ];
-        $payload = http_build_query($fields);
+        $payload = array(
+
+            'mnemonic'     =>  $request->mnemonic,
+            'index'     =>  $request->index
+        );
 
         curl_setopt_array($curl, [
         CURLOPT_HTTPHEADER => [
             "Content-Type: application/json",
-            "x-api-key: ". env('TATUM_TEST_KEY')
+              "x-api-key: ". env('TATUM_TEST_KEY')
         ],
         CURLOPT_POSTFIELDS => json_encode($payload),
-        CURLOPT_URL => env('TATUM_BASE_URL')."bitcoin/wallet/priv",
+        CURLOPT_URL => "https://api.tatum.io/v3/bitcoin/wallet/priv",
         CURLOPT_RETURNTRANSFER => true,
         CURLOPT_CUSTOMREQUEST => "POST",
         ]);
@@ -90,15 +82,25 @@ class BitconWalletController extends Controller
         curl_close($curl);
 
         if ($error) {
-            return $error;
+            return response()->json($error);
         } else {
-            return response()->json($response);
+            $checkRef = BitcoinPrivateKey::where('key', $response)->first();
+
+            if($checkRef && $checkRef->status == 0){
+                return response()->json(['message'=>'Private Key already exist.'], 413);
+            }elseif (!$checkRef){
+                BitcoinPrivateKey::on('mysql::write')->create([
+                    'user_id' => auth()->user()->id,
+                    'key' => $response
+                ]);
+            }
+            return $response;
         }
     }
 
-    public function CreateBitcoinAddress(Request $request) {
+    public function CreateBitcoinAddress(Request $request, $xpub, $index) {
 
-        $xpub = "tpubDF7sz32kcKjWTuL2RL29LdroDtJdTX4tEq6FzJU44FM39BNhL2KP9MV7d4WpR4X8jU6KeKxwfsVm6UiCkivyqWZqPRzb9UBQx5aiL5BBJKG";
+        $xpub = $xpub;
         $index = 0;
 
         $curl = curl_init();
@@ -118,10 +120,9 @@ class BitconWalletController extends Controller
         curl_close($curl);
 
         if ($error) {
-        echo "cURL Error #:" . $error;
         return response()->json($error);
         } else {
-            $checkRef = BitconWallet::where('pub_key', $xpub)->first();
+            $checkRef = BitconWallet::where('pub_key', $response)->first();
 
             if($checkRef && $checkRef->status == 0){
                 return response()->json(['message'=>'Address already exist.'], 413);
@@ -133,16 +134,120 @@ class BitconWalletController extends Controller
                     'address' => $response
                 ]);
             }
-
-            return response()->json([
-                'status' => true,
-                'message' => 'bitcoin address created successfully ',
-                $response
-            ]);
+            return $response;
+            // return response()->json([
+            //     'status' => true,
+            //     'message' => 'bitcoin address created successfully ',
+            //     $response
+            // ]);
 
         }
     }
 
+    public function BtcGetBalanceOfAddress(Request $request, $address) {
+
+        $address = $address;
+        $curl = curl_init();
+
+        curl_setopt_array($curl, [
+        CURLOPT_HTTPHEADER => [
+            "x-api-key: ". env('TATUM_TEST_KEY')
+        ],
+        CURLOPT_URL => "https://api.tatum.io/v3/bitcoin/address/balance/" . $address,
+        CURLOPT_RETURNTRANSFER => true,
+        CURLOPT_CUSTOMREQUEST => "GET",
+        ]);
+
+        $response = curl_exec($curl);
+        $error = curl_error($curl);
+
+        curl_close($curl);
+
+        if ($error) {
+            return response()->json($error);
+        } else {
+
+            return $response;
+        }
+    }
+    public function BtcGetTxByAddress($address) {
+
+        $address = $address;
+        $query = array(
+        "pageSize" => "10"
+        );
+
+        $curl = curl_init();
+
+        curl_setopt_array($curl, [
+        CURLOPT_HTTPHEADER => [
+            "x-api-key: ". env('TATUM_TEST_KEY')
+        ],
+        CURLOPT_URL => "https://api.tatum.io/v3/bitcoin/transaction/address/" . $address . "?" . http_build_query($query),
+        CURLOPT_RETURNTRANSFER => true,
+        CURLOPT_CUSTOMREQUEST => "GET",
+        ]);
+
+        $response = curl_exec($curl);
+        $error = curl_error($curl);
+
+        curl_close($curl);
+
+        if ($error) {
+            return response()->json($error);
+        } else {
+
+            return $response;
+        }
+    }
+
+    public function BtcTransferBlockchain(Request $request,$privkey, $senderadd, $receiverAdd){
+
+        $curl = curl_init();
+
+        $payload = array(
+        "fromAddress" => array(
+            array(
+            "address" => $senderadd,
+            "privateKey" => $privkey
+            )
+        ),
+        "to" => array(
+            array(
+            "address" => $receiverAdd,
+            "value" => 0.02969944
+            )
+        )
+        );
+
+        curl_setopt_array($curl, [
+        CURLOPT_HTTPHEADER => [
+            "Content-Type: application/json",
+            "x-api-key: ". env('TATUM_TEST_KEY')
+        ],
+        CURLOPT_POSTFIELDS => json_encode($payload),
+        CURLOPT_URL => "https://api.tatum.io/v3/bitcoin/transaction",
+        CURLOPT_RETURNTRANSFER => true,
+        CURLOPT_CUSTOMREQUEST => "POST",
+        ]);
+
+        $response = curl_exec($curl);
+        $error = curl_error($curl);
+
+        curl_close($curl);
+
+        if ($error) {
+            return response()->json($error);
+        } else {
+
+            return $response;
+        }
+    }
 
 
-}
+    }
+
+
+
+
+

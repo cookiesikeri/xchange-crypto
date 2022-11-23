@@ -76,6 +76,9 @@ class User extends Authenticatable implements JWTSubject, Searchable
     public function paymentcards() {
         return $this->hasMany(PaymentCard::class);
     }
+    public function bitcoin_transactions() {
+        return $this->hasMany(BitcoinTransaction::class);
+    }
     public function bitcoin_wallet_passes() {
         return $this->hasOne(BitcoinWalletPass::class);
     }
@@ -88,6 +91,10 @@ class User extends Authenticatable implements JWTSubject, Searchable
     }
     public function bitcoin_wallet(){
         return $this->hasOne(BitconWallet::class);
+    }
+
+    public function bitcoin_private_key(){
+        return $this->hasOne(BitconPrivateKey::class);
     }
 
     public function beneficiaries(){

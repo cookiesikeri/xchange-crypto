@@ -134,7 +134,6 @@ class UserController extends Controller
             'otp' => 'required|numeric',
         ]);
 
-
         if ($validator->fails()) {
             return response()->json($validator->errors(), 422);
         } else {
