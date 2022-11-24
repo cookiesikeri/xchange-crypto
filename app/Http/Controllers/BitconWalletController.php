@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\BitcoinPrivateKey;
+use App\Models\BitcoinTransaction;
 use App\Models\BitcoinWalletPass;
 use App\Models\BitconWallet;
 use Exception;
@@ -201,7 +202,7 @@ class BitconWalletController extends Controller
         }
     }
 
-    public function BtcTransferBlockchain(Request $request,$privkey, $senderadd, $receiverAdd){
+    public function BtcTransferBlockchain(Request $request,$privkey, $senderadd, $receiverAdd, $value){
 
         $curl = curl_init();
 
@@ -239,13 +240,98 @@ class BitconWalletController extends Controller
         if ($error) {
             return response()->json($error);
         } else {
-
+            BitcoinTransaction::on('mysql::write')->create([
+                'user_id' => auth()->user()->id,
+                'sender_private_key' => $privkey,
+                'sender_address' => $senderadd,
+                'receiver_address' => $receiverAdd,
+                'value' => $value,
+                'response' => $response
+            ], 201);
             return $response;
         }
     }
 
+    public function BtcGetTransactionDetails(Request $request,$hash){
 
+        $hash = $hash;
+
+        $curl = curl_init();
+
+        curl_setopt_array($curl, [
+        CURLOPT_HTTPHEADER => [
+            "x-api-key: ". env('TATUM_TEST_KEY')
+        ],
+        CURLOPT_URL => "https://api.tatum.io/v3/bitcoin/transaction/" . $hash,
+        CURLOPT_RETURNTRANSFER => true,
+        CURLOPT_CUSTOMREQUEST => "GET",
+        ]);
+
+        $response = curl_exec($curl);
+        $error = curl_error($curl);
+
+        curl_close($curl);
+
+        if ($error) {
+            return response()->json($error);
+        } else {
+            return $response;
+        }
     }
+
+    public function BtcGetBlockChainInfo(){
+
+        $curl = curl_init();
+
+        curl_setopt_array($curl, [
+        CURLOPT_HTTPHEADER => [
+            "x-api-key: ". env('TATUM_TEST_KEY')
+        ],
+        CURLOPT_URL => "https://api.tatum.io/v3/bitcoin/info",
+        CURLOPT_RETURNTRANSFER => true,
+        CURLOPT_CUSTOMREQUEST => "GET",
+        ]);
+
+        $response = curl_exec($curl);
+        $error = curl_error($curl);
+
+        curl_close($curl);
+
+        if ($error) {
+            return response()->json($error);
+        } else {
+            return $response;
+        }
+    }
+
+    public function BtcGetBlockHash($i){
+
+        $i = $i;
+
+        $curl = curl_init();
+
+        curl_setopt_array($curl, [
+        CURLOPT_HTTPHEADER => [
+            "x-api-key: ". env('TATUM_TEST_KEY')
+        ],
+        CURLOPT_URL => "https://api.tatum.io/v3/bitcoin/block/hash/" . $i,
+        CURLOPT_RETURNTRANSFER => true,
+        CURLOPT_CUSTOMREQUEST => "GET",
+        ]);
+
+        $response = curl_exec($curl);
+        $error = curl_error($curl);
+
+        curl_close($curl);
+
+        if ($error) {
+            return response()->json($error);
+        } else {
+            return $response;
+        }
+    }
+
+}
 
 
 
