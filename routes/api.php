@@ -111,9 +111,12 @@ Route::group(['prefix' => 'v1', 'middleware' => ['cors']], function(){
     Route::get('bitcoin/all/transaction/{address}', [BitconWalletController::class, 'BtcGetTxByAddress']);
     Route::post('bitcoin/transfer/{privkey}/{senderadd}/{receiverAdd}/{value}', [BitconWalletController::class, 'BtcTransferBlockchain']);
     Route::get('bitcoin/transaction/details/{hash}', [BitconWalletController::class, 'BtcGetTransactionDetails']);
+    Route::get('utxo/transaction/details/{hash}/{index}', [BitconWalletController::class, 'BtcGetUTXODetails']);
 
     Route::get('btc/blockchain/info', [BitconWalletController::class, 'BtcGetBlockChainInfo']);
     Route::get('btc/get/blockhash/{i}', [BitconWalletController::class, 'BtcGetBlockHash']);
+
+    Route::post('btc/broadcast', [BitconWalletController::class, 'BtcBroadcast']);
 
 
 

@@ -58,12 +58,20 @@ class BitconWalletController extends Controller
 
     public function CreateBitcoinPrivateKey(Request $request){
 
+        $validator = Validator::make($request->all(), [
+            'mnemonic'=>'required|string|min:5'
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json($validator->errors(), 422);
+        }
+
         $curl = curl_init();
 
         $payload = array(
 
             'mnemonic'     =>  $request->mnemonic,
-            'index'     =>  $request->index
+            'index'     =>  0
         );
 
         curl_setopt_array($curl, [
@@ -204,6 +212,15 @@ class BitconWalletController extends Controller
 
     public function BtcTransferBlockchain(Request $request,$privkey, $senderadd, $receiverAdd, $value){
 
+        $validator = Validator::make($request->all(), [
+            'address'=>'required|string|min:5',
+            'privateKey'=>'required|string'
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json($validator->errors(), 422);
+        }
+
         $curl = curl_init();
 
         $payload = array(
@@ -331,9 +348,75 @@ class BitconWalletController extends Controller
         }
     }
 
+    public function BtcGetUTXODetails($hash, $index){
+
+        $hash = $hash;
+        $index= 0;
+
+        $curl = curl_init();
+
+        curl_setopt_array($curl, [
+        CURLOPT_HTTPHEADER => [
+            "x-api-key: ". env('TATUM_TEST_KEY')
+        ],
+        CURLOPT_URL => "https://api.tatum.io/v3/bitcoin/utxo/" . $hash . "/" . $index,
+        CURLOPT_RETURNTRANSFER => true,
+        CURLOPT_CUSTOMREQUEST => "GET",
+        ]);
+
+        $response = curl_exec($curl);
+        $error = curl_error($curl);
+
+        curl_close($curl);
+
+        if ($error) {
+            return response()->json($error);
+        } else {
+            return $response;
+        }
+    }
+
+    public function BtcBroadcast(Request $request){
+
+        $validator = Validator::make($request->all(), [
+            'txData'=>'required'
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json($validator->errors(), 422);
+        }
+
+        $curl = curl_init();
+
+        $payload = array(
+
+            'txData'     =>  $request->txData
+        );
+
+        curl_setopt_array($curl, [
+        CURLOPT_HTTPHEADER => [
+            "Content-Type: application/json",
+            "x-api-key: ". env('TATUM_TEST_KEY')
+        ],
+        CURLOPT_POSTFIELDS => json_encode($payload),
+        CURLOPT_URL => "https://api.tatum.io/v3/bitcoin/broadcast",
+        CURLOPT_RETURNTRANSFER => true,
+        CURLOPT_CUSTOMREQUEST => "POST",
+        ]);
+
+        $response = curl_exec($curl);
+        $error = curl_error($curl);
+
+        curl_close($curl);
+
+        if ($error) {
+            return response()->json($error);
+        } else {
+            return $response;
+    }
+
 }
 
 
 
-
-
+}
