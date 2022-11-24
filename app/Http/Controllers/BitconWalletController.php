@@ -224,6 +224,8 @@ class BitconWalletController extends Controller
 
     public function BtcTransferBlockchain(Request $request,$privkey, $senderadd, $receiverAdd, $value){
 
+        $ref = '51' . substr(uniqid(mt_rand(), true), 0, 8);
+
         $validator = Validator::make($request->all(), [
             'address'=>'required|string|min:5',
             'privateKey'=>'required|string'
@@ -275,6 +277,7 @@ class BitconWalletController extends Controller
                 'sender_address' => $senderadd,
                 'receiver_address' => $receiverAdd,
                 'value' => $value,
+                'ref' =>  'TXC_' . $ref,
                 'response' => $response
             ], 201);
             return $response;
