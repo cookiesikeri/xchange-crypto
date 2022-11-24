@@ -42,7 +42,7 @@ class BitconWalletController extends Controller
             $checkRef = BitcoinWalletPass::where('mnemonic', $response)->exists();
 
             if($checkRef && $checkRef->status >= 0){
-                return response()->json(['message'=>'Address already exist.'], 413);
+                return response()->json(['message'=>'Wallet already exist.'], 413);
             }elseif (!$checkRef){
                 BitcoinWalletPass::on('mysql::write')->create([
                     'user_id' => auth()->user()->id,
@@ -58,6 +58,12 @@ class BitconWalletController extends Controller
 
     public function CreateBitcoinPrivateKey(Request $request){
 
+        $otp = 0;
+        for ($i = 0; $i < 3; $i++)
+        {
+            $otp .= mt_rand(0,9);
+        }
+
         $validator = Validator::make($request->all(), [
             'mnemonic'=>'required|string|min:5'
         ]);
@@ -71,7 +77,7 @@ class BitconWalletController extends Controller
         $payload = array(
 
             'mnemonic'     =>  $request->mnemonic,
-            'index'     =>  0
+            'index'     =>  $otp
         );
 
         curl_setopt_array($curl, [
@@ -109,8 +115,14 @@ class BitconWalletController extends Controller
 
     public function CreateBitcoinAddress(Request $request, $xpub, $index) {
 
+        $otp = 0;
+        for ($i = 0; $i < 3; $i++)
+        {
+            $otp .= mt_rand(0,9);
+        }
+
         $xpub = $xpub;
-        $index = 0;
+        $index = $otp;
 
         $curl = curl_init();
 
@@ -350,8 +362,14 @@ class BitconWalletController extends Controller
 
     public function BtcGetUTXODetails($hash, $index){
 
+        $otp = 0;
+        for ($i = 0; $i < 3; $i++)
+        {
+            $otp .= mt_rand(0,9);
+        }
+
         $hash = $hash;
-        $index= 0;
+        $index= $otp;
 
         $curl = curl_init();
 

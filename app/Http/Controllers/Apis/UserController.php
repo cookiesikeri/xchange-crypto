@@ -492,27 +492,9 @@ class UserController extends Controller
         return response()->json($this->user->log_wallet_transaction($user, $amount_entered, $new_balance, $transaction_type, $description, $transaction_status, $transaction_reference));
     }
 
-    public function get_vendor_wallet_transaction_history($wallet_id, $chunk)
-    {
-        return response()->json($this->user->get_vendor_wallet_transaction_history($wallet_id, $chunk));
-    }
-
     public function generate_transaction_reference()
     {
         return response()->json($this->user->generate_transaction_reference());
-    }
-
-
-    public function GetvirtualcardDetails(Request $request)
-    {
-
-        return response()->json($request->user()->card_request_virtual);
-    }
-
-    public function GetphysicalDetails(Request $request)
-    {
-
-        return response()->json($request->user()->card_request_physical);
     }
 
     public function getReferrals($user_id){

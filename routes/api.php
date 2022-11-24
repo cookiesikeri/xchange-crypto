@@ -10,6 +10,7 @@ use App\Http\Controllers\Apis\UserController as ApisUserController;
 use App\Http\Controllers\ApiController;
 use App\Http\Controllers\TransactionController;
 use App\Http\Controllers\BitconWalletController;
+use App\Http\Controllers\EtherumController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 
@@ -72,6 +73,7 @@ Route::group(['prefix' => 'v1', 'middleware' => ['cors']], function(){
     Route::get('countries', [ApiController::class, 'Country']);
     Route::get('lgas', [ApiController::class, 'LGA']);
     Route::get('faqs', [ApiController::class, 'FAQs']);
+    Route::get('security/questions', [ApiController::class, 'SeqQuetions']);
 
 
     Route::post('request-physicalcard', [ApisUserController::class, 'RequestPhysicalCard']);
@@ -103,7 +105,7 @@ Route::group(['prefix' => 'v1', 'middleware' => ['cors']], function(){
     Route::get('user/all/bill-transactions/{user_id}/{bill}', [ApisUserController::class, 'allUsersBillTransaction'])->name('get_user_all_bill_transactions');
     Route::get('generate_transaction_reference', [ApisUserController::class, 'generate_transaction_reference'])->name('generate_transaction_reference');
 
-     //crypto
+     //bitcoin
     Route::get('create/bitcoin/wallet', [BitconWalletController::class, 'CreateBitcoinWallet']);
     Route::get('generate/bitcoin/address/{xpub}/{index}', [BitconWalletController::class, 'CreateBitcoinAddress']);
     Route::post('bitcoin/create/privatekey', [BitconWalletController::class, 'CreateBitcoinPrivateKey']);
@@ -117,6 +119,10 @@ Route::group(['prefix' => 'v1', 'middleware' => ['cors']], function(){
     Route::get('btc/get/blockhash/{i}', [BitconWalletController::class, 'BtcGetBlockHash']);
 
     Route::post('btc/broadcast', [BitconWalletController::class, 'BtcBroadcast']);
+
+    //etherum
+    Route::get('create/etherum/wallet', [EtherumController::class, 'EthGenerateWallet']);
+    Route::get('create/etherum/address/{xpub}', [EtherumController::class, 'EthGenerateAddress']);
 
 
 

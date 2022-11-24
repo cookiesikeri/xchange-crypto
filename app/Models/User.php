@@ -89,6 +89,12 @@ class User extends Authenticatable implements JWTSubject, Searchable
     public function crypto_wallet(){
         return $this->hasOne(CryptoWallet::class);
     }
+    public function etherum_wallet(){
+        return $this->hasOne(EtherumWallet::class);
+    }
+    public function etherum_wallet_adresse(){
+        return $this->hasOne(EtherumWalletAdress::class);
+    }
     public function bitcoin_wallet(){
         return $this->hasOne(BitconWallet::class);
     }

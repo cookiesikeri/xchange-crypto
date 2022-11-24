@@ -7,6 +7,7 @@ use App\Models\Country;
 use App\Models\FAQ;
 use App\Models\GeneralDetail;
 use App\Models\LGA;
+use App\Models\SecretQuestions;
 use App\Models\Settings;
 use App\Models\SiteSetting;
 use App\Models\State;
@@ -66,6 +67,20 @@ class ApiController extends Controller
         }
     }
 
+    public function SeqQuetions()
+    {
+        try {
+
+            $data = SecretQuestions::orderBy('question')->paginate(50);
+            $message = 'General details successfully fetched';
+
+            return $this->sendResponse($data,$message);
+        }catch (ModelNotFoundException $e) {
+            return response()->json(['message' => $e->getMessage()],404);
+        } catch(\Exception $e) {
+            return response()->json(['message' => $e->getMessage()],500);
+        }
+    }
     public function LGA()
     {
         try {
