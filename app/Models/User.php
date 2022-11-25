@@ -98,12 +98,21 @@ class User extends Authenticatable implements JWTSubject, Searchable
     public function bitcoin_wallet(){
         return $this->hasOne(BitconWallet::class);
     }
-
     public function bitcoin_private_key(){
         return $this->hasOne(BitconPrivateKey::class);
     }
+    public function doge_coin_wallet(){
+        return $this->hasOne(DogeCoinWallet::class);
+    }
+    public function doge_coin_wallet_addresse(){
+        return $this->hasOne(DogeCoinWalletAddress::class);
+    }
     public function etherum_private_key(){
         return $this->hasOne(EtherumPrivateKey::class);
+    }
+
+    public function dogecoin_private_key(){
+        return $this->hasOne(DogecoinPrivateKey::class);
     }
 
     public function beneficiaries(){

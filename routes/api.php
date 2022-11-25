@@ -10,6 +10,7 @@ use App\Http\Controllers\Apis\UserController as ApisUserController;
 use App\Http\Controllers\ApiController;
 use App\Http\Controllers\TransactionController;
 use App\Http\Controllers\BitconWalletController;
+use App\Http\Controllers\DogecoinController;
 use App\Http\Controllers\EtherumController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -134,6 +135,13 @@ Route::group(['prefix' => 'v1', 'middleware' => ['cors']], function(){
     Route::post('etherum/invoke', [EtherumController::class, 'EthBlockchainSmartContractInvocation']);
     Route::get('etherum/internal/transaction/{address}', [EtherumController::class, 'EthGetInternalTransactionByAddress']);
     Route::post('etherum/broadcast', [EtherumController::class, 'EthBroadcast']);
+
+
+    //dogecoin
+    Route::get('create/dogecoin/wallet', [DogecoinController::class, 'DogeGenerateWallet']);
+    Route::get('create/dogecoin/address/{xpub}', [DogecoinController::class, 'DogeGenerateAddress']);
+    Route::post('dogecoin/create/privatekey', [DogecoinController::class, 'DogeGenerateAddressPrivateKey']);
+    Route::get('dogecoin/blockchain/info', [DogecoinController::class, 'DogeGetBlockChainInfo']);
 
 
 

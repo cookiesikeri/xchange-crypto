@@ -8,13 +8,16 @@ use App\Models\EtherumWallet;
 use App\Models\EtherumWalletAdress;
 use App\Models\EthTransaction;
 use Illuminate\Http\Request;
+use App\Enums\ActivityType;
+use App\Traits\ManagesUsers;
 use App\Traits\ManagesResponse;
+use Illuminate\Support\Facades\Response;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Validator;
 
 class EtherumController extends Controller
 {
-    use  ManagesResponse;
+    use  ManagesResponse, ManagesUsers;
 
     public function EthGenerateWallet(Request $request){
 
@@ -41,9 +44,7 @@ class EtherumController extends Controller
                     'user_id' => auth()->user()->id,
                     'response' => $response
                 ]);
-
-
-            return $response;
+                return $response;
         }
     }
 

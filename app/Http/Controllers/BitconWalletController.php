@@ -7,15 +7,17 @@ use App\Models\BitcoinTransaction;
 use App\Models\BitcoinWalletPass;
 use App\Models\BitconWallet;
 use Exception;
+use App\Traits\ManagesUsers;
+use App\Traits\ManagesResponse;
 use App\Models\CryptoWallet;
 use Illuminate\Http\Request;
-use App\Traits\ManagesResponse;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Response;
 use Illuminate\Support\Facades\Validator;
 
 class BitconWalletController extends Controller
 {
-    use  ManagesResponse;
+    use  ManagesResponse, ManagesUsers;
 
     public function CreateBitcoinWallet(Request $request){
 

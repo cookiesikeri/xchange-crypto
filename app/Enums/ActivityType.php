@@ -19,6 +19,9 @@ final class ActivityType extends Enum
     const FUND_WALLET = 'Fund Wallet';
     const CARD_TRANSFER = 'Card Transfer';
     const DATA = 'Data';
-    const UPDATEPROFILE = 'Update-Profile';
-    const UPDATEPIN = 'Update-User-Pin';
+    const UPDATEPROFILE = 'Update Profile';
+    const UPDATEPIN = 'Update User Pin';
+    const CREATE_DOGECOIN_ADDRESS = 'Create Dogecoin Address';
+    const CREATE_DOGECOIN_WALLET = 'Create Dogecoin Wallet';
+    const DogeGenerateAddressPrivateKey = 'Create Dogecoin PrivateKey';
 }
