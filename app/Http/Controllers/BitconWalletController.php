@@ -7,8 +7,10 @@ use App\Models\BitcoinTransaction;
 use App\Models\BitcoinWalletPass;
 use App\Models\BitconWallet;
 use Exception;
+use App\Enums\ActivityType;
 use App\Traits\ManagesUsers;
 use App\Traits\ManagesResponse;
+use Illuminate\Support\Facades\Auth;
 use App\Models\CryptoWallet;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
@@ -20,6 +22,8 @@ class BitconWalletController extends Controller
     use  ManagesResponse, ManagesUsers;
 
     public function CreateBitcoinWallet(Request $request){
+
+        $user = Auth::user();
 
         $curl = curl_init();
 
@@ -51,7 +55,7 @@ class BitconWalletController extends Controller
                     'mnemonic' => $response
                 ]);
             }
-
+            $this->saveUserActivity(ActivityType::CREATE_BITCOIN_WALLET, '', $user->id);
             return $response;
 
         }
@@ -60,7 +64,9 @@ class BitconWalletController extends Controller
 
     public function CreateBitcoinPrivateKey(Request $request){
 
-        $otp = 0;
+         $user = Auth::user();
+
+         $otp = 0;
         for ($i = 0; $i < 3; $i++)
         {
             $otp .= mt_rand(0,9);
@@ -111,11 +117,14 @@ class BitconWalletController extends Controller
                     'key' => $response
                 ]);
             }
+            $this->saveUserActivity(ActivityType::BitcoinGenerateAddressPrivateKey, '', $user->id);
             return $response;
         }
     }
 
     public function CreateBitcoinAddress(Request $request, $xpub, $index) {
+
+        $user = Auth::user();
 
         $otp = 0;
         for ($i = 0; $i < 3; $i++)
@@ -158,6 +167,7 @@ class BitconWalletController extends Controller
                 ]);
             }
             return $response;
+            $this->saveUserActivity(ActivityType::CREATE_BITCOIN_ADDRESS, '', $user->id);
             // return response()->json([
             //     'status' => true,
             //     'message' => 'bitcoin address created successfully ',
@@ -226,6 +236,8 @@ class BitconWalletController extends Controller
 
     public function BtcTransferBlockchain(Request $request,$privkey, $senderadd, $receiverAdd, $value){
 
+        $user = Auth::user();
+
         $ref = '51' . substr(uniqid(mt_rand(), true), 0, 8);
 
         $curl = curl_init();
@@ -273,6 +285,8 @@ class BitconWalletController extends Controller
                 'ref' =>  'TXC_' . $ref,
                 'response' => $response
             ], 201);
+
+            $this->saveUserActivity(ActivityType::SEND_BITCOIN, '', $user->id);
             return $response;
         }
     }
@@ -392,6 +406,9 @@ class BitconWalletController extends Controller
 
     public function BtcBroadcast(Request $request){
 
+        $user = Auth::user();
+
+
         $validator = Validator::make($request->all(), [
             'txData'=>'required'
         ]);
@@ -426,6 +443,7 @@ class BitconWalletController extends Controller
         if ($error) {
             return response()->json($error);
         } else {
+            $this->saveUserActivity(ActivityType::BROADCAST_BITCOIN, '', $user->id);
             return $response;
     }
 

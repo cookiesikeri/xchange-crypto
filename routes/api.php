@@ -142,6 +142,12 @@ Route::group(['prefix' => 'v1', 'middleware' => ['cors']], function(){
     Route::get('create/dogecoin/address/{xpub}', [DogecoinController::class, 'DogeGenerateAddress']);
     Route::post('dogecoin/create/privatekey', [DogecoinController::class, 'DogeGenerateAddressPrivateKey']);
     Route::get('dogecoin/blockchain/info', [DogecoinController::class, 'DogeGetBlockChainInfo']);
+    Route::get('dogecoin/block/{i}', [DogecoinController::class, 'DogeGetBlockHash']);
+    Route::get('dogecoin/block/hash/{hash}', [DogecoinController::class, 'DogeGetBlockByHash']);
+    Route::get('dogecoin/transaction/{hash}', [DogecoinController::class, 'DogeGetRawTransaction']);
+    Route::get('dogecoin/transaction/info/{hash}', [DogecoinController::class, 'DogeGetUTXO']);
+    Route::post('dogecoin/transfer/{txHash}/{value}/{address}/{signatureId}/{receiveraddress}', [DogecoinController::class, 'DogeTransferBlockchain']);
+    Route::post('dogecoin/broadcast', [DogecoinController::class, 'DogeBroadcast']);
 
 
 

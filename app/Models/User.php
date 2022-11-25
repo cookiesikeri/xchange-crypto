@@ -115,6 +115,10 @@ class User extends Authenticatable implements JWTSubject, Searchable
         return $this->hasOne(DogecoinPrivateKey::class);
     }
 
+    public function dodgecoin_transactions(){
+        return $this->hasMany(DogecoinTransaction::class);
+    }
+
     public function beneficiaries(){
         return $this->hasMany(Beneficiaries::class);
     }

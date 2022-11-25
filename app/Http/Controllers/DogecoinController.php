@@ -11,6 +11,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Traits\ManagesResponse;
 use App\Jobs\UserActivityJob;
+use App\Models\DodgecoinTransaction;
 use App\Models\DogecoinPrivateKey;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Response;
@@ -180,5 +181,220 @@ class DogecoinController extends Controller
 
         }
     }
+    public function DogeGetBlockHash($i){
+
+        $i = $i;
+        $curl = curl_init();
+
+        curl_setopt_array($curl, [
+        CURLOPT_HTTPHEADER => [
+            "x-api-key: ". env('TATUM_TEST_KEY')
+        ],
+        CURLOPT_URL => "https://api.tatum.io/v3/dogecoin/block/hash/" . $i,
+        CURLOPT_RETURNTRANSFER => true,
+        CURLOPT_CUSTOMREQUEST => "GET",
+        ]);
+
+        $response = curl_exec($curl);
+        $error = curl_error($curl);
+
+        curl_close($curl);
+
+        if ($error) {
+            return response()->json($error);
+        } else {
+            return $response;
+        }
+    }
+    public function DogeGetBlockByHash($hash){
+
+        $hash = $hash;
+
+        $curl = curl_init();
+
+        curl_setopt_array($curl, [
+        CURLOPT_HTTPHEADER => [
+            "x-api-key: ". env('TATUM_TEST_KEY')
+        ],
+        CURLOPT_URL => "https://api.tatum.io/v3/dogecoin/block/" . $hash,
+        CURLOPT_RETURNTRANSFER => true,
+        CURLOPT_CUSTOMREQUEST => "GET",
+        ]);
+
+        $response = curl_exec($curl);
+        $error = curl_error($curl);
+
+        curl_close($curl);
+
+        if ($error) {
+            return $error;
+        } else {
+            return $response;
+        }
+    }
+    public function DogeGetRawTransaction($hash,){
+
+        $hash = $hash;
+
+        $curl = curl_init();
+
+        curl_setopt_array($curl, [
+        CURLOPT_HTTPHEADER => [
+            "x-api-key: ". env('TATUM_TEST_KEY')
+        ],
+        CURLOPT_URL => "https://api.tatum.io/v3/dogecoin/transaction/" . $hash,
+        CURLOPT_RETURNTRANSFER => true,
+        CURLOPT_CUSTOMREQUEST => "GET",
+        ]);
+
+        $response = curl_exec($curl);
+        $error = curl_error($curl);
+
+        curl_close($curl);
+
+        if ($error) {
+            return $error;
+        } else {
+            return $response;
+        }
+
+    }
+
+    public function DogeGetUTXO($hash,){
+
+        $otp = 0;
+        for ($i = 0; $i < 3; $i++)
+        {
+            $otp .= mt_rand(0,9);
+        }
+
+        $hash = $hash;
+        $index = $otp;
+        $curl = curl_init();
+
+        curl_setopt_array($curl, [
+        CURLOPT_HTTPHEADER => [
+            "x-api-key: ". env('TATUM_TEST_KEY')
+        ],
+        CURLOPT_URL => "https://api.tatum.io/v3/dogecoin/utxo/" . $hash . "/" . $index,
+        CURLOPT_RETURNTRANSFER => true,
+        CURLOPT_CUSTOMREQUEST => "GET",
+        ]);
+
+        $response = curl_exec($curl);
+        $error = curl_error($curl);
+
+        curl_close($curl);
+
+        if ($error) {
+            return $error;
+        } else {
+            return $response;
+        }
+
+    }
+
+    public function DogeTransferBlockchain($txHash, $value, $address,$signatureId,$receiveaddress){
+
+        $user = Auth::user();
+
+        $ref = '51' . substr(uniqid(mt_rand(), true), 0, 8);
+
+        $curl = curl_init();
+
+        $payload = array(
+        "fromUTXO" => array(
+            array(
+            'txHash' => $txHash,
+            "value" => $value,
+            "address" => $address,
+            "index" => 0,
+            "signatureId" => $signatureId,
+            )
+        ),
+        "to" => array(
+            array(
+            "address" => $receiveaddress,
+            "value" => 0.02969944
+
+            )
+        )
+        );
+
+        curl_setopt_array($curl, [
+        CURLOPT_HTTPHEADER => [
+            "Content-Type: application/json",
+            "x-api-key: ". env('TATUM_TEST_KEY')
+        ],
+        CURLOPT_POSTFIELDS => json_encode($payload),
+        CURLOPT_URL => "https://api.tatum.io/v3/dogecoin/transaction",
+        CURLOPT_RETURNTRANSFER => true,
+        CURLOPT_CUSTOMREQUEST => "POST",
+        ]);
+
+        $response = curl_exec($curl);
+        $error = curl_error($curl);
+
+        curl_close($curl);
+
+        if ($error) {
+            return $error;
+        } else {
+            DodgecoinTransaction::on('mysql::write')->create([
+                'user_id' => auth()->user()->id,
+                'txHash' => $txHash,
+                'value' => $value,
+                'address' => $address,
+                'ref' =>  'TXC_' . $ref,
+                'index' => 0,
+                'signatureId' => $signatureId,
+                'recaddress' => $receiveaddress,
+                'response' => $response
+            ], 201);
+
+            $this->saveUserActivity(ActivityType::SEND_DOGECOIN, '', $user->id);
+            return $response;
+        }
+
+    }
+
+    public function DogeBroadcast(Request $request){
+
+        $user = Auth::user();
+
+        $curl = curl_init();
+
+        $payload = array(
+        "txData" =>  $request->txData,
+        );
+
+        curl_setopt_array($curl, [
+        CURLOPT_HTTPHEADER => [
+            "Content-Type: application/json",
+            "x-api-key: ". env('TATUM_TEST_KEY')
+        ],
+        CURLOPT_POSTFIELDS => json_encode($payload),
+        CURLOPT_URL => "https://api.tatum.io/v3/dogecoin/broadcast",
+        CURLOPT_RETURNTRANSFER => true,
+        CURLOPT_CUSTOMREQUEST => "POST",
+        ]);
+
+        $response = curl_exec($curl);
+        $error = curl_error($curl);
+
+        curl_close($curl);
+
+        if ($error) {
+            return $error;
+        } else {
+            $this->saveUserActivity(ActivityType::BROADCAST_DOGECOIN, '', $user->id);
+            return $response;
+
+        }
+
+    }
+
+
+
 
 }

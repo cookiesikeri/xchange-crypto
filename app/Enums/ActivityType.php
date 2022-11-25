@@ -24,4 +24,17 @@ final class ActivityType extends Enum
     const CREATE_DOGECOIN_ADDRESS = 'Create Dogecoin Address';
     const CREATE_DOGECOIN_WALLET = 'Create Dogecoin Wallet';
     const DogeGenerateAddressPrivateKey = 'Create Dogecoin PrivateKey';
+    const SEND_DOGECOIN = 'Send Dogecoin';
+    const BROADCAST_DOGECOIN = 'Broadcast Dogecoin';
+    const CREATE_BITCOIN_ADDRESS = 'Create Bitcoin Address';
+    const CREATE_BITCOIN_WALLET = 'Create Bitcoin Wallet';
+    const BitcoinGenerateAddressPrivateKey = 'Create Bitcoin PrivateKey';
+    const SEND_BITCOIN = 'Send Bitcoin';
+    const BROADCAST_BITCOIN = 'Broadcast Bitcoin';
+    const CREATE_ETH_ADDRESS = 'Create ETH Address';
+    const CREATE_ETH_WALLET = 'Create ETH Wallet';
+    const ETHGenerateAddressPrivateKey = 'Create ETH PrivateKey';
+    const SEND_ETH = 'Send ETH';
+    const BROADCAST_ETH = 'Broadcast ETH';
+
 }

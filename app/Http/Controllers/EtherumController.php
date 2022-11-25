@@ -8,6 +8,7 @@ use App\Models\EtherumWallet;
 use App\Models\EtherumWalletAdress;
 use App\Models\EthTransaction;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use App\Enums\ActivityType;
 use App\Traits\ManagesUsers;
 use App\Traits\ManagesResponse;
@@ -20,6 +21,7 @@ class EtherumController extends Controller
     use  ManagesResponse, ManagesUsers;
 
     public function EthGenerateWallet(Request $request){
+        $user = Auth::user();
 
         $curl = curl_init();
 
@@ -44,11 +46,14 @@ class EtherumController extends Controller
                     'user_id' => auth()->user()->id,
                     'response' => $response
                 ]);
+                $this->saveUserActivity(ActivityType::CREATE_ETH_WALLET, '', $user->id);
                 return $response;
         }
     }
 
     public function EthGenerateAddress($xpub){
+
+        $user = Auth::user();
 
         $otp = 0;
         for ($i = 0; $i < 3; $i++)
@@ -90,11 +95,14 @@ class EtherumController extends Controller
                     'address' => $response
                 ]);
             }
+            $this->saveUserActivity(ActivityType::CREATE_ETH_ADDRESS, '', $user->id);
             return $response;
         }
     }
 
     public function EthGenerateAddressPrivateKey(Request $request){
+
+        $user = Auth::user();
 
         $otp = 0;
         for ($i = 0; $i < 3; $i++)
@@ -147,6 +155,7 @@ class EtherumController extends Controller
                     'key' => $response
                 ]);
             }
+            $this->saveUserActivity(ActivityType::ETHGenerateAddressPrivateKey, '', $user->id);
             return $response;
         }
     }
@@ -316,6 +325,8 @@ class EtherumController extends Controller
 
     public function EthBlockchainTransfer(Request $request){
 
+        $user = Auth::user();
+
         $ref = '51' . substr(uniqid(mt_rand(), true), 0, 8);
 
         $validator = Validator::make($request->all(), [
@@ -366,6 +377,8 @@ class EtherumController extends Controller
                 'fromPrivateKey' => $request->privkey,
                 'response' => $response
             ], 201);
+
+            $this->saveUserActivity(ActivityType::SEND_ETH, '', $user->id);
             return $response;
         }
     }
@@ -452,6 +465,8 @@ class EtherumController extends Controller
 
     public function EthBroadcast(Request $request){
 
+        $user = Auth::user();
+
         $curl = curl_init();
 
         $payload = array(
@@ -477,6 +492,7 @@ class EtherumController extends Controller
         if ($error) {
             return $error;
         } else {
+            $this->saveUserActivity(ActivityType::BROADCAST_ETH, '', $user->id);
             return $response;
         }
 

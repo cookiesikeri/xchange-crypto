@@ -58,13 +58,13 @@ class UserController extends Controller
         $this->utility = new Functions();
     }
 
-    public function register(Request $request, $referral_code=null)
-    {
+    public function register(Request $request, $referral_code=null){
+
         $validator = Validator::make($request->all(), [
-            'name'         => 'required|string|between:2,100',
-            'email'         => 'required|string|unique:users',
+            'name' => 'required|string|between:2,100',
+            'email' => 'required|string|unique:users',
             'phone' => 'required|string|unique:users',
-            'password'     => 'required|string|min:6',
+            'password' => 'required|string|min:4',
         ]);
 
         if ($validator->fails()) {
@@ -72,85 +72,78 @@ class UserController extends Controller
         }
 
         try {
-            $user                 = new InviteeUser();
-            $user->name           = $request->input('name');
-            $user->phone   = $request->input('phone');
-            $user->email   = $request->input('email');
-            $user->password       = $request->input('password');
-
+            $user = new InviteeUser();
+            $user->name = $request->input('name');
+            $user->phone = $request->input('phone');
+            $user->email = $request->input('email');
+            $user->password = $request->input('password');
             $user->save();
 
             $this->sendOTP($user);
 
-            return $user;
+            //return $user;
+            return response()->json([ 'status' => true, 'message' => 'Account Created Successfully', 'user' => $user ], 200);
 
         } catch (\Exception $e) {
-            //return error message
-            return response()->json([
-                'errors'  => $e->getMessage(),
-                'message' => 'User Registration Failed!',
-            ], 409);
-
+            return response()->json([ 'status' => false, 'message' => 'User Registration Failed!', 'errors' => $e->getMessage(), ], 409);//return error message
         }
     }
 
     public function resendOtp(Request $request){
+
         try{
-            $validator = Validator::make($request->all(), [
-                'user_id' => 'required|uuid',
-            ]);
+            $validator = Validator::make($request->all(), [ 'user_id' => 'required|uuid', ]);
             if ($validator->fails()) {
-                return response()->json($validator->errors(), 422);
+                return response()->json(['status' => false, $validator->errors()], 422);
             } else {
                 $user_id = $request->input('user_id');
                 $user = User::on('mysql::read')->findOrFail($user_id);
                 $this->sendOtp($user);
             }
+
         }catch(ModelNotFoundException $me){
-            return response()->json(['message'=>'User not found.'], 404);
+            return response()->json([ 'status' => false, 'message'=>'User not found.' ], 404);
         }catch(Exception $e){
-            return response()->json(['message'=>$e->getMessage()], 422);
+            return response()->json([ 'status' => false, 'message'=>$e->getMessage() ], 422);
         }
     }
 
-    public function sendOTP($user)
-    {
+    public function sendOTP($user){
+
         $otp = mt_rand(10000,99999);
         OtpVerify::on('mysql::write')->create([
             'user_id' => $user->id,
             'otp' => $otp,
             'expires_at' => Carbon::now()->addMinutes(env('OTP_VALIDITY'))
         ]);
+
         $message = "Hello! Your Xchange Verification Code is $otp. Code is valid for the next ".env('OTP_VALIDITY')."minutes.";
-        // $this->sendSms($user->phone,$message);
+        //$this->sendSms($user->phone,$message);
         Mail::to($user->email)->send(new OtpMail($user->name, $otp));
 
         return "OTP successfully generated";
     }
 
-    public function verifyOtp(Request $request)
-    {
-        $validator = Validator::make($request->all(), [
-            'otp' => 'required|numeric',
-        ]);
+    public function verifyOtp(Request $request){
+
+        $validator = Validator::make($request->all(), [ 'otp' => 'required|numeric', ]);
 
         if ($validator->fails()) {
-            return response()->json($validator->errors(), 422);
+            return response()->json([ 'status' => false, $validator->errors() ], 422);
         } else {
             $otp = $request->input('otp');
             $userId = $request->input('user_id');
 
-            $verifyOtp = OtpVerify::on('mysql::read')->where([
-                'otp' => $otp,
-                'user_id' => $userId
-            ])->first();
+            $verifyOtp = OtpVerify::on('mysql::read')->where([ 'otp' => $otp, 'user_id' => $userId ])->first();
+
             if(!empty($verifyOtp)){
+
                 if(Carbon::now() >= $verifyOtp->expires_at){
-                    return response()->json(['errors' => 'OTP is no longer valid'],403);
+                    return response()->json([ 'status' => false, 'message' => 'OTP is no longer valid' ],403);
                 }
-                return $this->registerUsers($userId);
+                return response()->json([ 'status' => true, 'message' => 'Success', 'user' => $this->registerUsers($userId) ], 200);//return $this->registerUsers($userId);
             } else {
-                return response()->json(['errors' => 'OTP does not exist'],404);
+                return response()->json([ 'status' => false, 'message' => 'OTP does not exist' ],404);
             }
         }
     }
@@ -185,13 +178,13 @@ class UserController extends Controller
                          'user_id' => $user->id
                      ]);
                      if (!$token = Auth::attempt($credentials)) {
-                         return response()->json(['message' => 'Unable to create token, kindly login'], 401);
+                         return response()->json(['status' => false,'message' => 'Unable to create token, kindly login'], 401);
                      }
                      Mail::to($inviteeUser->email)
                          ->send(new OnboardingMail($inviteeUser));
 
                      return response()->json([
-                         'status'  => 0,
+                         'status'  => true,
                          'message' => 'Account created Successfully',
                          'user'    => [
                              'id'           => $user->id,
@@ -204,9 +197,7 @@ class UserController extends Controller
                          'data'           => $this->respondWithToken($token)
                      ], 201);
                  } else {
-                     return response()->json([
-                         'message' => 'Identity could not be verified.',
-                     ], 403);
+                     return response()->json([ 'status' => false, 'message' => 'Identity could not be verified.', ], 403);
                  }
 
 
@@ -214,8 +205,9 @@ class UserController extends Controller
         } catch (\Exception $e) {
             //return error message
             return response()->json([
-                'errors'  => $e->getMessage(),
+                'status' => false,
                 'message' => 'User Registration Failed!',
+                'errors'  => $e->getMessage(),
             ], 409);
 
         }
@@ -226,26 +218,28 @@ class UserController extends Controller
     {
         try{
             $validator = Validator::make($request->all(), [
+                'name' => 'string',
                 'phone' => 'string',
                 'email' => 'string|email',
-                'password' => 'nullable|string|min:6',
+                'password' => 'nullable|string|min:4',
             ]);
 
             // return $request;
             if ($validator->fails()) {
-                return response()->json($validator->errors(), 422);
+                return response()->json([ 'status' => false, $validator->errors() ], 422);
             }
             $credentials = $request->only(['phone', 'password', 'email']);
 
             if (!$token = Auth::attempt($credentials)) {
                 return response()->json([
-                    'status'    =>  -1,
+                    //'status'    =>  -1,
+                    'status'    =>  false,
                     'message'   => 'Invalid credentials'
                 ], 401);
             }
 
             if ($this->isAdminShutdownStatus()) {
-                return response()->json(['message' => 'your account has been suspended by the admin. contact customer\'s support'], 405);
+                return response()->json(['status' => false, 'message' => 'your account has been suspended by the admin. contact customer\'s support'], 405);
             }
 
             $user = User::on('mysql::read')->where('phone', $request->phone)->first();
@@ -257,7 +251,8 @@ class UserController extends Controller
 
             if(!empty($user) && $user->status !== 1 && env('APP_ENV') !== 'local'){
 
-                return response()->json(['status' =>  -1,'message' => 'Your Account has been deactivated, please contact Admin'],401);
+                //return response()->json(['status' =>  -1,'message' => 'Your Account has been deactivated, please contact Admin'],401);
+                return response()->json(['status' => false,'message' => 'Your Account has been deactivated, please contact Admin'],401);
             }
 
             $this->saveUserActivity(ActivityType::LOGIN, '', $user->id);
@@ -275,7 +270,7 @@ class UserController extends Controller
             }
 
             return response()->json([
-                'status'   =>   0,
+                'status'   =>   true,
                 'message'  =>   'Successful',
                 'user'     =>   [
                     'id'            => $user->id,
@@ -301,7 +296,7 @@ class UserController extends Controller
             ]);
 
         }catch(Exception $e){
-            return response()->json(['message'=>$e->getMessage()], 422);
+            return response()->json([ 'status' => false, 'message'=>$e->getMessage()], 422);
         }
     }
 
@@ -309,7 +304,7 @@ class UserController extends Controller
     public function logout()
     {
         auth()->logout();
-        return response()->json(['message' => 'Successfully logged out'], 200);
+        return response()->json(['status' => true, 'message' => 'Successfully logged out'], 200);
     }
 
     /**
@@ -326,14 +321,15 @@ class UserController extends Controller
     {
         try {
 
+            $status = true;
             $data = User::orderBy('id', 'desc')->get();
             $message = 'data successfully fetched';
 
-            return $this->sendResponse($data,$message);
+            return $this->sendResponse($status,$message,$data);
         }catch (ModelNotFoundException $e) {
-            return response()->json(['message' => $e->getMessage()],404);
+            return response()->json(['status' => false, 'message' => $e->getMessage()],404);
         } catch(\Exception $e) {
-            return response()->json(['message' => $e->getMessage()],500);
+            return response()->json(['status' => false, 'message' => $e->getMessage()],500);
         }
     }
 
@@ -347,9 +343,7 @@ class UserController extends Controller
      */
     protected function respondWithToken($token)
     {
-
-
-        return array('access_token'=>$token, 'expires_in'=>auth()->factory()->getTTL() * 60 *2,);
+        return array('status' => true, 'access_token'=>$token, 'expires_in'=>auth()->factory()->getTTL() * 60 *2,);
     }
 
     public function AccountVerification(Request $request)
@@ -358,11 +352,10 @@ class UserController extends Controller
         $validator = Validator::make($request->all(), [
             'email' => 'required|string|email|max:100',
             'verified_otp' => 'required|string|min:4',
-
         ]);
 
         if ($validator->fails()) {
-            return response()->json($validator->errors(), 400);
+            return response()->json(['status' => false, $validator->errors()], 400);
         }
         $user = User::on('mysql::write')->where('email', $request->email)->first();
         if (!$user) {
@@ -396,7 +389,7 @@ class UserController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return response()->json($validator->errors(), 422);
+            return response()->json(['status' => false,$validator->errors()], 422);
         }
         $input = array();
 
@@ -443,7 +436,7 @@ class UserController extends Controller
             }
 
             return response()->json([
-                'status'   =>   1 ,
+                'status'   =>   true ,
                 'message'  =>   'Account updated succesfully',
                 'user'     =>   [
                     'id'            => $user->id,
@@ -465,7 +458,7 @@ class UserController extends Controller
                 'walletBalance'   =>   $user->wallet->balance,
             ]);
         }
-        return response()->json(['message' => 'you are not the owner of this account']);
+        return response()->json(['status' => false, 'message' => 'you are not the owner of this account']);
     }
 
 
