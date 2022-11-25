@@ -105,6 +105,7 @@ Route::group(['prefix' => 'v1', 'middleware' => ['cors']], function(){
     Route::get('user/all/bill-transactions/{user_id}/{bill}', [ApisUserController::class, 'allUsersBillTransaction'])->name('get_user_all_bill_transactions');
     Route::get('generate_transaction_reference', [ApisUserController::class, 'generate_transaction_reference'])->name('generate_transaction_reference');
 
+
      //bitcoin
     Route::get('create/bitcoin/wallet', [BitconWalletController::class, 'CreateBitcoinWallet']);
     Route::get('generate/bitcoin/address/{xpub}/{index}', [BitconWalletController::class, 'CreateBitcoinAddress']);
@@ -114,15 +115,25 @@ Route::group(['prefix' => 'v1', 'middleware' => ['cors']], function(){
     Route::post('bitcoin/transfer/{privkey}/{senderadd}/{receiverAdd}/{value}', [BitconWalletController::class, 'BtcTransferBlockchain']);
     Route::get('bitcoin/transaction/details/{hash}', [BitconWalletController::class, 'BtcGetTransactionDetails']);
     Route::get('utxo/transaction/details/{hash}/{index}', [BitconWalletController::class, 'BtcGetUTXODetails']);
-
     Route::get('btc/blockchain/info', [BitconWalletController::class, 'BtcGetBlockChainInfo']);
     Route::get('btc/get/blockhash/{i}', [BitconWalletController::class, 'BtcGetBlockHash']);
-
     Route::post('btc/broadcast', [BitconWalletController::class, 'BtcBroadcast']);
+
 
     //etherum
     Route::get('create/etherum/wallet', [EtherumController::class, 'EthGenerateWallet']);
     Route::get('create/etherum/address/{xpub}', [EtherumController::class, 'EthGenerateAddress']);
+    Route::post('etherum/create/privatekey', [EtherumController::class, 'EthGenerateAddressPrivateKey']);
+    Route::get('etherum/current/block', [EtherumController::class, 'EthGetCurrentBlock']);
+    Route::get('etherum/block/{hash}', [EtherumController::class, 'EthGetBlockByHash']);
+    Route::get('etherum/balance/{address}', [EtherumController::class, 'EthGetBalance']);
+    Route::get('etherum/transaction/{hash}', [EtherumController::class, 'EthGetTransaction']);
+    Route::get('etherum/transaction/{address}', [EtherumController::class, 'EthGetTransactionByAddress']);
+    Route::get('etherum/transaction/count/{hash}', [EtherumController::class, 'EthGetTransactionCount']);
+    Route::post('etherum/transfer', [EtherumController::class, 'EthBlockchainTransfer']);
+    Route::post('etherum/invoke', [EtherumController::class, 'EthBlockchainSmartContractInvocation']);
+    Route::get('etherum/internal/transaction/{address}', [EtherumController::class, 'EthGetInternalTransactionByAddress']);
+    Route::post('etherum/broadcast', [EtherumController::class, 'EthBroadcast']);
 
 
 

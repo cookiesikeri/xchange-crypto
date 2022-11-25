@@ -102,9 +102,15 @@ class User extends Authenticatable implements JWTSubject, Searchable
     public function bitcoin_private_key(){
         return $this->hasOne(BitconPrivateKey::class);
     }
+    public function etherum_private_key(){
+        return $this->hasOne(EtherumPrivateKey::class);
+    }
 
     public function beneficiaries(){
         return $this->hasMany(Beneficiaries::class);
+    }
+    public function eth_transactions(){
+        return $this->hasMany(EthTransaction::class);
     }
 
 

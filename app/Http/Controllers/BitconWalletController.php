@@ -77,7 +77,7 @@ class BitconWalletController extends Controller
         $payload = array(
 
             'mnemonic'     =>  $request->mnemonic,
-            'index'     =>  $otp
+            'index'     =>  0
         );
 
         curl_setopt_array($curl, [
@@ -225,15 +225,6 @@ class BitconWalletController extends Controller
     public function BtcTransferBlockchain(Request $request,$privkey, $senderadd, $receiverAdd, $value){
 
         $ref = '51' . substr(uniqid(mt_rand(), true), 0, 8);
-
-        $validator = Validator::make($request->all(), [
-            'address'=>'required|string|min:5',
-            'privateKey'=>'required|string'
-        ]);
-
-        if ($validator->fails()) {
-            return response()->json($validator->errors(), 422);
-        }
 
         $curl = curl_init();
 
@@ -437,7 +428,6 @@ class BitconWalletController extends Controller
     }
 
 }
-
 
 
 }
