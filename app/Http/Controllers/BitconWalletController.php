@@ -56,7 +56,8 @@ class BitconWalletController extends Controller
                 ]);
             }
             $this->saveUserActivity(ActivityType::CREATE_BITCOIN_WALLET, '', $user->id);
-            return $response;
+
+            return response()->json([ 'status' => true, 'message' => 'Wallet created Successfully', 'response' => $response ], 201);
 
         }
     }
@@ -118,7 +119,7 @@ class BitconWalletController extends Controller
                 ]);
             }
             $this->saveUserActivity(ActivityType::BitcoinGenerateAddressPrivateKey, '', $user->id);
-            return $response;
+           return response()->json([ 'status' => true, 'message' => 'private key created Successfully', 'response' => $response ], 201);
         }
     }
 
@@ -166,8 +167,9 @@ class BitconWalletController extends Controller
                     'address' => $response
                 ]);
             }
-            return $response;
+
             $this->saveUserActivity(ActivityType::CREATE_BITCOIN_ADDRESS, '', $user->id);
+            return response()->json([ 'status' => true, 'message' => 'addreess created Successfully', 'response' => $response ], 201);
             // return response()->json([
             //     'status' => true,
             //     'message' => 'bitcoin address created successfully ',
@@ -200,7 +202,7 @@ class BitconWalletController extends Controller
             return response()->json($error);
         } else {
 
-            return $response;
+            return response()->json([ 'status' => true, 'message' => 'balance fetched successfully', 'response' => $response ], 200);
         }
     }
     public function BtcGetTxByAddress($address) {
@@ -230,7 +232,7 @@ class BitconWalletController extends Controller
             return response()->json($error);
         } else {
 
-            return $response;
+            return response()->json([ 'status' => true, 'message' => 'Successful', 'response' => $response ], 200);
         }
     }
 

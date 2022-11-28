@@ -36,5 +36,15 @@ final class ActivityType extends Enum
     const ETHGenerateAddressPrivateKey = 'Create ETH PrivateKey';
     const SEND_ETH = 'Send ETH';
     const BROADCAST_ETH = 'Broadcast ETH';
+    const CREATE_LITECOIN_WALLET = 'Create Litecoin Wallet';
+    const CREATE_LITECOIN_ADDRESS = 'Create Litecoin Address';
+    const LitecoinAddressPrivateKey = 'Create Litecoin PrivateKey';
+    const SEND_LITECOIN = 'Send Litecoin';
+    const BROADCAST_LITECOIN = 'Litecoin Bitcoin';
+    const CREATE_POLYGON_WALLET = 'Create Polygon Wallet';
+    const CREATE_POLYGON_ADDRESS = 'Create Polygon Address';
+    const SEND_POLYGON = 'Send Polygon';
+    const BROADCAST_POLYGON = 'Polygon Bitcoin';
+    const POLYGONAddressPrivateKey = 'Create Polygon PrivateKey';
 
 }

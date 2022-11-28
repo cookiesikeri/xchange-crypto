@@ -12,6 +12,8 @@ use App\Http\Controllers\TransactionController;
 use App\Http\Controllers\BitconWalletController;
 use App\Http\Controllers\DogecoinController;
 use App\Http\Controllers\EtherumController;
+use App\Http\Controllers\LitecoinController;
+use App\Http\Controllers\PolygonController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 
@@ -149,6 +151,26 @@ Route::group(['prefix' => 'v1', 'middleware' => ['cors']], function(){
     Route::post('dogecoin/transfer/{txHash}/{value}/{address}/{signatureId}/{receiveraddress}', [DogecoinController::class, 'DogeTransferBlockchain']);
     Route::post('dogecoin/broadcast', [DogecoinController::class, 'DogeBroadcast']);
 
+
+    //Litecoin
+    Route::get('create/litecoin/wallet', [LitecoinController::class, 'LitecoinGenerateWallet']);
+    Route::get('create/litecoin/address/{xpub}', [LitecoinController::class, 'LitecoinGenerateAddress']);
+    Route::get('litecoin/blockchain/info', [LitecoinController::class, 'LtcGetBlockChainInfo']);
+    Route::get('litecoin/block/{i}', [LitecoinController::class, 'LtcGetBlockHash']);
+    Route::get('litecoin/block/hash/{hash}', [LitecoinController::class, 'LtcGetBlockyHash']);
+    Route::get('litecoin/transaction/{hash}', [LitecoinController::class, 'LtcGetRawTransaction']);
+    Route::get('litecoin/transaction/{address}', [LitecoinController::class, 'LtcGetTxByAddress']);
+    Route::get('litecoin/transaction/info/{address}', [LitecoinController::class, 'LtcGetUTXO']);
+    Route::post('litecoin/create/privatekey', [LitecoinController::class, 'LtcGenerateAddressPrivateKey']);
+    Route::post('litecoin/transfer/{address}/{privateKey}/{receiveradd}/{value}', [LitecoinController::class, 'LtcTransferBlockchain']);
+    Route::post('litecoin/broadcast', [LitecoinController::class, 'LtcBroadcast']);
+
+
+    //polygon
+    Route::get('create/polygon/wallet', [PolygonController::class, 'PolygonGenerateWallet']);
+    Route::get('create/polygon/address/{xpub}', [PolygonController::class, 'PolygonGenerateAddress']);
+    Route::post('polygon/create/privatekey', [PolygonController::class, 'PolygonGenerateAddressPrivateKey']);
+    Route::get('polygon/block/number', [PolygonController::class, 'PolygonGetCurrentBlock']);
 
 
 });

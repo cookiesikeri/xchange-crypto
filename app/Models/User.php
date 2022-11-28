@@ -67,14 +67,15 @@ class User extends Authenticatable implements JWTSubject, Searchable
     {
         return $this->hasOne('App\Models\CustomerValidation');
     }
-
     public function wallet(){
 
         return $this->hasOne('App\Models\Wallet');
     }
-
     public function paymentcards() {
         return $this->hasMany(PaymentCard::class);
+    }
+    public function litecoin_transactions() {
+        return $this->hasMany(LitecoinTransaction::class);
     }
     public function bitcoin_transactions() {
         return $this->hasMany(BitcoinTransaction::class);
@@ -92,8 +93,11 @@ class User extends Authenticatable implements JWTSubject, Searchable
     public function etherum_wallet(){
         return $this->hasOne(EtherumWallet::class);
     }
-    public function etherum_wallet_adresse(){
+    public function etherum_wallet_adress(){
         return $this->hasOne(EtherumWalletAdress::class);
+    }
+    public function litecoin_wallet_address(){
+        return $this->hasOne(LitecoinWalletAddress::class);
     }
     public function bitcoin_wallet(){
         return $this->hasOne(BitconWallet::class);
@@ -111,8 +115,24 @@ class User extends Authenticatable implements JWTSubject, Searchable
         return $this->hasOne(EtherumPrivateKey::class);
     }
 
+    public function  litecoin_private_key(){
+        return $this->hasOne(LitecoinPrivateKey::class);
+    }
     public function dogecoin_private_key(){
         return $this->hasOne(DogecoinPrivateKey::class);
+    }
+    public function litecoin_wallet(){
+        return $this->hasOne(LitecoinWallet::class);
+    }
+
+    public function polygon_wallet(){
+        return $this->hasOne(PolygonWallet::class);
+    }
+    public function _polygon_private_key(){
+        return $this->hasOne(PolygonPrivateKey::class);
+    }
+    public function polygon_wallet_address(){
+        return $this->hasOne(PolygonWalletAddress::class);
     }
 
     public function dodgecoin_transactions(){
