@@ -467,6 +467,15 @@ class EtherumController extends Controller
 
         $user = Auth::user();
 
+        $validator = Validator::make($request->all(), [
+            'txData'=>'required|string|min:5'
+
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json($validator->errors(), 422);
+        }
+
         $curl = curl_init();
 
         $payload = array(
@@ -493,9 +502,101 @@ class EtherumController extends Controller
             return $error;
         } else {
             $this->saveUserActivity(ActivityType::BROADCAST_ETH, '', $user->id);
-            return $response;
+            return response()->json([ 'status' => true, 'message' => 'Broadcast Successful', 'response' => $response ], 200);
         }
 
+    }
+
+    public function EthEstimateGas(Request $request){
+
+        $curl = curl_init();
+
+        $validator = Validator::make($request->all(), [
+            'from'=>'required|string|min:5',
+            'to'=>'required|string|min:5',
+            'amount'=>'required|min:0'
+
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json($validator->errors(), 422);
+        }
+
+        $curl = curl_init();
+
+        $payload = array(
+        "from" =>  $request->from,
+        "to" =>  $request->to,
+        "amount" =>  $request->amount,
+        );
+
+        curl_setopt_array($curl, [
+        CURLOPT_HTTPHEADER => [
+            "Content-Type: application/json",
+            "x-api-key: ". env('TATUM_TEST_KEY')
+        ],
+        CURLOPT_POSTFIELDS => json_encode($payload),
+        CURLOPT_URL => "https://api.tatum.io/v3/ethereum/gas",
+        CURLOPT_RETURNTRANSFER => true,
+        CURLOPT_CUSTOMREQUEST => "POST",
+        ]);
+
+        $response = curl_exec($curl);
+        $error = curl_error($curl);
+
+        curl_close($curl);
+
+        if ($error) {
+            return $error;
+        } else {
+            return response()->json([ 'status' => true, 'message' => 'Gas fee fetched Successfully', 'response' => $response ], 200);
+        }
+    }
+
+    public function EthEstimateGasMultiple(Request $request){
+
+        $curl = curl_init();
+
+        $validator = Validator::make($request->all(), [
+            'from'=>'required|string|min:5',
+            'to'=>'required|string|min:5',
+            'amount'=>'required|min:0'
+
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json($validator->errors(), 422);
+        }
+
+        $curl = curl_init();
+
+        $payload = array(
+        "from" =>  $request->from,
+        "to" =>  $request->to,
+        "amount" =>  $request->amount,
+        );
+
+        curl_setopt_array($curl, [
+        CURLOPT_HTTPHEADER => [
+            "Content-Type: application/json",
+            "x-api-key: ". env('TATUM_TEST_KEY')
+        ],
+        CURLOPT_POSTFIELDS => json_encode($payload),
+        CURLOPT_URL => "https://api.tatum.io/v3/ethereum/gas",
+        CURLOPT_RETURNTRANSFER => true,
+        CURLOPT_CUSTOMREQUEST => "POST",
+        ]);
+
+        $response = curl_exec($curl);
+        $error = curl_error($curl);
+
+        curl_close($curl);
+
+        if ($error) {
+            return $error;
+        } else {
+            return response()->json([ 'status' => true, 'message' => 'Gas fee fetched Successfully', 'response' => $response ], 200);
+        }
     }
 
 }

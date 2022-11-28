@@ -67,6 +67,7 @@ class User extends Authenticatable implements JWTSubject, Searchable
     {
         return $this->hasOne('App\Models\CustomerValidation');
     }
+
     public function wallet(){
 
         return $this->hasOne('App\Models\Wallet');
@@ -134,11 +135,15 @@ class User extends Authenticatable implements JWTSubject, Searchable
     public function polygon_wallet_address(){
         return $this->hasOne(PolygonWalletAddress::class);
     }
-
+    public function binance_wallet(){
+        return $this->hasOne(BinanceWallet::class);
+    }
     public function dodgecoin_transactions(){
         return $this->hasMany(DogecoinTransaction::class);
     }
-
+    public function binance_transactions(){
+        return $this->hasMany(BinanceTransaction::class);
+    }
     public function beneficiaries(){
         return $this->hasMany(Beneficiaries::class);
     }
@@ -146,6 +151,9 @@ class User extends Authenticatable implements JWTSubject, Searchable
         return $this->hasMany(EthTransaction::class);
     }
 
+    public function polygon_transactions(){
+        return $this->hasMany(PolygonTransaction::class);
+    }
 
     public function useractivities(){
         return $this->hasMany(UserActivity::class);

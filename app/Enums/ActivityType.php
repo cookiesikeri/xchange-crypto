@@ -44,7 +44,13 @@ final class ActivityType extends Enum
     const CREATE_POLYGON_WALLET = 'Create Polygon Wallet';
     const CREATE_POLYGON_ADDRESS = 'Create Polygon Address';
     const SEND_POLYGON = 'Send Polygon';
-    const BROADCAST_POLYGON = 'Polygon Bitcoin';
+    const BROADCAST_POLYGON = 'Broadcast Polygon';
     const POLYGONAddressPrivateKey = 'Create Polygon PrivateKey';
+
+    const CREATE_BINANCE_WALLET = 'Create Binance Wallet';
+    const CREATE_BINANCE_ADDRESS = 'Create Binance Address';
+    const SEND_BINANCE = 'Send Binance';
+    const BROADCAST_BINANCE = 'Broadcast Binance ';
+    const BINANCEAddressPrivateKey = 'Create Binance PrivateKey';
 
 }

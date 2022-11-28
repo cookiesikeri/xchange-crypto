@@ -451,5 +451,38 @@ class BitconWalletController extends Controller
 
 }
 
+        public function BtcEstimateGas(Request $request){
+
+
+            $curl = curl_init();
+
+            $payload = array(
+            "chain" =>  $request->chain,
+            "type" =>  $request->type,
+            );
+
+            curl_setopt_array($curl, [
+            CURLOPT_HTTPHEADER => [
+                "Content-Type: application/json",
+                "x-api-key: 4dc3bcdb-3c8a-4ba9-98d5-92f1a98339aa"
+            ],
+            CURLOPT_POSTFIELDS => json_encode($payload),
+            CURLOPT_URL => "https://api.tatum.io/v3/blockchain/estimate",
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_CUSTOMREQUEST => "POST",
+            ]);
+
+            $response = curl_exec($curl);
+            $error = curl_error($curl);
+
+            curl_close($curl);
+
+            if ($error) {
+                return $error;
+            } else {
+                return response()->json([ 'status' => true, 'message' => 'Gas fee fetched Successfully', 'response' => $response ], 200);
+            }
+        }
+
 
 }

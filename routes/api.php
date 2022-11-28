@@ -8,6 +8,7 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\PasswordResetRequestController;
 use App\Http\Controllers\Apis\UserController as ApisUserController;
 use App\Http\Controllers\ApiController;
+use App\Http\Controllers\BinanceController;
 use App\Http\Controllers\TransactionController;
 use App\Http\Controllers\BitconWalletController;
 use App\Http\Controllers\DogecoinController;
@@ -77,10 +78,8 @@ Route::group(['prefix' => 'v1', 'middleware' => ['cors']], function(){
     Route::get('lgas', [ApiController::class, 'LGA']);
     Route::get('faqs', [ApiController::class, 'FAQs']);
     Route::get('security/questions', [ApiController::class, 'SeqQuetions']);
-
-
-    Route::post('request-physicalcard', [ApisUserController::class, 'RequestPhysicalCard']);
-    Route::post('request-virtuallcard', [ApisUserController::class, 'RequestVirtualCard']);
+    Route::get('check/malicous/address/{address}', [ApiController::class, 'CheckMalicousAddress']);
+    Route::get('current/exchange/rate/{currency}', [ApiController::class, 'Exchangerate']);
 
 
     //users
@@ -121,6 +120,7 @@ Route::group(['prefix' => 'v1', 'middleware' => ['cors']], function(){
     Route::get('btc/blockchain/info', [BitconWalletController::class, 'BtcGetBlockChainInfo']);
     Route::get('btc/get/blockhash/{i}', [BitconWalletController::class, 'BtcGetBlockHash']);
     Route::post('btc/broadcast', [BitconWalletController::class, 'BtcBroadcast']);
+    Route::post('btc/gas/fee', [BitconWalletController::class, 'BtcEstimateGas']);
 
 
     //etherum
@@ -137,6 +137,8 @@ Route::group(['prefix' => 'v1', 'middleware' => ['cors']], function(){
     Route::post('etherum/invoke', [EtherumController::class, 'EthBlockchainSmartContractInvocation']);
     Route::get('etherum/internal/transaction/{address}', [EtherumController::class, 'EthGetInternalTransactionByAddress']);
     Route::post('etherum/broadcast', [EtherumController::class, 'EthBroadcast']);
+    Route::post('etherum/gas/fee', [EtherumController::class, 'EthEstimateGas']);
+    Route::post('etherum/gas/fee/multiple', [EtherumController::class, 'EthEstimateGasMultiple']);
 
 
     //dogecoin
@@ -150,6 +152,7 @@ Route::group(['prefix' => 'v1', 'middleware' => ['cors']], function(){
     Route::get('dogecoin/transaction/info/{hash}', [DogecoinController::class, 'DogeGetUTXO']);
     Route::post('dogecoin/transfer/{txHash}/{value}/{address}/{signatureId}/{receiveraddress}', [DogecoinController::class, 'DogeTransferBlockchain']);
     Route::post('dogecoin/broadcast', [DogecoinController::class, 'DogeBroadcast']);
+    Route::post('dogecoin/gas/fee/{from}/{to}/{amount}', [DogecoinController::class, 'DogeEstimateGas']);
 
 
     //Litecoin
@@ -164,6 +167,7 @@ Route::group(['prefix' => 'v1', 'middleware' => ['cors']], function(){
     Route::post('litecoin/create/privatekey', [LitecoinController::class, 'LtcGenerateAddressPrivateKey']);
     Route::post('litecoin/transfer/{address}/{privateKey}/{receiveradd}/{value}', [LitecoinController::class, 'LtcTransferBlockchain']);
     Route::post('litecoin/broadcast', [LitecoinController::class, 'LtcBroadcast']);
+    Route::post('litecoin/gas/fee', [LitecoinController::class, 'LtcEstimateGas']);
 
 
     //polygon
@@ -171,8 +175,25 @@ Route::group(['prefix' => 'v1', 'middleware' => ['cors']], function(){
     Route::get('create/polygon/address/{xpub}', [PolygonController::class, 'PolygonGenerateAddress']);
     Route::post('polygon/create/privatekey', [PolygonController::class, 'PolygonGenerateAddressPrivateKey']);
     Route::get('polygon/block/number', [PolygonController::class, 'PolygonGetCurrentBlock']);
+    Route::get('polygon/block/{block}', [PolygonController::class, 'PolygonGetBlockbyHash']);
+    Route::get('polygon/balance/{address}', [PolygonController::class, 'PolygonGetBalance']);
+    Route::get('polygon/transaction/{address}', [PolygonController::class, 'PolygonGetTransactionByAddress']);
+    Route::get('polygon/transactions/count/{address}', [PolygonController::class, 'PolygonGetTransactionCount']);
+    Route::post('polygon/transfer', [PolygonController::class, 'PolygonBlockchainTransfer']);
+    Route::post('polygon/invoke', [PolygonController::class, 'PolygonBlockchainSmartContractInvocation']);
+    Route::post('polygon/broadcast', [PolygonController::class, 'PolygonBroadcast']);
+    Route::post('polygon/gas/fee', [PolygonController::class, 'PolygonEstimateGas']);
 
 
+    //binance
+    Route::get('create/binance/wallet', [BinanceController::class, 'BnbGenerateWallet']);
+    Route::get('binance/block/number', [BinanceController::class, 'BnbGetCurrentBlock']);
+    Route::get('binance/transaction/{height}', [BinanceController::class, 'BnbGetBlock']);
+    Route::get('binance/balance/{address}', [BinanceController::class, 'BnbGetAccount']);
+    Route::get('binance/transaction/{block}', [BinanceController::class, 'BnbGetTransaction']);
+    Route::get('binance/account/transaction/{address}', [BinanceController::class, 'BnbGetTxByAccount']);
+    Route::post('binance/transfer', [BinanceController::class, 'BnbBlockchainTransfer']);
+    Route::post('binance/broadcast', [BinanceController::class, 'BnbBroadcast']);
 });
 
 
@@ -186,19 +207,6 @@ Route::prefix('bills')->group( function() {
     Route::prefix('data')->name('data.')->group(function () {
         Route::get('bundles/{networkID}', [DataController::class, 'getBundles'])->name('bundles.get');
         Route::post('request', [DataController::class, 'request'])->name('bundles.get');
-    });
-
-    // all power routes group
-    Route::prefix('power')->name('power.')->group(function () {
-        Route::post('meter-info', [PowerController::class, 'getMeterInfo'])->name('get-meter-info');
-        Route::post('request', [PowerController::class, 'request'])->name('request');
-    });
-
-    // all tv routes group
-    Route::prefix('tv')->name('tv.')->group(function () {
-        Route::get('info/{providerID}', [TVController::class, 'getTVInfo'])->name('get-tv-info');
-        Route::post('info', [TVController::class, 'getCardInfo'])->name('get-card-info');
-        Route::post('request', [TVController::class, 'request'])->name('request');
     });
 
 });

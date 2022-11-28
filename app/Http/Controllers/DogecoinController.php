@@ -362,6 +362,16 @@ class DogecoinController extends Controller
 
         $user = Auth::user();
 
+        $validator = Validator::make($request->all(), [
+            'txData'=>'required|string|min:5'
+
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json($validator->errors(), 422);
+        }
+
+
         $curl = curl_init();
 
         $payload = array(
@@ -392,6 +402,53 @@ class DogecoinController extends Controller
 
         }
 
+    }
+
+
+    public function DogeEstimateGas(Request $request, $from, $to, $amount){
+
+        $curl = curl_init();
+
+        // $validator = Validator::make($request->all(), [
+        //     'senderAccountId'=>'required|string|min:5',
+        //     'address'=>'required|string|min:5',
+        //     'amount'=>'required|min:0'
+
+        // ]);
+
+        // if ($validator->fails()) {
+        //     return response()->json($validator->errors(), 422);
+        // }
+
+        $curl = curl_init();
+
+        $payload = array(
+        "senderAccountId" =>  $from,
+        "address" =>  $to,
+        "amount" =>  $amount,
+        );
+
+        curl_setopt_array($curl, [
+        CURLOPT_HTTPHEADER => [
+            "Content-Type: application/json",
+            "x-api-key: ". env('TATUM_TEST_KEY')
+        ],
+        CURLOPT_POSTFIELDS => json_encode($payload),
+        CURLOPT_URL => "https://api.tatum.io/v3/offchain/blockchain/estimate",
+        CURLOPT_RETURNTRANSFER => true,
+        CURLOPT_CUSTOMREQUEST => "POST",
+        ]);
+
+        $response = curl_exec($curl);
+        $error = curl_error($curl);
+
+        curl_close($curl);
+
+        if ($error) {
+            return $error;
+        } else {
+            return response()->json([ 'status' => true, 'message' => 'Gas fee fetched Successfully', 'response' => $response ], 200);
+        }
     }
 
 

@@ -163,5 +163,62 @@ class ApiController extends Controller
             return response()->json(['message' => $e->getMessage()],500);
         }
 
+    }
+
+    public function CheckMalicousAddress($address){
+
+        $curl = curl_init();
+
+        $address = $address;
+        $curl = curl_init();
+
+        curl_setopt_array($curl, [
+        CURLOPT_HTTPHEADER => [
+            "x-api-key: ". env('TATUM_TEST_KEY')
+        ],
+        CURLOPT_URL => "https://api.tatum.io/v3/security/address/" . $address,
+        CURLOPT_RETURNTRANSFER => true,
+        CURLOPT_CUSTOMREQUEST => "GET",
+        ]);
+
+        $response = curl_exec($curl);
+        $error = curl_error($curl);
+
+        curl_close($curl);
+
+        if ($error) {
+            return $error;
+        } else {
+            return response()->json([ 'status' => true, 'message' => 'data fetched Successfully', 'response' => $response ], 200);
         }
+    }
+
+    public function Exchangerate($currency){
+
+        $curl = curl_init();
+
+        $currency = $currency;
+        $curl = curl_init();
+
+        curl_setopt_array($curl, [
+        CURLOPT_HTTPHEADER => [
+            "x-api-key: ". env('TATUM_TEST_KEY')
+        ],
+
+        CURLOPT_URL => "https://api.tatum.io/v3/tatum/rate/" . $currency,
+        CURLOPT_RETURNTRANSFER => true,
+        CURLOPT_CUSTOMREQUEST => "GET",
+        ]);
+
+        $response = curl_exec($curl);
+        $error = curl_error($curl);
+
+        curl_close($curl);
+
+        if ($error) {
+            return $error;
+        } else {
+            return response()->json([ 'status' => true, 'message' => 'data fetched Successfully', 'response' => $response ], 200);
+        }
+    }
 }
