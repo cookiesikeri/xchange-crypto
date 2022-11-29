@@ -123,7 +123,7 @@ class BitconWalletController extends Controller
         }
     }
 
-    public function CreateBitcoinAddress(Request $request, $xpub, $index) {
+    public function CreateBitcoinAddress(Request $request, $xpub) {
 
         $user = Auth::user();
 
