@@ -152,7 +152,7 @@ Route::group(['prefix' => 'v1', 'middleware' => ['cors']], function(){
     Route::get('dogecoin/transaction/info/{hash}', [DogecoinController::class, 'DogeGetUTXO']);
     Route::post('dogecoin/transfer/{txHash}/{value}/{address}/{signatureId}/{receiveraddress}', [DogecoinController::class, 'DogeTransferBlockchain']);
     Route::post('dogecoin/broadcast', [DogecoinController::class, 'DogeBroadcast']);
-    Route::post('dogecoin/gas/fee/{from}/{to}/{amount}', [DogecoinController::class, 'DogeEstimateGas']);
+    Route::post('dogecoin/gas/fee', [DogecoinController::class, 'DogeEstimateGas']);
 
 
     //Litecoin

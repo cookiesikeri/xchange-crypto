@@ -405,27 +405,28 @@ class DogecoinController extends Controller
     }
 
 
-    public function DogeEstimateGas(Request $request, $from, $to, $amount){
+    public function DogeEstimateGas(Request $request){
 
         $curl = curl_init();
 
-        // $validator = Validator::make($request->all(), [
-        //     'senderAccountId'=>'required|string|min:5',
-        //     'address'=>'required|string|min:5',
-        //     'amount'=>'required|min:0'
+        $validator = Validator::make($request->all(), [
+            'senderAccountId'=>'required|string|min:5',
+            'address'=>'required|string|min:5',
+            'amount'=>'required|min:0'
 
-        // ]);
+        ]);
 
-        // if ($validator->fails()) {
-        //     return response()->json($validator->errors(), 422);
-        // }
+        if ($validator->fails()) {
+            return response()->json($validator->errors(), 422);
+        }
 
         $curl = curl_init();
 
         $payload = array(
-        "senderAccountId" =>  $from,
-        "address" =>  $to,
-        "amount" =>  $amount,
+        "senderAccountId" =>  $request->senderAccountId,
+        "address" =>  $request->address,
+        "amount" =>  $request->amount,
+        "xpub" =>  $request->xpub
         );
 
         curl_setopt_array($curl, [
