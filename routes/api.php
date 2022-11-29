@@ -110,7 +110,7 @@ Route::group(['prefix' => 'v1', 'middleware' => ['cors']], function(){
 
      //bitcoin
     Route::get('create/bitcoin/wallet', [BitconWalletController::class, 'CreateBitcoinWallet']);
-    Route::get('generate/bitcoin/address/{xpub}/{index}', [BitconWalletController::class, 'CreateBitcoinAddress']);
+    Route::get('generate/bitcoin/address/{xpub}', [BitconWalletController::class, 'CreateBitcoinAddress']);
     Route::post('bitcoin/create/privatekey', [BitconWalletController::class, 'CreateBitcoinPrivateKey']);
     Route::get('bitcoin/balance/{address}', [BitconWalletController::class, 'BtcGetBalanceOfAddress']);
     Route::get('bitcoin/all/transaction/{address}', [BitconWalletController::class, 'BtcGetTxByAddress']);
