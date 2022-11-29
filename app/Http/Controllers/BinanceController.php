@@ -162,15 +162,15 @@ class BinanceController extends Controller
 
     public function BnbGetTxByAccount(Request $request, $address){
 
-        // $validator = Validator::make($request->all(), [
-        //     'startTime'=>'required',
-        //     'endTime'=>'required'
+        $validator = Validator::make($request->all(), [
+            'startTime'=>'required',
+            'endTime'=>'required'
 
-        // ]);
+        ]);
 
-        // if ($validator->fails()) {
-        //     return response()->json($validator->errors(), 422);
-        // }
+        if ($validator->fails()) {
+            return response()->json($validator->errors(), 422);
+        }
 
         $address = $address;
 
@@ -198,7 +198,7 @@ class BinanceController extends Controller
         if ($error) {
             return $error;
         } else {
-            return $response;
+            return response()->json([ 'status' => true, 'message' => 'transactions fetched Successfully', 'response' => $response ], 200);
         }
 
     }

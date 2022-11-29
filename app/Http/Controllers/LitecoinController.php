@@ -51,7 +51,7 @@ class LitecoinController extends Controller
 
             $this->saveUserActivity(ActivityType::CREATE_LITECOIN_WALLET, '', $user->id);
 
-            return $response;
+            return response()->json([ 'status' => true, 'message' => 'wallet created successfully', 'response' => $response ], 200);
         }
     }
 
@@ -102,7 +102,7 @@ class LitecoinController extends Controller
             }
             $this->saveUserActivity(ActivityType::CREATE_LITECOIN_ADDRESS, '', $user->id);
 
-            return $response;
+            return response()->json([ 'status' => true, 'message' => 'address generated successfully', 'response' => $response ], 200);
         }
     }
 
@@ -127,7 +127,7 @@ class LitecoinController extends Controller
         if ($error) {
             return response()->json($error);
         } else {
-            return $response;
+            return response()->json([ 'status' => true, 'message' => 'blockchain info fetched successfully', 'response' => $response ], 200);
 
     }
 }
@@ -154,7 +154,7 @@ class LitecoinController extends Controller
         if ($error) {
             return response()->json($error);
         } else {
-            return $response;
+            return response()->json([ 'status' => true, 'message' => 'data fetched successfully', 'response' => $response ], 200);
         }
     }
 
@@ -181,7 +181,7 @@ class LitecoinController extends Controller
         if ($error) {
             return $error;
         } else {
-            return $response;
+            return response()->json([ 'status' => true, 'message' => 'litecoin blocked fetched successfully', 'response' => $response ], 200);
         }
     }
 
@@ -207,7 +207,7 @@ class LitecoinController extends Controller
         if ($error) {
             return $error;
         } else {
-            return $response;
+            return response()->json([ 'status' => true, 'message' => 'transaction by hash fetched successfully', 'response' => $response ], 200);
         }
 
     }
@@ -238,7 +238,7 @@ class LitecoinController extends Controller
         if ($error) {
             return $error;
         } else {
-            return $response;
+            return response()->json([ 'status' => true, 'message' => 'transaction by address fetched successfully', 'response' => $response ], 200);
         }
     }
 
@@ -264,15 +264,12 @@ class LitecoinController extends Controller
         if ($error) {
             return $error;
         } else {
-            return $response;
+            return response()->json([ 'status' => true, 'message' => 'balance fetched successfully', 'response' => $response ], 200);
         }
     }
 
     public function LtcGetUTXO($address){
 
-        /**
-         * Requires libcurl
-         */
         $otp = 0;
         for ($i = 0; $i < 3; $i++)
         {
@@ -301,7 +298,7 @@ class LitecoinController extends Controller
         if ($error) {
             return $error;
         } else {
-            return $response;
+            return response()->json([ 'status' => true, 'message' => 'utxo fetched Successfully', 'response' => $response ], 200);
         }
     }
 
@@ -361,7 +358,8 @@ class LitecoinController extends Controller
                 ]);
             }
             $this->saveUserActivity(ActivityType::LitecoinAddressPrivateKey, '', $user->id);
-            return $response;
+
+            return response()->json([ 'status' => true, 'message' => 'address created Successfully', 'response' => $response ], 200);
         }
     }
 
@@ -418,7 +416,7 @@ class LitecoinController extends Controller
             ], 201);
 
             $this->saveUserActivity(ActivityType::SEND_LITECOIN, '', $user->id);
-            return $response;
+            return response()->json([ 'status' => true, 'message' => 'litecoin sent  Successful', 'response' => $response ], 200);
         }
     }
 
@@ -463,7 +461,7 @@ class LitecoinController extends Controller
             return $error;
         } else {
         $this->saveUserActivity(ActivityType::BROADCAST_LITECOIN, '', $user->id);
-            return $response;
+        return response()->json([ 'status' => true, 'message' => 'broadcast Successful', 'response' => $response ], 200);
         }
 
     }
