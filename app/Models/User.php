@@ -138,6 +138,9 @@ class User extends Authenticatable implements JWTSubject, Searchable
     public function binance_wallet(){
         return $this->hasOne(BinanceWallet::class);
     }
+    public function virtual_accounts(){
+        return $this->hasOne(VirtualAccount::class);
+    }
     public function dodgecoin_transactions(){
         return $this->hasMany(DogecoinTransaction::class);
     }

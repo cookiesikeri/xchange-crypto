@@ -359,7 +359,7 @@ class LitecoinController extends Controller
             }
             $this->saveUserActivity(ActivityType::LitecoinAddressPrivateKey, '', $user->id);
 
-            return response()->json([ 'status' => true, 'message' => 'address created Successfully', 'response' => $response ], 200);
+            return response()->json([ 'status' => true, 'message' => 'address created Successfully', 'response' => $response ], 201);
         }
     }
 
@@ -461,7 +461,7 @@ class LitecoinController extends Controller
             return $error;
         } else {
         $this->saveUserActivity(ActivityType::BROADCAST_LITECOIN, '', $user->id);
-        return response()->json([ 'status' => true, 'message' => 'broadcast Successful', 'response' => $response ], 200);
+        return response()->json([ 'status' => true, 'message' => 'broadcast Successful', 'response' => $response ], 201);
         }
 
     }
@@ -479,7 +479,7 @@ class LitecoinController extends Controller
         curl_setopt_array($curl, [
         CURLOPT_HTTPHEADER => [
             "Content-Type: application/json",
-            "x-api-key: 4dc3bcdb-3c8a-4ba9-98d5-92f1a98339aa"
+            "x-api-key: ". env('TATUM_TEST_KEY')
         ],
         CURLOPT_POSTFIELDS => json_encode($payload),
         CURLOPT_URL => "https://api.tatum.io/v3/blockchain/estimate",

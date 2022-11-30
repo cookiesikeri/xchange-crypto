@@ -15,6 +15,7 @@ use App\Http\Controllers\DogecoinController;
 use App\Http\Controllers\EtherumController;
 use App\Http\Controllers\LitecoinController;
 use App\Http\Controllers\PolygonController;
+use App\Http\Controllers\VirtualAccountController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 
@@ -59,7 +60,7 @@ Route::group(['prefix' => 'v1', 'middleware' => ['signature']], function(){
 
     Route::post('login', [UserController::class, 'login']);
 
-
+    Route::get('request/airtime/', [AirtimeController::class, 'sendSMS']);
 });
 
 Route::group(['prefix' => 'v1', 'middleware' => ['cors']], function(){
@@ -194,56 +195,40 @@ Route::group(['prefix' => 'v1', 'middleware' => ['cors']], function(){
     Route::get('binance/account/transaction/{address}', [BinanceController::class, 'BnbGetTxByAccount']);
     Route::post('binance/transfer', [BinanceController::class, 'BnbBlockchainTransfer']);
     Route::post('binance/broadcast', [BinanceController::class, 'BnbBroadcast']);
+
+
+    //virual account
+    Route::post('create/virtual/account', [VirtualAccountController::class, 'createAccount']);
+    Route::get('list/all/account', [VirtualAccountController::class, 'getAccounts']);
+    Route::get('get/customer/account/{id}', [VirtualAccountController::class, 'getAccountsByCustomerId']);
+
+
+
+    Route::get('tv/verify/customer', [UtilityController::class, 'VerifyCustomer']);
+
+    Route::get('request/airtime/{phone}/{network_id}/{amount}', [AirtimeController::class, 'request']);
+
+
+
+
+
+
+    //utility
 });
 
 
-Route::prefix('bills')->group( function() {
-    // all airtime routes group
-    Route::prefix('airtime')->name('airtime.')->group(function () {
-        Route::post('request', [AirtimeController::class, 'request'])->name('request');
-    });
 
-    // all data routes group
-    Route::prefix('data')->name('data.')->group(function () {
-        Route::get('bundles/{networkID}', [DataController::class, 'getBundles'])->name('bundles.get');
-        Route::post('request', [DataController::class, 'request'])->name('bundles.get');
-    });
-
+Route::get('generate-locator', function () {
+    $digits_needed = 12;
+    $random_number = '';
+    $count = 0;
+    while ($count < $digits_needed) {
+        $random_digit = mt_rand(0, 9);
+        $random_number .= $random_digit;
+        $count++;
+    }
+    return response()->json($random_number);
 });
-
-// all services routes group
-Route::prefix('services')->name('service.')->group(function () {
-    Route::get('get-service/{id}', [UtilityController::class, 'getService'])->name('get');
-});
-
-        // alll users routes group
-        Route::name('users.')->group(function () {
-            Route::get('users', [ApisUserController::class, 'index'])->name('index');
-            Route::get('users/null-wallets', [ApisUserController::class, 'indexNull'])->name('index_null');
-            Route::get('is_user/{user_id}', [ApisUserController::class, 'is_user'])->name('is_user');
-
-
-
-
-
-
-
-
-
-        });
-
-        //
-        Route::get('generate-locator', function () {
-            $digits_needed = 12;
-            $random_number = '';
-            $count = 0;
-            while ($count < $digits_needed) {
-                $random_digit = mt_rand(0, 9);
-                $random_number .= $random_digit;
-                $count++;
-            }
-            return response()->json($random_number);
-        });
 
 //    Route::webhooks('paystack-webhook');
 

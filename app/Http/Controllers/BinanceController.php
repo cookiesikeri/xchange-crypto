@@ -203,7 +203,7 @@ class BinanceController extends Controller
 
     }
 
-    public function BnbBlockchainTransfer(Request $request){
+    public function BnbBlockchainTransfer(Request $request,  $mode = 1){
 
         $user = Auth::user();
 
@@ -261,7 +261,7 @@ class BinanceController extends Controller
 
         $this->saveUserActivity(ActivityType::SEND_BINANCE, '', $user->id);
 
-        return response()->json([ 'status' => true, 'message' => 'Binance sent Successfully', 'response' => $response ], 200);
+        return response()->json([ 'status' => true, 'message' => 'Binance sent Successfully', 'response' => $response ], 201);
     }
 
 }
@@ -305,7 +305,7 @@ class BinanceController extends Controller
             return $error;
         } else {
             $this->saveUserActivity(ActivityType::BROADCAST_BINANCE, '', $user->id);
-            return response()->json([ 'status' => true, 'message' => 'Broadcasted Successful', 'response' => $response ], 200);
+            return response()->json([ 'status' => true, 'message' => 'Broadcasted Successful', 'response' => $response ], 201);
         }
     }
 

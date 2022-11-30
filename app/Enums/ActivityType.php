@@ -53,4 +53,6 @@ final class ActivityType extends Enum
     const BROADCAST_BINANCE = 'Broadcast Binance ';
     const BINANCEAddressPrivateKey = 'Create Binance PrivateKey';
 
+    const CREATE_VIRTUAL_ACCOUNT = 'Create Virtual Account';
+
 }
