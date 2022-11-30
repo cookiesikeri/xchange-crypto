@@ -47,7 +47,7 @@ use Illuminate\Validation\Validator as ValidationValidator;
 
 class UserController extends Controller
 {
-    use UploadImage, SendSms, ManagesResponse, ManagesUsers;
+    use ManagesResponse, ManagesUsers;
 
     protected $jwt;
     protected $utility;

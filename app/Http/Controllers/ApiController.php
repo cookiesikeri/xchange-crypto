@@ -2,11 +2,16 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\BinanceWallet;
+use App\Models\BitconWallet;
 use App\Models\ContactMessage;
 use App\Models\Country;
+use App\Models\EtherumWallet;
 use App\Models\FAQ;
 use App\Models\GeneralDetail;
 use App\Models\LGA;
+use App\Models\LitecoinWallet;
+use App\Models\PolygonWallet;
 use App\Models\SecretQuestions;
 use App\Models\Settings;
 use App\Models\SiteSetting;
@@ -219,6 +224,81 @@ class ApiController extends Controller
             return $error;
         } else {
             return response()->json([ 'status' => true, 'message' => 'data fetched Successfully', 'response' => $response ], 200);
+        }
+    }
+
+    public function BTCwallets()
+    {
+        try {
+
+            $data = BitconWallet::orderBy('question')->paginate(50);
+            $message = 'data successfully fetched';
+
+            return $this->sendResponse($data,$message);
+        }catch (ModelNotFoundException $e) {
+            return response()->json(['message' => $e->getMessage()],404);
+        } catch(\Exception $e) {
+            return response()->json(['message' => $e->getMessage()],500);
+        }
+    }
+
+    public function ETHwallets()
+    {
+        try {
+
+            $data = EtherumWallet::orderBy('question')->paginate(50);
+            $message = 'data successfully fetched';
+
+            return $this->sendResponse($data,$message);
+        }catch (ModelNotFoundException $e) {
+            return response()->json(['message' => $e->getMessage()],404);
+        } catch(\Exception $e) {
+            return response()->json(['message' => $e->getMessage()],500);
+        }
+    }
+
+    public function POLYGONwallets()
+    {
+        try {
+
+            $data = PolygonWallet::orderBy('question')->paginate(50);
+            $message = 'data successfully fetched';
+
+            return $this->sendResponse($data,$message);
+        }catch (ModelNotFoundException $e) {
+            return response()->json(['message' => $e->getMessage()],404);
+        } catch(\Exception $e) {
+            return response()->json(['message' => $e->getMessage()],500);
+        }
+    }
+
+    public function BNBwallets()
+    {
+        try {
+
+            $data = BinanceWallet::orderBy('question')->paginate(50);
+            $message = 'data successfully fetched';
+
+            return $this->sendResponse($data,$message);
+        }catch (ModelNotFoundException $e) {
+            return response()->json(['message' => $e->getMessage()],404);
+        } catch(\Exception $e) {
+            return response()->json(['message' => $e->getMessage()],500);
+        }
+    }
+
+    public function LTHwallets()
+    {
+        try {
+
+            $data = LitecoinWallet::orderBy('question')->paginate(50);
+            $message = 'data successfully fetched';
+
+            return $this->sendResponse($data,$message);
+        }catch (ModelNotFoundException $e) {
+            return response()->json(['message' => $e->getMessage()],404);
+        } catch(\Exception $e) {
+            return response()->json(['message' => $e->getMessage()],500);
         }
     }
 }

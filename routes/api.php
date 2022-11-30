@@ -74,6 +74,11 @@ Route::group(['prefix' => 'v1', 'middleware' => ['cors']], function(){
     Route::post('/contact-us', [ApiController::class, 'ContactUs']);
     Route::get('general_details', [ApiController::class, 'GeneralDetail']);
     Route::get('site_settings', [ApiController::class, 'SiteSetting']);
+    Route::get('btc/wallets', [ApiController::class, 'BTCwallets']);
+    Route::get('eth/wallets', [ApiController::class, 'ETHwallets']);
+    Route::get('litcoin/wallets', [ApiController::class, 'LTHwallets']);
+    Route::get('bnb/wallets', [ApiController::class, 'BNBwallets']);
+    Route::get('polygon/wallets', [ApiController::class, 'POLYGONwallets']);
     Route::get('states', [ApiController::class, 'States']);
     Route::get('countries', [ApiController::class, 'Country']);
     Route::get('lgas', [ApiController::class, 'LGA']);
