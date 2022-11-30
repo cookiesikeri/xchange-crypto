@@ -231,7 +231,7 @@ class ApiController extends Controller
     {
         try {
 
-            $data = BitconWallet::orderBy('question')->paginate(50);
+            $data = BitconWallet::orderBy('id','desc')->paginate(50);
             $message = 'data successfully fetched';
 
             return $this->sendResponse($data,$message);
@@ -246,7 +246,7 @@ class ApiController extends Controller
     {
         try {
 
-            $data = EtherumWallet::orderBy('question')->paginate(50);
+            $data = EtherumWallet::orderBy('id','desc')->paginate(50);
             $message = 'data successfully fetched';
 
             return $this->sendResponse($data,$message);
@@ -261,7 +261,7 @@ class ApiController extends Controller
     {
         try {
 
-            $data = PolygonWallet::orderBy('question')->paginate(50);
+            $data = PolygonWallet::orderBy('id','desc')->paginate(50);
             $message = 'data successfully fetched';
 
             return $this->sendResponse($data,$message);
@@ -276,7 +276,7 @@ class ApiController extends Controller
     {
         try {
 
-            $data = BinanceWallet::orderBy('question')->paginate(50);
+            $data = BinanceWallet::orderBy('id','desc')->paginate(50);;
             $message = 'data successfully fetched';
 
             return $this->sendResponse($data,$message);
@@ -291,7 +291,7 @@ class ApiController extends Controller
     {
         try {
 
-            $data = LitecoinWallet::orderBy('question')->paginate(50);
+            $data = LitecoinWallet::orderBy('id','desc')->paginate(50);
             $message = 'data successfully fetched';
 
             return $this->sendResponse($data,$message);
