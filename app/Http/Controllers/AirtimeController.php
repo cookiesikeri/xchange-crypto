@@ -19,6 +19,7 @@ use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Http;
 use App\Http\Controllers\Apis\UtilityController;
+use App\Mail\AirtimeVendMail;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Support\Facades\Log;
@@ -45,6 +46,9 @@ class AirtimeController extends Controller
 
     public function GetAirtime(Request $request)
     {
+
+        $user = Auth::user();
+
 
         $ref = '51' . substr(uniqid(mt_rand(), true), 0, 8);
 
@@ -120,9 +124,6 @@ class AirtimeController extends Controller
                 $wallet = Wallet::on('mysql::write')->where('user_id',$user->id)->first();
                 $wallet->update(['balance' => $new_balance]);
 
-                // $serviceName = app('App\Http\Controllers\Apis\UtilityController')->resolveServiceNameFromID($airtimePurchase->service_id);
-                // $description = $serviceName . ' N ' . intval($airtimePurchase->amount) . ' to ' . $airtimePurchase->phone;
-
                 WalletTransaction::on('mysql::write')->create([
                     'wallet_id'=>$user->wallet->id,
                     'type'=>'Debit',
@@ -148,6 +149,8 @@ class AirtimeController extends Controller
                 ])->get(env('VTU_DOT_NG_BASE_URL')."airtime?username=$username&password=$password&phone=$phone&network_id=$network_id&amount=$amount");
 
                 $this->saveUserActivity(ActivityType::AIRTIME, '', $user->id);
+
+                // Mail::to($request->email)->send(new \App\Mail\AirtimeVendMail($airtimePurchase));
 
             return response()->json([
                 "message" => "Airtime successfully delivered",

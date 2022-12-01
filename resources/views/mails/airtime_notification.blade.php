@@ -35,7 +35,7 @@
                                 <em id="receipt_date">Date: </em>
                             </p>
                             <p>
-                                <em id="receipt_trans_id">Transaction ID #: {{$airtimeTransaction->transaction_id}}</em>
+                                <em id="receipt_trans_id">Transaction ID #: {{$airtimePurchase->transaction_id}}</em>
                             </p>
                         </div>
                     </div>
@@ -53,32 +53,28 @@
                                     <td class="col-md-9">
                                         <b id="receipt_service_id">
                                             Airtime Purchase
-                                            @if($airtimeTransaction->service_id == 1)
+                                            @if($airtimePurchase->service_id == 1)
                                             MTN
-                                            @elseif($airtimeTransaction->service_id == 2)
+                                            @elseif($airtimePurchase->service_id == 2)
                                             Glo
-                                            @elseif($airtimeTransaction->service_id == 3)
+                                            @elseif($airtimePurchase->service_id == 3)
                                             Airtel
                                             @else
                                             9Mobile
                                             @endif
                                         </b>
                                     </td>
-                                    <td class="col-md-1 text-center" id="receipt_amount">₦{{ $airtimeTransaction->amount }}</td>
-                                    @if ($is_vendor)
-                                        <td class="col-md-1 text-center" id="receipt_total">₦{{ $airtimeTransaction->amount }}</td>
-                                    @else
-                                        <td class="col-md-1 text-center" id="receipt_total">₦{{$airtimeTransaction->amount_paid}}</td>
-                                    @endif
+                                    <td class="col-md-1 text-center" id="receipt_amount">₦{{ $airtimePurchase->amount }}</td>
+
+                                        <td class="col-md-1 text-center" id="receipt_total">₦{{$airtimePurchase->amount_paid}}</td>
+
                                 </tr>
                                 <tr>
                                     <td>   </td>
                                     <td class="text-right"><h4><strong>Total: </strong></h4></td>
-                                    @if ($is_vendor)
-                                        <td class="text-center text-danger"><h4><strong id='receipt_total_purchase'>₦{{ $airtimeTransaction->amount }}</strong></h4></td>
-                                    @else
-                                        <td class="text-center text-danger"><h4><strong id='receipt_total_purchase'>₦{{ $airtimeTransaction->amount }}</strong></h4></td>
-                                    @endif
+
+                                        <td class="text-center text-danger"><h4><strong id='receipt_total_purchase'>₦{{ $airtimePurchase->amount }}</strong></h4></td>
+
                                 </tr>
                             </tbody>
                         </table>

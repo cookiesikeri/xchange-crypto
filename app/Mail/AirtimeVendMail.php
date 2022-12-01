@@ -16,15 +16,10 @@ class AirtimeVendMail extends Mailable
      *
      * @return void
      */
-    public $airtimeTransaction;
-    public $is_vendor = false;
-    public function __construct(\App\Models\AirtimeTransaction $airtimeTransaction)
+    public $airtimePurchase;
+    public function __construct(\App\Models\AirtimeTransaction $airtimePurchase)
     {
-        /* $this->airtimeTransaction = $airtimeTransaction;
-        $vendor = \App\Models\Vendor::where('user_id', $this->airtimeTransaction->user_id)->first();
-        if (!empty($vendor)) {
-            $this->is_vendor = true;
-        } */
+        $this->airtimePurchase = $airtimePurchase;
     }
 
     /**

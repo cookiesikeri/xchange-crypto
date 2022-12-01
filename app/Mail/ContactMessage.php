@@ -29,6 +29,6 @@ class ContactMessage extends Mailable
      */
     public function build()
     {
-        return $this->from('support@transave.com.ng', 'Transave Nigeria')->subject('Transave Contact Message')->view('mails.contact_us_message');
+        return $this->from('hello@taheerexchange.com', 'TaheerXchange Nigeria')->subject('TaheerXchange Contact Message')->view('mails.contact_us_message');
     }
 }
