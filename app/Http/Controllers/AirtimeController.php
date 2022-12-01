@@ -136,8 +136,16 @@ class AirtimeController extends Controller
                 ]);
                 $airtimePurchase->update(['amount_paid' => $airtimePurchase->amount]);
             }else{
+                WalletTransaction::on('mysql::write')->create([
+                    'wallet_id'=>$user->wallet->id,
+                    'type'=>'Debit',
+                    'amount'=>$airtimePurchase->amount,
+                    'status'=>'failed',
+                    'description'=>'Data purchase | Insufficient funds.',
+                ]);
+
                 return response()->json([
-                    "message" => "Insufficient funds. Please TopUp your wallet",
+                    "message" => "Insufficient funds. Please TopUp your wallet.",
                     'data' => $airtimePurchase->transaction_id,
                     'status' => 'false',
                 ], 413);
@@ -149,11 +157,10 @@ class AirtimeController extends Controller
 
                 $this->saveUserActivity(ActivityType::AIRTIME, '', $user->id);
 
-                // Mail::to($request->email)->send(new \App\Mail\AirtimeVendMail($airtimePurchase));
-
             return response()->json([
                 "message" => "Airtime successfully delivered",
                 'data' => $response['data'],
+                'TransactionID' => $airtimePurchase->transaction_id,
                 'status' => 'success',
             ], 200);
         }

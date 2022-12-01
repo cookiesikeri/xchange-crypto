@@ -9,7 +9,7 @@ class DataBundle extends Model
 {
     use UsesUuid;
     protected $fillable = [
-        'name', 'amount', 'service_id', 'code'
+        'name', 'amount'
     ];
 
     protected $with = [

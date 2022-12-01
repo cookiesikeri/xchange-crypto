@@ -19,6 +19,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Http;
 use App\Http\Controllers\Apis\UtilityController;
 use App\Mail\DataVendMail;
+use App\Models\DataBundle;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Support\Facades\Log;
@@ -123,9 +124,6 @@ class DataController extends Controller
                 $wallet = Wallet::on('mysql::write')->where('user_id',$user->id)->first();
                 $wallet->update(['balance' => $new_balance]);
 
-                // $serviceName = app('App\Http\Controllers\Apis\UtilityController')->resolveServiceNameFromID($dataPurchase->service_id);
-                // $description = $serviceName . ' N ' . $dataPurchase->amount . ' to ' . $dataPurchase->phone;
-
                 WalletTransaction::on('mysql::write')->create([
                     'wallet_id'=>$user->wallet->id,
                     'type'=>'Debit',
@@ -152,13 +150,32 @@ class DataController extends Controller
                     'type'=>'Debit',
                     'amount'=>$dataPurchase->amount,
                     'status'=>'failed',
-                    'description'=>'Data purchase',
+                    'description'=>'Data purchase | Insufficient funds.',
                 ]);
-                $resp['msg'] = 'Insufficient funds. Please TopUp your wallet.';
-                $resp['tNo'] = $dataPurchase->transaction_id;
+                return response()->json([
+                    "message" => "Insufficient funds. Please TopUp your wallet.",
+                    'data' => $dataPurchase->transaction_id,
+                    'status' => 'false',
+                ], 413);
             }
 
         }
+
+
+    public function DataBundles()
+    {
+        try {
+
+            $data = DataBundle::orderBy('id','desc')->paginate(50);
+            $message = 'data successfully fetched';
+
+            return $this->sendResponse($data,$message);
+        }catch (ModelNotFoundException $e) {
+            return response()->json(['message' => $e->getMessage()],404);
+        } catch(\Exception $e) {
+            return response()->json(['message' => $e->getMessage()],500);
+        }
+    }
 
 
 

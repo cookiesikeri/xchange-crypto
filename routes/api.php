@@ -209,10 +209,15 @@ Route::group(['prefix' => 'v1', 'middleware' => ['cors']], function(){
 
 
 
-    Route::get('tv/verify/customer', [UtilityController::class, 'VerifyCustomer']);
+    //airtime
     Route::post('get/airtime', [AirtimeController::class, 'GetAirtime']);
+
+    //data
+    Route::get('data/bundles', [DataController::class, 'DataBundles']);
     Route::post('get/data', [DataController::class, 'GetData']);
 
+   //utilitty
+   Route::get('get/networks', [UtilityController::class, 'Networks']);
 
     Route::get('get_user_btc_address/{user_id}', [ApisUserController::class, 'get_user_btc_address'])->name('get_user_btc_address');
 
