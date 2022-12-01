@@ -44,6 +44,7 @@ class AirtimeController extends Controller
     public function GetAirtime(Request $request)
     {
 
+        $ref = '51' . substr(uniqid(mt_rand(), true), 0, 8);
 
             $username = env('VTU_DOT_NG_USERNAME');
             $password = env('VTU_DOT_NG_PASSWORD');
@@ -85,7 +86,7 @@ class AirtimeController extends Controller
             $data['payment_method'] = 'WALLET';
             $data['platform']       = 'MOBILE';
             $data['user_id']        = $request->gLocatorID;
-            $data['payment_ref']       = 'NILL';
+            $data['payment_ref']       = 'TXC_' . $ref;
 
 
             $userID = $this->utility->getUserByID(Auth::id());
@@ -128,7 +129,7 @@ class AirtimeController extends Controller
                     'bank_name'=>'TaheerXchange',
                     'transfer'=>false,
                     'transaction_type'=>'wallet',
-                    'transaction_ref'=>'wallet',
+                    'transaction_ref'=>'TXC_' . $ref,
                     'status'=>'success',
                 ]);
                 $airtimePurchase->update(['amount_paid' => $airtimePurchase->amount]);

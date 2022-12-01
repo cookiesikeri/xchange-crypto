@@ -35,7 +35,7 @@ class UserRepository implements UserInterface {
     }
 
     public function get_user_btc_address($user_id) {
-        $btc_address = 0.00;
+        $btc_address = '';
         $user = $this->is_user($user_id);
         if(!is_int($user)) {
             $btc_address = $user->bitcoin_wallet_pass->address;
