@@ -147,7 +147,7 @@ class AirtimeController extends Controller
                     'Content-Type' => "application/json"
                 ])->get(env('VTU_DOT_NG_BASE_URL')."airtime?username=$username&password=$password&phone=$phone&network_id=$network_id&amount=$amount");
 
-                $this->saveUserActivity(ActivityType::CREATE_ETH_ADDRESS, '', $user->id);
+                $this->saveUserActivity(ActivityType::AIRTIME, '', $user->id);
 
             return response()->json([
                 "message" => "Airtime successfully delivered",

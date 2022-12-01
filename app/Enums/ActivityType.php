@@ -14,11 +14,9 @@ final class ActivityType extends Enum
     const WALLET_TRANSFER =   'Wallet Transfer';
     const LOGIN =   'Auth-login';
     const REGISTER =   'Auth-register';
-    const AIRTIME = 'Airtime';
     const BTC = 'Buy Bitcoin';
     const FUND_WALLET = 'Fund Wallet';
     const CARD_TRANSFER = 'Card Transfer';
-    const DATA = 'Data';
     const UPDATEPROFILE = 'Update Profile';
     const UPDATEPIN = 'Update User Pin';
     const CREATE_DOGECOIN_ADDRESS = 'Create Dogecoin Address';
@@ -54,5 +52,9 @@ final class ActivityType extends Enum
     const BINANCEAddressPrivateKey = 'Create Binance PrivateKey';
 
     const CREATE_VIRTUAL_ACCOUNT = 'Create Virtual Account';
+    const AIRTIME = 'Airtime puchase';
+    const DATA = 'Data puchase';
+    const ELECTRICITY = 'Power Unit puchase';
+    const TV = 'TV decorder puchase';
 
 }

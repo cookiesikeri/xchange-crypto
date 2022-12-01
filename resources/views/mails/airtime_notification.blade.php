@@ -23,11 +23,11 @@
                     <div class="row">
                         <div class="col-xs-6 col-sm-6 col-md-6" style="visibility:hidden">
                             <address>
-                                <strong>Expresstopup Nigeria</strong>
+                                <strong>TaheerXchange Nigeria</strong>
                                 <br>
-                                    Email: support@expresstopup.ng
+                                    Email: hello@taheerexchange.com
                                 <br>
-                                <abbr title="Phone">Tel:</abbr> 081-2039-9379
+                                <abbr title="Phone">Tel:</abbr> 0813-234-4213
                             </address>
                         </div>
                         <div class="col-xs-6 col-sm-6 col-md-6 text-right">
@@ -94,7 +94,7 @@
 
         <div class="footer">
             <div class="container text-center">
-                expresstopup &copy; {{ date('Y') }}
+                TaheerXchange &copy; {{ date('Y') }}
             </div>
         </div>
     </div>
