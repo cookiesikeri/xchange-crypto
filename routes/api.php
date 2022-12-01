@@ -15,6 +15,7 @@ use App\Http\Controllers\DogecoinController;
 use App\Http\Controllers\EtherumController;
 use App\Http\Controllers\LitecoinController;
 use App\Http\Controllers\PolygonController;
+use App\Http\Controllers\TVController;
 use App\Http\Controllers\VirtualAccountController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -216,8 +217,13 @@ Route::group(['prefix' => 'v1', 'middleware' => ['cors']], function(){
     Route::get('data/bundles', [DataController::class, 'DataBundles']);
     Route::post('get/data', [DataController::class, 'GetData']);
 
+
+    //tv
+    Route::get('tv/customer/details', [TVController::class, 'getCardInfo']);
+
    //utilitty
    Route::get('get/networks', [UtilityController::class, 'Networks']);
+   Route::get('get-service/{id}', [UtilityController::class, 'getService']);
 
     Route::get('get_user_btc_address/{user_id}', [ApisUserController::class, 'get_user_btc_address'])->name('get_user_btc_address');
 

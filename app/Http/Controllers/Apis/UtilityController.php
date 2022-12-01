@@ -195,6 +195,22 @@ class UtilityController extends Controller
         }
     }
 
+    public function resolveServiceNameFromID($serviceID)
+    {
+        $service = \App\Models\Service::on('mysql::read')->find($serviceID);
+
+        if (!$service) {
+            return "s404";
+        }
+
+        return $service;
+    }
+
+    public function getService($typeID)
+    {
+        return response()->json(\App\Models\Service::on('mysql::read')->where('service_type_id', $typeID)->get());
+    }
+
 
 
 }
