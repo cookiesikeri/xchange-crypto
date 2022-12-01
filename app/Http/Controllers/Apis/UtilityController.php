@@ -153,44 +153,6 @@ class UtilityController extends Controller
         return $random_number;
     }
 
-    public function VerifyCustomer($username, $password, $phone, $service_id, $smartcard_number){
-
-        $url = "https://vtu.ng/wp-json/api/v1/tv";
-        $fields = [
-            'phone'=>$phone,
-            'username'=>$username,
-            'password'=>$password,
-            'service_id'=>$service_id,
-            'smartcard_number'=>$smartcard_number,
-            'smartcard_number'=>$smartcard_number,
-        ];
-        $fields_string = http_build_query($fields);
-        //open connection
-        $ch = curl_init();
-
-        //set the url, number of POST vars, POST data
-        curl_setopt($ch,CURLOPT_URL, $url);
-        curl_setopt($ch,CURLOPT_POST, true);
-        curl_setopt($ch,CURLOPT_POSTFIELDS, $fields_string);
-        curl_setopt($ch, CURLOPT_HTTPHEADER, array(
-            "Content-Type: application/json"
-        ));
-
-        //So that curl_exec returns the contents of the cURL; rather than echoing it
-        curl_setopt($ch,CURLOPT_RETURNTRANSFER, true);
-
-        //execute post
-        $result = curl_exec($ch);
-
-        if(curl_errno($ch)){
-            return array('message'=>curl_error($ch), 'error'=>true);
-        }
-
-        $res = json_decode($result, true);
-
-        curl_close($ch);
-        return array('error'=>false, 'data'=>$res['data']);
-    }
 
     public function getUserByID($user_id)
     {
@@ -202,6 +164,16 @@ class UtilityController extends Controller
 
         return -1;
     }
+
+    public function getTodaysPendingTransactionsCount($userID, $serviceID)
+    {
+        $pendingTransactions = $this->getTodaysPendingTransactions($userID, $serviceID);
+        if ($pendingTransactions == "s404" || $pendingTransactions == "st404") {
+            return $pendingTransactions;
+        }
+        return count($pendingTransactions->toArray());
+    }
+
 
 
 }

@@ -2,7 +2,7 @@
 
 
 use App\Http\Controllers\AirtimeController;
-use App\Http\Controllers\Apis\DataController;
+use App\Http\Controllers\DataController;
 use App\Http\Controllers\Apis\UtilityController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\PasswordResetRequestController;
@@ -210,7 +210,8 @@ Route::group(['prefix' => 'v1', 'middleware' => ['cors']], function(){
 
 
     Route::get('tv/verify/customer', [UtilityController::class, 'VerifyCustomer']);
-    Route::get('get/airtime', [AirtimeController::class, 'GetAirtime']);
+    Route::post('get/airtime', [AirtimeController::class, 'GetAirtime']);
+    Route::post('get/data', [DataController::class, 'GetData']);
 
 
     Route::get('get_user_btc_address/{user_id}', [ApisUserController::class, 'get_user_btc_address'])->name('get_user_btc_address');

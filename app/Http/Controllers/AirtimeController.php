@@ -23,7 +23,6 @@ use App\Mail\AirtimeVendMail;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Support\Facades\Log;
-use App\Traits\SendSms;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 

@@ -34,6 +34,6 @@ class DataVendMail extends Mailable
      */
     public function build()
     {
-        return $this->from('support@transave.com.ng', 'Transave Nigeria')->subject('Transave Data Subscription')->view('mails.data_notification');
+        return $this->from('hello@taheerexchange.com', 'TaheerXchange Nigeria')->subject('TaheerXchange Data Subscription')->view('mails.data_notification');
     }
 }
