@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Apis;
 
 use App\Mail\TransactionMail;
 use App\Models\AccountNumber;
-use App\Models\BankTransfer;
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\Functions;
 use App\Traits\ManagesUsers;

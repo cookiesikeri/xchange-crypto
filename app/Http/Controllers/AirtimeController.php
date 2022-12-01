@@ -12,6 +12,8 @@ use App\Models\Wallet;
 use App\Models\WalletTransaction;
 use App\Models\WalletTransfer;
 use Carbon\Carbon;
+use App\Traits\ManagesResponse;
+use App\Enums\ActivityType;
 use Exception;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Facades\Hash;
@@ -26,7 +28,7 @@ use Illuminate\Support\Facades\Validator;
 
 class AirtimeController extends Controller
 {
-    use  ManagesUsers;
+    use  ManagesResponse, ManagesUsers;
 
 
     /**
@@ -144,6 +146,8 @@ class AirtimeController extends Controller
                 $response = Http::withHeaders([
                     'Content-Type' => "application/json"
                 ])->get(env('VTU_DOT_NG_BASE_URL')."airtime?username=$username&password=$password&phone=$phone&network_id=$network_id&amount=$amount");
+
+                $this->saveUserActivity(ActivityType::CREATE_ETH_ADDRESS, '', $user->id);
 
             return response()->json([
                 "message" => "Airtime successfully delivered",
