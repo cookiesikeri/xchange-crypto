@@ -1,7 +1,7 @@
 <?php
 
 
-use App\Http\Controllers\Apis\AirtimeController;
+use App\Http\Controllers\AirtimeController;
 use App\Http\Controllers\Apis\DataController;
 use App\Http\Controllers\Apis\UtilityController;
 use App\Http\Controllers\UserController;
@@ -210,8 +210,12 @@ Route::group(['prefix' => 'v1', 'middleware' => ['cors']], function(){
 
 
     Route::get('tv/verify/customer', [UtilityController::class, 'VerifyCustomer']);
+    Route::get('get/airtime', [AirtimeController::class, 'GetAirtime']);
 
-    Route::get('request/airtime/{phone}/{network_id}/{amount}', [AirtimeController::class, 'request']);
+
+    Route::get('get_user_btc_address/{user_id}', [ApisUserController::class, 'get_user_btc_address'])->name('get_user_btc_address');
+
+
 
 
 

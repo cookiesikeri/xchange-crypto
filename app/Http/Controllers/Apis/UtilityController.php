@@ -192,4 +192,16 @@ class UtilityController extends Controller
         return array('error'=>false, 'data'=>$res['data']);
     }
 
+    public function getUserByID($user_id)
+    {
+        $user = \App\Models\User::on('mysql::read')->find($user_id);
+
+        if ($user && $user->count() > 0) {
+            return $user->id;
+        }
+
+        return -1;
+    }
+
+
 }

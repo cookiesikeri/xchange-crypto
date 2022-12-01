@@ -9,6 +9,7 @@ interface UserInterface {
     public function user_has_sufficient_wallet_balance($user_id, $amount);
     public function update_user_wallet_balance($user_id, $amount);
     public function debit_user_wallet($user_id, $amount);
+    public function get_user_btc_address($user_id);
     public function get_user_airtime_transactions($user_id, $paginate, $status);
     public function get_user_all_airtime_transactions($user_id, $status);
     public function get_user_data_transactions($user_id, $paginate, $status);

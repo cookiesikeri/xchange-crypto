@@ -32,13 +32,12 @@ use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Support\Facades\Log;
-use App\Traits\SendSms;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 
 class UserController extends Controller
 {
-    use SendSms, ManagesUsers;
+    use  ManagesUsers;
 
     protected $user;
     protected $utility;
@@ -484,6 +483,12 @@ class UserController extends Controller
         }catch(Exception $e){
             return response()->json(['message'=>$e->getMessage()], 420);
         }
+    }
+
+
+    public function get_user_btc_address($user_id)
+    {
+        return response()->json($this->user->get_user_btc_address($user_id));
     }
 
 

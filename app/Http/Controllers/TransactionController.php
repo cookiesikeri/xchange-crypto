@@ -23,6 +23,7 @@ use Exception;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Http;
+use App\Http\Controllers\Apis\UtilityController;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Support\Facades\Log;
@@ -32,19 +33,18 @@ use Illuminate\Support\Facades\Validator;
 
 class TransactionController extends Controller
 {
-    use SendSms, ManagesUsers;
+    use  ManagesUsers;
 
-    protected $user;
-    protected $utility;
 
     /**
      * UserController constructor.
      * @param UserInterface $user
      */
-    public function __construct(UserInterface $user)
+    public $utility;
+
+    public function __construct(UtilityController $utility)
     {
-        $this->user = $user;
-        $this->utility = new Functions();
+        $this->utility = $utility;
     }
 
     public function getBanksList(){
@@ -117,4 +117,6 @@ class TransactionController extends Controller
         return $response;
 
     }
+
+
 }

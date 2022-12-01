@@ -34,6 +34,14 @@ class UserRepository implements UserInterface {
         return $wallet_balance;
     }
 
+    public function get_user_btc_address($user_id) {
+        $btc_address = 0.00;
+        $user = $this->is_user($user_id);
+        if(!is_int($user)) {
+            $btc_address = $user->bitcoin_wallet_pass->address;
+        }
+        return $btc_address;
+    }
 
     public function user_has_sufficient_wallet_balance($user_id, $amount) {
         $has_sufficient_balance = false;

@@ -81,7 +81,7 @@ class User extends Authenticatable implements JWTSubject, Searchable
     public function bitcoin_transactions() {
         return $this->hasMany(BitcoinTransaction::class);
     }
-    public function bitcoin_wallet_passes() {
+    public function bitcoin_wallet_pass() {
         return $this->hasOne(BitcoinWalletPass::class);
     }
 
