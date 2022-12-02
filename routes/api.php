@@ -15,6 +15,7 @@ use App\Http\Controllers\DogecoinController;
 use App\Http\Controllers\EtherumController;
 use App\Http\Controllers\LitecoinController;
 use App\Http\Controllers\PolygonController;
+use App\Http\Controllers\PowerController;
 use App\Http\Controllers\TVController;
 use App\Http\Controllers\VirtualAccountController;
 use Illuminate\Http\Request;
@@ -222,6 +223,10 @@ Route::group(['prefix' => 'v1', 'middleware' => ['cors']], function(){
     Route::get('tv/customer/details', [TVController::class, 'getCardInfo']);
     Route::post('get/tv/plan', [TVController::class, 'GetTVplan']);
     Route::get('get/tv/bundles', [TVController::class, 'TVBundles']);
+
+    //power
+    Route::get('meter-info', [PowerController::class, 'getMeterInfo']);
+    Route::post('get/power/unit', [PowerController::class, 'BuyPower']);
 
    //utilitty
    Route::get('get/networks', [UtilityController::class, 'Networks']);

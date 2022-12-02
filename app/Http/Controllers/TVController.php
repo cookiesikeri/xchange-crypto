@@ -25,6 +25,7 @@ use Illuminate\Validation\ValidationException;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
+use Tymon\JWTAuth\Facades\JWTAuth;
 
 class TVController extends Controller
 {
@@ -35,11 +36,13 @@ class TVController extends Controller
      * UserController constructor.
      * @param UserInterface $user
      */
+    protected $jwt;
     public $utility;
 
-    public function __construct(UtilityController $utility)
+    public function __construct(UtilityController $utility, JWTAuth $jwt)
     {
         $this->utility = $utility;
+        $this->jwt = $jwt;
     }
 
     public function getTVInfo($providerID) {
