@@ -9,11 +9,7 @@ class TVBundle extends Model
 {
     use UsesUuid;
     protected $table = "tv_bundles";
-    protected $fillable = [
-        // this is why you don't code when you're loosing it. Can't believe I actually wrote this next line :-(
-        // 'name'  =>  'amount'
-        'name', 'amount', 'code', 'available', 'allowance', 'service_id'
-    ];
+    protected $guarded = [];
     CONST CREATED_AT = 'date_created';
     CONST UPDATED_AT = 'date_modified';
 

@@ -124,13 +124,6 @@ class DataController extends Controller
                 $wallet = Wallet::on('mysql::write')->where('user_id',$user->id)->first();
                 $wallet->update(['balance' => $new_balance]);
 
-                WalletTransaction::on('mysql::write')->create([
-                    'wallet_id'=>$user->wallet->id,
-                    'type'=>'Debit',
-                    'amount'=>$dataPurchase->amount,
-                    'status'=>'success',
-                    'description'=>'Data purchase',
-                ]);
                 $dataPurchase->update(['amount_paid' => $dataPurchase->amount]);
 
                 $response = Http::withHeaders([
@@ -138,6 +131,17 @@ class DataController extends Controller
                 ])->get(env('VTU_DOT_NG_BASE_URL')."data?username=$username&password=$password&phone=$phone&network_id=$network_id&amount=$amount&variation_id=$variation_id");
 
                 $this->saveUserActivity(ActivityType::DATA, '', $user->id);
+
+                WalletTransaction::on('mysql::write')->create([
+                    'wallet_id'=>$user->wallet->id,
+                    'type'=>'Debit',
+                    'amount'=>$dataPurchase->amount,
+                    'status'=>'success',
+                    'reference'=>$dataPurchase->transaction_id,
+                    'transaction_ref'=>'TXC_' . $ref,
+                    'description'=>'Data purchase',
+                ]);
+
 
             return response()->json([
                 "message" => "You should receive your data bundle shortly with a notification to your e-mail and phone number",
@@ -149,10 +153,11 @@ class DataController extends Controller
                     'wallet_id'=>$user->wallet->id,
                     'type'=>'Debit',
                     'amount'=>$dataPurchase->amount,
-                    'status'=>'failed',
+                    'status'=>false,
+                    'reference'=>$dataPurchase->transaction_id,
                     'description'=>'Data purchase | Insufficient funds.',
                 ]);
-                return response()->json([
+                  return response()->json([
                     "message" => "Insufficient funds. Please TopUp your wallet.",
                     'data' => $dataPurchase->transaction_id,
                     'status' => 'false',

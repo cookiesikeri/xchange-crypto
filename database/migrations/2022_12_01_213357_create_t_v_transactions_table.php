@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateTvTransactionsTable extends Migration
+class CreateTVTransactionsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,7 +13,7 @@ class CreateTvTransactionsTable extends Migration
      */
     public function up()
     {
-        Schema::create('tv_transactions', function (Blueprint $table) {
+        Schema::create('t_v_transactions', function (Blueprint $table) {
             $table->uuid('id')->primary();
             $table->foreignUuid('transaction_id');
             $table->string('status');
@@ -45,6 +45,6 @@ class CreateTvTransactionsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('tv_transactions');
+        Schema::dropIfExists('t_v_transactions');
     }
 }

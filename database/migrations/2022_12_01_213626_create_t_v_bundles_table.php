@@ -2,10 +2,10 @@
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\DB;
 
-class CreateTvBundlesTable extends Migration
+class CreateTVBundlesTable extends Migration
 {
     /**
      * Run the migrations.
@@ -36,7 +36,7 @@ class CreateTvBundlesTable extends Migration
                 'created_at' => now(),
                 'updated_at' => now(),
                 ],
-                
+
                 [
                 'name' => 'DStv Compact French Touch',
                 'amount' => 10300.00,
@@ -47,7 +47,7 @@ class CreateTvBundlesTable extends Migration
                 'created_at' => now(),
                 'updated_at' => now(),
                 ],
-                
+
                 [
                 'name' => 'DStv Compact Asian Add-on',
                 'amount' => 14200.00,
@@ -58,7 +58,7 @@ class CreateTvBundlesTable extends Migration
                 'created_at' => now(),
                 'updated_at' => now(),
                 ],
-                
+
                 [
                 'name' => 'DStv Compact HDPVR/Xtraview',
                 'amount' => 10500.00,
@@ -69,7 +69,7 @@ class CreateTvBundlesTable extends Migration
                 'created_at' => now(),
                 'updated_at' => now(),
                 ],
-                
+
                 [
                 'name' => 'DStv Compact Plus French Plus (For Premium, Compact+ and Compact only',
                 'amount' => 20600.00,
@@ -80,7 +80,7 @@ class CreateTvBundlesTable extends Migration
                 'created_at' => now(),
                 'updated_at' => now(),
                 ],
-                
+
                 [
                 'name' => 'DStv Compact Plus French Touch',
                 'amount' => 14800.00,
@@ -91,7 +91,7 @@ class CreateTvBundlesTable extends Migration
                 'created_at' => now(),
                 'updated_at' => now(),
                 ],
-                
+
                 [
                 'name' => 'DStv Compact Plus Asian Add-on',
                 'amount' => 18700.00,
@@ -102,8 +102,8 @@ class CreateTvBundlesTable extends Migration
                 'created_at' => now(),
                 'updated_at' => now(),
                 ],
-                
-                
+
+
                 [
                 'name' => 'DStv Compact Plus HDPVR/XtraView',
                 'amount' => 15000.00,
@@ -114,7 +114,7 @@ class CreateTvBundlesTable extends Migration
                 'created_at' => now(),
                 'updated_at' => now(),
                 ],
-                
+
                 [
                 'name' => 'DStv Premium French Plus Extraview',
                 'amount' => 29100.00,
@@ -125,7 +125,7 @@ class CreateTvBundlesTable extends Migration
                 'created_at' => now(),
                 'updated_at' => now(),
                 ],
-                
+
                 [
                 'name' => 'DStv Premium french Touch',
                 'amount' => 20800.00,
@@ -136,7 +136,7 @@ class CreateTvBundlesTable extends Migration
                 'created_at' => now(),
                 'updated_at' => now(),
                 ],
-                
+
                 [
                 'name' => 'DStv Premium Asian Add-on',
                 'amount' => 20600.00,
@@ -147,8 +147,8 @@ class CreateTvBundlesTable extends Migration
                 'created_at' => now(),
                 'updated_at' => now(),
                 ],
-                
-                
+
+
                 [
                 'name' => 'DStv Premium HDPVR/XtraView',
                 'amount' => 21000.00,
@@ -159,7 +159,7 @@ class CreateTvBundlesTable extends Migration
                 'created_at' => now(),
                 'updated_at' => now(),
                 ],
-                
+
                 [
                 'name' => 'DStv Premium Asia HDPVR/XtraView',
                 'amount' => 23100.00,
@@ -170,7 +170,7 @@ class CreateTvBundlesTable extends Migration
                 'created_at' => now(),
                 'updated_at' => now(),
                 ],
-                
+
                 [
                 'name' => 'Asian Bouquet HDPVR/Xtraview',
                 'amount' => 8800.00,
@@ -181,8 +181,8 @@ class CreateTvBundlesTable extends Migration
                 'created_at' => now(),
                 'updated_at' => now(),
                 ],
-                
-                
+
+
                 [
                 'name' => 'DStv Compact',
                 'amount' => 8000.00,
@@ -193,7 +193,7 @@ class CreateTvBundlesTable extends Migration
                 'created_at' => now(),
                 'updated_at' => now(),
                 ],
-                
+
                 [
                 'name' => 'DStv Compact Plus',
                 'amount' => 12500.00,
@@ -204,7 +204,7 @@ class CreateTvBundlesTable extends Migration
                 'created_at' => now(),
                 'updated_at' => now(),
                 ],
-                
+
                 [
                 'name' => 'DStv Premium',
                 'amount' => 18500.00,
@@ -215,7 +215,7 @@ class CreateTvBundlesTable extends Migration
                 'created_at' => now(),
                 'updated_at' => now(),
                 ],
-                
+
                 [
                 'name' => 'DStv Premium Asia',
                 'amount' => 20600.00,
@@ -226,8 +226,8 @@ class CreateTvBundlesTable extends Migration
                 'created_at' => now(),
                 'updated_at' => now(),
                 ],
-                
-                
+
+
                 [
                 'name' => 'Asian Bouquet Add on',
                 'amount' => 6300.00,
@@ -238,7 +238,7 @@ class CreateTvBundlesTable extends Migration
                 'created_at' => now(),
                 'updated_at' => now(),
                 ],
-                
+
                 [
                 'name' => 'DStv Yanga Bouquet E36',
                 'amount' => 2665.00,
@@ -249,7 +249,7 @@ class CreateTvBundlesTable extends Migration
                 'created_at' => now(),
                 'updated_at' => now(),
                 ],
-                
+
                 [
                 'name' => 'DStv Confam Bouquet E3',
                 'amount' => 4720.00,
@@ -260,7 +260,7 @@ class CreateTvBundlesTable extends Migration
                 'created_at' => now(),
                 'updated_at' => now(),
                 ],
-                
+
                 [
                 'name' => 'DStv Padi',
                 'amount' => 1950.00,
@@ -271,7 +271,7 @@ class CreateTvBundlesTable extends Migration
                 'created_at' => now(),
                 'updated_at' => now(),
                 ],
-                
+
                 [
                 'name' => 'DStv Great Wall Standalone Bouquet',
                 'amount' => 1385.00,
@@ -282,7 +282,7 @@ class CreateTvBundlesTable extends Migration
                 'created_at' => now(),
                 'updated_at' => now(),
                 ],
-                
+
                 [
                 'name' => 'DStv Confam + Xtraview',
                 'amount' => 7215.00,
@@ -293,7 +293,7 @@ class CreateTvBundlesTable extends Migration
                 'created_at' => now(),
                 'updated_at' => now(),
                 ],
-                
+
                 [
                 'name' => 'DStv Yanga + Xtraview',
                 'amount' => 5165.00,
@@ -304,7 +304,7 @@ class CreateTvBundlesTable extends Migration
                 'created_at' => now(),
                 'updated_at' => now(),
                 ],
-                
+
                 [
                 'name' => 'DStv Padi + Xtraview',
                 'amount' => 4450.00,
@@ -315,7 +315,7 @@ class CreateTvBundlesTable extends Migration
                 'created_at' => now(),
                 'updated_at' => now(),
                 ],
-                
+
                 [
                 'name' => 'DStv Box Office',
                 'amount' => 600.00,
@@ -326,7 +326,7 @@ class CreateTvBundlesTable extends Migration
                 'created_at' => now(),
                 'updated_at' => now(),
                 ],
-                
+
                 [
                 'name' => 'Add-on-French 11 Bouquet E36',
                 'amount' => 3360.00,
@@ -337,7 +337,7 @@ class CreateTvBundlesTable extends Migration
                 'created_at' => now(),
                 'updated_at' => now(),
                 ],
-                
+
                 [
                 'name' => 'Add-on-DStv French Touch Bouquet E36',
                 'amount' => 2400.00,
@@ -348,7 +348,7 @@ class CreateTvBundlesTable extends Migration
                 'created_at' => now(),
                 'updated_at' => now(),
                 ],
-                
+
                 [
                 'name' => 'Add-on-DStv French Touch Add-on Bouquet E36',
                 'amount' => 2400.00,
@@ -359,7 +359,7 @@ class CreateTvBundlesTable extends Migration
                 'created_at' => now(),
                 'updated_at' => now(),
                 ],
-                
+
                 [
                 'name' => 'Add-on-DStv HDPVR/Xtraview E36',
                 'amount' => 2600.00,
@@ -370,7 +370,7 @@ class CreateTvBundlesTable extends Migration
                 'created_at' => now(),
                 'updated_at' => now(),
                 ],
-                
+
                 [
                 'name' => 'French Plus Add-on',
                 'amount' => 8200.00,
@@ -381,7 +381,7 @@ class CreateTvBundlesTable extends Migration
                 'created_at' => now(),
                 'updated_at' => now(),
                 ],
-                
+
                 [
                 'name' => 'GOtv Max',
                 'amount' => 3700.00,
@@ -392,7 +392,7 @@ class CreateTvBundlesTable extends Migration
                 'created_at' => now(),
                 'updated_at' => now(),
                 ],
-                
+
                 [
                 'name' => 'GOtv Max',
                 'amount' => 3700.00,
@@ -403,7 +403,7 @@ class CreateTvBundlesTable extends Migration
                 'created_at' => now(),
                 'updated_at' => now(),
                 ],
-                
+
                 [
                 'name' => 'GOtv Jinja Bouquet',
                 'amount' => 1740.00,
@@ -414,7 +414,7 @@ class CreateTvBundlesTable extends Migration
                 'created_at' => now(),
                 'updated_at' => now(),
                 ],
-                
+
                 [
                 'name' => 'GOtv Smallie - Yearly',
                 'amount' => 6300.00,
@@ -425,7 +425,7 @@ class CreateTvBundlesTable extends Migration
                 'created_at' => now(),
                 'updated_at' => now(),
                 ],
-                
+
                 [
                 'name' => 'GOtv Smallie - quarterly',
                 'amount' => 2200.00,
@@ -436,7 +436,7 @@ class CreateTvBundlesTable extends Migration
                 'created_at' => now(),
                 'updated_at' => now(),
                 ],
-                
+
                 [
                 'name' => 'GOtv Smallie - Monthly',
                 'amount' => 900.00,
@@ -447,8 +447,8 @@ class CreateTvBundlesTable extends Migration
                 'created_at' => now(),
                 'updated_at' => now(),
                 ],
-                
-                
+
+
                 [
                 'name' => 'StarTimes Nova',
                 'amount' => 1000.00,
@@ -459,7 +459,7 @@ class CreateTvBundlesTable extends Migration
                 'created_at' => now(),
                 'updated_at' => now(),
                 ],
-                
+
                 [
                 'name' => 'StarTimes Basic',
                 'amount' => 1800.00,
@@ -470,7 +470,7 @@ class CreateTvBundlesTable extends Migration
                 'created_at' => now(),
                 'updated_at' => now(),
                 ],
-                
+
                 [
                 'name' => 'StarTimes Smart',
                 'amount' => 2300.00,
@@ -481,7 +481,7 @@ class CreateTvBundlesTable extends Migration
                 'created_at' => now(),
                 'updated_at' => now(),
                 ],
-                
+
                 [
                 'name' => 'StarTimes Classic',
                 'amount' => 2600.00,
@@ -492,7 +492,7 @@ class CreateTvBundlesTable extends Migration
                 'created_at' => now(),
                 'updated_at' => now(),
                 ],
-                
+
                 [
                 'name' => 'StarTimes Super',
                 'amount' => 4300.00,
@@ -503,11 +503,11 @@ class CreateTvBundlesTable extends Migration
                 'created_at' => now(),
                 'updated_at' => now(),
                 ],
-                
-                
-                
-                          
-            
+
+
+
+
+
         ]);
     }
 

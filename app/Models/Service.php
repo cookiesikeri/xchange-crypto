@@ -10,7 +10,7 @@ class Service extends Model
     use UsesUuid;
     protected $table = 'service';
     protected $fillable = [
-        'name', 'status', 'service_charge', 'commission', 'service_type_id', 'api_id', 'minimum_value', 'maximum_value'
+        'name', 'status', 'service_fee', 'commission', 'service_type_id', 'api_id', 'minimum_value', 'maximum_value'
     ];
 
     public function dataBundles() {

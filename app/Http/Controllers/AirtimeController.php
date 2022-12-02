@@ -123,24 +123,13 @@ class AirtimeController extends Controller
                 $wallet = Wallet::on('mysql::write')->where('user_id',$user->id)->first();
                 $wallet->update(['balance' => $new_balance]);
 
-                WalletTransaction::on('mysql::write')->create([
-                    'wallet_id'=>$user->wallet->id,
-                    'type'=>'Debit',
-                    'amount'=>$airtimePurchase->amount,
-                    'description'=>'Airtime Purchase',
-                    'bank_name'=>'TaheerXchange',
-                    'transfer'=>false,
-                    'transaction_type'=>'wallet',
-                    'transaction_ref'=>'TXC_' . $ref,
-                    'status'=>'success',
-                ]);
                 $airtimePurchase->update(['amount_paid' => $airtimePurchase->amount]);
             }else{
                 WalletTransaction::on('mysql::write')->create([
                     'wallet_id'=>$user->wallet->id,
                     'type'=>'Debit',
                     'amount'=>$airtimePurchase->amount,
-                    'status'=>'failed',
+                    'status'=>false,
                     'description'=>'Data purchase | Insufficient funds.',
                 ]);
 
@@ -156,6 +145,18 @@ class AirtimeController extends Controller
                 ])->get(env('VTU_DOT_NG_BASE_URL')."airtime?username=$username&password=$password&phone=$phone&network_id=$network_id&amount=$amount");
 
                 $this->saveUserActivity(ActivityType::AIRTIME, '', $user->id);
+
+                WalletTransaction::on('mysql::write')->create([
+                    'wallet_id'=>$user->wallet->id,
+                    'type'=>'Debit',
+                    'amount'=>$airtimePurchase->amount,
+                    'description'=>'Airtime Purchase',
+                    'bank_name'=>'TaheerXchange',
+                    'transfer'=>"success",
+                    'transaction_type'=>'wallet',
+                    'transaction_ref'=>'TXC_' . $ref,
+                    'status'=>'success',
+                ]);
 
             return response()->json([
                 "message" => "Airtime successfully delivered",

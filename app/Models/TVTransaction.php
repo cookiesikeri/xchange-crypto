@@ -11,7 +11,7 @@ class TVTransaction extends Model
     // by default status is pending = 0, active = 1, fulfilled = 2, failed = 3 and re-try = 4
     protected $table = "tv_transactions";
     protected $fillable = [
-        'transaction_id', 'status', 'smartcard_num', 'amount', 'amount_paid', 'commission', 'phone', 'email', 'payment_method', 'payment_ref', 'platform', 'customer_name', 'bundle_name', 'service_id', 'user_id', 'tv_bundles_id', 'access_token', 'transaction_trials'
+        'transaction_id', 'status', 'smartcard_number', 'amount', 'amount_paid', 'commission', 'phone', 'email', 'payment_method', 'payment_ref', 'platform', 'customer_name', 'bundle_name', 'service_id', 'user_id', 'tv_bundles_id', 'variation_id', 'transaction_trials'
     ];
     protected $with = [
         'bundle'
