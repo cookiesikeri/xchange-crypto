@@ -19,6 +19,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Http;
 use App\Http\Controllers\Apis\UtilityController;
 use App\Models\AccountNumber;
+use App\Models\TVBundle;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Support\Facades\Log;
@@ -99,7 +100,6 @@ class TVController extends Controller
         $ref = '51' . substr(uniqid(mt_rand(), true), 0, 8);
         $data = array(
             'phone'       => $user->phone,
-            'user_id'       => Auth::id(),
             'email'       => $user->email,
             'amount'      => $request->amount,
             'smartcard_number'  => $request->smartcard_number,
@@ -129,7 +129,6 @@ class TVController extends Controller
         $username = $username;
         $password = $password;
         $service_id = $request->service_id;
-        $phone = $request->phone;
         $smartcard_number =  $request->smartcard_number;
         $variation_id = $request->variation_id;
         $transaction_pin = $request->transaction_pin;
@@ -139,7 +138,7 @@ class TVController extends Controller
         $data['commission']     = 0;
         $data['payment_method'] = 'WALLET';
         $data['platform']       = 'MOBILE';
-        $data['user_id']        = $request->gLocatorID;
+        $data['user_id']        = auth()->user()->id;
         $data['payment_ref']       = 'TXC_' . $ref;
 
         $userID = $this->utility->getUserByID(Auth::id());
@@ -170,8 +169,8 @@ class TVController extends Controller
         $tvBundle = \App\Models\TVBundle::on('mysql::read')->find($tvTransaction->tv_bundles_id);
         $service = \App\Models\Service::on('mysql::read')->find($tvTransaction->service_id);
 
-        // $wallet = Wallet::on('mysql::write')->where('user_id', $user->id)->first();
-        // $acc = AccountNumber::on('mysql::read')->where([['wallet_id', $user->wallet->id], ['account_name', 'Wallet ID']])->first();
+        $wallet = Wallet::on('mysql::write')->where('user_id', $user->id)->first();
+        $acc = AccountNumber::on('mysql::read')->where([['wallet_id', $user->wallet->id], ['account_name', 'Wallet ID']])->first();
 
 
         $current_balance = floatval($user->wallet->balance);
@@ -194,7 +193,7 @@ class TVController extends Controller
                 'Content-Type' => "application/json"
             ])->get(env('VTU_DOT_NG_BASE_URL')."tv?username=$username&password=$password&phone=$user->phone&service_id=$service_id&smartcard_number=$smartcard_number&variation_id=$variation_id");
 
-            $new_balance = $current_balance - intval($tvBundle->amount + $service->service_charge);
+            $new_balance = $current_balance - intval($tvBundle->amount);
             $wallet->update(['balance' => $new_balance]);
             $resp['status'] = 2000;
             $resp['success'] = true;
@@ -238,6 +237,22 @@ class TVController extends Controller
 
         }catch(ValidationException $e){
             return response()->json(['message'=>$e->getMessage(), 'errors'=>$e->errors()]);
+        }
+    }
+
+
+    public function TVBundles()
+    {
+        try {
+
+            $data = TVBundle::orderBy('created_at','desc')->paginate(50);
+            $message = 'data successfully fetched';
+
+            return $this->sendResponse($data,$message);
+        }catch (ModelNotFoundException $e) {
+            return response()->json(['message' => $e->getMessage()],404);
+        } catch(\Exception $e) {
+            return response()->json(['message' => $e->getMessage()],500);
         }
     }
 }

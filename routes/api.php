@@ -221,6 +221,7 @@ Route::group(['prefix' => 'v1', 'middleware' => ['cors']], function(){
     //tv
     Route::get('tv/customer/details', [TVController::class, 'getCardInfo']);
     Route::post('get/tv/plan', [TVController::class, 'GetTVplan']);
+    Route::get('get/tv/bundles', [TVController::class, 'TVBundles']);
 
    //utilitty
    Route::get('get/networks', [UtilityController::class, 'Networks']);
