@@ -141,6 +141,10 @@ class DataController extends Controller
                     'transaction_ref'=>'TXC_' . $ref,
                     'description'=>'Data purchase',
                 ]);
+                $dataPurchase->update([
+                    'status'            =>  1,
+                    'amount_paid'       =>  $amount,
+                ]);
 
 
             return response()->json([

@@ -18,7 +18,9 @@ class AirtimeTransaction extends Model
     const CREATED_AT = 'date_created';
     const UPDATED_AT = 'date_modified';
 
-    protected $guarded = [];
+    protected $fillable = [
+        'transaction_id', 'status', 'phone', 'email', 'amount', 'amount_paid', 'commission', 'payment_method', 'payment_ref', 'platform', 'user_id', 'network_id'
+    ];
 
     protected $with = [
         'service'
