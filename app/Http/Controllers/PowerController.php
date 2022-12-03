@@ -189,6 +189,7 @@ class PowerController extends Controller
                         'Content-Type' => "application/json"
                     ])->get(env('VTU_DOT_NG_BASE_URL')."electricity?username=$username&password=$password&phone=$user->phone&meter_number=$meter_number&service_id=$service_id&variation_id=$variation_id&amount=$amount");
 
+
                     $new_balance = $current_balance - intval($powerTransaction->amount);
                     $wallet->update(['balance' => $new_balance]);
                     $resp['status'] = 2000;
@@ -230,6 +231,7 @@ class PowerController extends Controller
                     'data' => $response['data'],
                     'status' => 'success',
                 ], 200);
+
 
 
         }catch(ValidationException $e){
