@@ -110,11 +110,16 @@ class PowerController extends Controller
 
             $request->validate([
                 'variation_id'=>'required|string',
-                'amount'=>'required|min:600|max:200000',
+                'amount'=>'required|max:200000',
                 'user_id'=>'required|uuid',
                 'transaction_pin'=>'required|numeric',
                 'meter_number'=>'required|numeric'
             ]);
+
+            if ($request->amount <= 500) {
+
+                return response()->json(['message'=>'Amount to transfer CANNOT be less than 600'], 422);
+            }
 
             $userID = Auth::id();
             $amount         = $request->input('amount');
