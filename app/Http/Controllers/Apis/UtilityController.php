@@ -171,6 +171,24 @@ class UtilityController extends Controller
         return -1;
     }
 
+    public function getPowerServiceInfo($name)
+    {
+
+        Log::info('Service name = ' . $name);
+        $service = \App\Models\Service::on('mysql::read')->where('name', $name)->first();
+
+        if (!$service) {
+            $service = "404";
+        }
+
+        Log::info('Service = ');
+
+        Log::info($service);
+
+        return $service;
+
+    }
+
     public function getTodaysPendingTransactionsCount($userID, $serviceID)
     {
         $pendingTransactions = $this->getTodaysPendingTransactions($userID, $serviceID);
