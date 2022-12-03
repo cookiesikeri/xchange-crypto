@@ -158,6 +158,11 @@ class AirtimeController extends Controller
                     'status'=>'success',
                 ]);
 
+                $airtimePurchase->update([
+                    'status'            =>  1,
+                    'amount_paid'       =>  $amount,
+                ]);
+
             return response()->json([
                 "message" => "Airtime successfully delivered",
                 'data' => $response['data'],

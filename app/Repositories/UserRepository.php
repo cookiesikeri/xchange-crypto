@@ -35,12 +35,56 @@ class UserRepository implements UserInterface {
     }
 
     public function get_user_btc_address($user_id) {
-        $btc_address = '';
+
         $user = $this->is_user($user_id);
         if(!is_int($user)) {
-            $btc_address = $user->bitcoin_wallet_pass->address;
+            $btc_address = $user->bitcon_wallet->address;
+            $btc_key = $user->bitcon_wallet->pub_key;
         }
-        return $btc_address;
+        return response()->json([ 'status' => true, 'message' => 'data fetched successfully', 'address' => $btc_address, 'pubkey' => $btc_key ], 200);
+    }
+    public function get_user_eth_address($user_id) {
+        $user = $this->is_user($user_id);
+        if(!is_int($user)) {
+            $btc_address = $user->etherum_wallet_adress->address;
+            $btc_key = $user->etherum_wallet_adress->pub_key;
+        }
+        return response()->json([ 'status' => true, 'message' => 'data fetched successfully', 'address' => $btc_address, 'pubkey' => $btc_key ], 200);
+    }
+    public function get_user_litecoin_address($user_id) {
+
+        $user = $this->is_user($user_id);
+        if(!is_int($user)) {
+            $btc_address = $user->litecoin_wallet_address->address;
+            $btc_key = $user->litecoin_wallet_address->pub_key;
+        }
+        return response()->json([ 'status' => true, 'message' => 'data fetched successfully', 'address' => $btc_address, 'pubkey' => $btc_key ], 200);
+    }
+    public function get_user_dogecoin_address($user_id) {
+
+        $user = $this->is_user($user_id);
+        if(!is_int($user)) {
+            $btc_address = $user->doge_coin_wallet_address->address;
+            $btc_key = $user->litecoin_wallet_address->pub_key;
+        }
+        return response()->json([ 'status' => true, 'message' => 'data fetched successfully', 'address' => $btc_address, 'pubkey' => $btc_key ], 200);
+    }
+    public function get_user_polygon_address($user_id) {
+
+        $user = $this->is_user($user_id);
+        if(!is_int($user)) {
+            $btc_address = $user->polygon_wallet_address->address;
+            $btc_key = $user->litecoin_wallet_address->pub_key;
+        }
+        return response()->json([ 'status' => true, 'message' => 'data fetched successfully', 'address' => $btc_address, 'pubkey' => $btc_key ], 200);
+    }
+    public function get_user_bnb_address($user_id) {
+
+        $user = $this->is_user($user_id);
+        if(!is_int($user)) {
+            $btc_address = $user->binance_wallet->response;
+        }
+        return response()->json([ 'status' => true, 'message' => 'data fetched successfully', 'data' => $btc_address ], 200);
     }
 
     public function user_has_sufficient_wallet_balance($user_id, $amount) {

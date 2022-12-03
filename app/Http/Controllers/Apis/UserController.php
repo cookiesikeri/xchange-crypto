@@ -489,8 +489,26 @@ class UserController extends Controller
     {
         return response()->json($this->user->get_user_btc_address($user_id));
     }
-
-
+    public function get_user_eth_address($user_id)
+    {
+        return response()->json($this->user->get_user_eth_address($user_id));
+    }
+    public function get_user_litecoin_address($user_id)
+    {
+        return response()->json($this->user->get_user_litecoin_address($user_id));
+    }
+    public function get_user_polygon_address($user_id)
+    {
+        return response()->json($this->user->get_user_polygon_address($user_id));
+    }
+    public function get_user_bnb_address($user_id)
+    {
+        return response()->json($this->user->get_user_bnb_address($user_id));
+    }
+    public function get_user_dogecoin_address($user_id)
+    {
+        return response()->json($this->user->get_user_dogecoin_address($user_id));
+    }
     public function log_wallet_transaction($user, $amount_entered, $new_balance, $transaction_type, $description, $transaction_status, $transaction_reference)
     {
         return response()->json($this->user->log_wallet_transaction($user, $amount_entered, $new_balance, $transaction_type, $description, $transaction_status, $transaction_reference));

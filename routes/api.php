@@ -90,16 +90,16 @@ Route::group(['prefix' => 'v1', 'middleware' => ['cors']], function(){
     Route::get('current/exchange/rate/{currency}', [ApiController::class, 'Exchangerate']);
 
 
+    //bank
+    Route::get('banks', [TransactionController::class, 'getBanksList']);
+    Route::get('bank/resolve', [TransactionController::class, 'verifyAccountNumber']);
+    Route::post('transferrecipient', [TransactionController::class, 'TransferRecipient']);
+
     //users
     Route::post('/user/secret_question_and_answer', [ApisUserController::class, 'setSecretQandA']);
     Route::post('user/set_transaction_pin', [ApisUserController::class, 'setTransactionPin']);
     Route::post('change_pin/get_otp', [ApisUserController::class, 'initChangePin']);
     Route::post('update_transaction_pin', [ApisUserController::class, 'updateTransactionPin']);
-
-    //transfer
-    Route::get('banks', [TransactionController::class, 'getBanksList']);
-    Route::get('bank/resolve', [TransactionController::class, 'verifyAccountNumber']);
-    Route::post('transferrecipient', [TransactionController::class, 'TransferRecipient']);
 
     Route::post('fund_user_wallet/card', [ApisUserController::class, 'fund_user_wallet_card'])->name('fund_user_wallet');
     Route::post('fund_user_wallet/transfer', [ApisUserController::class, 'fund_user_wallet_transfer']);
@@ -108,12 +108,20 @@ Route::group(['prefix' => 'v1', 'middleware' => ['cors']], function(){
 
     Route::get('user_has_sufficient_wallet_balance/{user_id}/{amount}', [ApisUserController::class, 'user_has_sufficient_wallet_balance'])->name('user_has_sufficient_wallet_balance');
     Route::get('update_user_wallet_balance/{user_id}/{amount}', [ApisUserController::class, 'update_user_wallet_balance'])->name('update_user_wallet_balance');
-    Route::get('get_user_airtime_transactions/{user_id}/{paginate}/{status}', [ApisUserController::class, 'get_user_airtime_transactions'])->name('get_user_airtime_transactions');
+    Route::get('get_user_airtime_transactions/{user_id}/{paginate}/{status}', [ApisUserController::class, 'get_user_airtime_transactions']);
     Route::get('get_user_all_airtime_transactions/{user_id}/{status}', [ApisUserController::class, 'get_user_all_airtime_transactions'])->name('get_user_all_airtime_transactions');
     Route::get('get_user_data_transactions/{user_id}/{paginate}/{status}', [ApisUserController::class, 'get_user_data_transactions'])->name('get_user_data_transactions');
     Route::get('get_user_all_data_transactions/{user_id}/{status}', [ApisUserController::class, 'get_user_all_data_transactions'])->name('get_user_all_data_transactions');
     Route::get('user/all/bill-transactions/{user_id}/{bill}', [ApisUserController::class, 'allUsersBillTransaction'])->name('get_user_all_bill_transactions');
     Route::get('generate_transaction_reference', [ApisUserController::class, 'generate_transaction_reference'])->name('generate_transaction_reference');
+
+    Route::get('get_user_btc_address/{user_id}', [ApisUserController::class, 'get_user_btc_address']);
+    Route::get('get_user_eth_address/{user_id}', [ApisUserController::class, 'get_user_eth_address']);
+    Route::get('get_user_litecoin_address/{user_id}', [ApisUserController::class, 'get_user_litecoin_address']);
+    Route::get('get_user_polygon_address/{user_id}', [ApisUserController::class, 'get_user_polygon_address']);
+    Route::get('get_user_bnb_address/{user_id}', [ApisUserController::class, 'get_user_bnb_address']);
+    Route::get('get_user_dogecoin_address/{user_id}', [ApisUserController::class, 'get_user_dogecoin_address']);
+
 
 
      //bitcoin
@@ -232,16 +240,6 @@ Route::group(['prefix' => 'v1', 'middleware' => ['cors']], function(){
    Route::get('get/networks', [UtilityController::class, 'Networks']);
    Route::get('get-service/{id}', [UtilityController::class, 'getService']);
 
-    Route::get('get_user_btc_address/{user_id}', [ApisUserController::class, 'get_user_btc_address'])->name('get_user_btc_address');
-
-
-
-
-
-
-
-
-    //utility
 });
 
 

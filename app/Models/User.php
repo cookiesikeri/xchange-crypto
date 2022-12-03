@@ -85,6 +85,10 @@ class User extends Authenticatable implements JWTSubject, Searchable
         return $this->hasOne(BitcoinWalletPass::class);
     }
 
+    public function bitcon_wallet() {
+        return $this->hasOne(BitconWallet::class);
+    }
+
     public function secret_q_and_a(){
         return $this->hasOne(UserSecretQAndA::class);
     }
@@ -109,7 +113,7 @@ class User extends Authenticatable implements JWTSubject, Searchable
     public function doge_coin_wallet(){
         return $this->hasOne(DogeCoinWallet::class);
     }
-    public function doge_coin_wallet_addresse(){
+    public function doge_coin_wallet_address(){
         return $this->hasOne(DogeCoinWalletAddress::class);
     }
     public function etherum_private_key(){
