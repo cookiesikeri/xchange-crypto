@@ -18,4 +18,5 @@ The balances on the account as at <b>{{ $transaction->created_at->format('H:i') 
 Current Balance: <b>{{ number_format($total->balance) }}</b>
 
 <br>
+{{ config('app.name') }}
 @endcomponent

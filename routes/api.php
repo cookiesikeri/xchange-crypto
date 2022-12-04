@@ -72,7 +72,7 @@ Route::group(['prefix' => 'v1', 'middleware' => ['cors']], function(){
 
     Route::post('users/{user}', [UserController::class, 'update']);
 
-    Route::post('verify_bvn', [UserController::class, 'verifyBVN']);
+    Route::post('verify_bvn/{bvn}/{acct}/{code}', [ApisUserController::class, 'verifyBVN']);
     Route::post('/contact-us', [ApiController::class, 'ContactUs']);
     Route::get('general_details', [ApiController::class, 'GeneralDetail']);
     Route::get('site_settings', [ApiController::class, 'SiteSetting']);
@@ -101,19 +101,35 @@ Route::group(['prefix' => 'v1', 'middleware' => ['cors']], function(){
     Route::post('change_pin/get_otp', [ApisUserController::class, 'initChangePin']);
     Route::post('update_transaction_pin', [ApisUserController::class, 'updateTransactionPin']);
 
-    Route::post('fund_user_wallet/card', [ApisUserController::class, 'fund_user_wallet_card'])->name('fund_user_wallet');
+    Route::post('fund_user_wallet/card', [ApisUserController::class, 'fund_user_wallet_card']);
     Route::post('fund_user_wallet/transfer', [ApisUserController::class, 'fund_user_wallet_transfer']);
     Route::get('user/secret_question_and_answer/{user_id}', [ApisUserController::class, 'getUserSecretQuestion']);
     Route::get('get_user_wallet_balance/{user_id}', [ApisUserController::class, 'get_user_wallet_balance'])->name('get_user_wallet_balance');
 
-    Route::get('user_has_sufficient_wallet_balance/{user_id}/{amount}', [ApisUserController::class, 'user_has_sufficient_wallet_balance'])->name('user_has_sufficient_wallet_balance');
-    Route::get('update_user_wallet_balance/{user_id}/{amount}', [ApisUserController::class, 'update_user_wallet_balance'])->name('update_user_wallet_balance');
+    Route::get('user_has_sufficient_wallet_balance/{user_id}/{amount}', [ApisUserController::class, 'user_has_sufficient_wallet_balance']);
+    Route::get('update_user_wallet_balance/{user_id}/{amount}', [ApisUserController::class, 'update_user_wallet_balance']);
     Route::get('get_user_airtime_transactions/{user_id}/{paginate}/{status}', [ApisUserController::class, 'get_user_airtime_transactions']);
-    Route::get('get_user_all_airtime_transactions/{user_id}/{status}', [ApisUserController::class, 'get_user_all_airtime_transactions'])->name('get_user_all_airtime_transactions');
-    Route::get('get_user_data_transactions/{user_id}/{paginate}/{status}', [ApisUserController::class, 'get_user_data_transactions'])->name('get_user_data_transactions');
-    Route::get('get_user_all_data_transactions/{user_id}/{status}', [ApisUserController::class, 'get_user_all_data_transactions'])->name('get_user_all_data_transactions');
-    Route::get('user/all/bill-transactions/{user_id}/{bill}', [ApisUserController::class, 'allUsersBillTransaction'])->name('get_user_all_bill_transactions');
-    Route::get('generate_transaction_reference', [ApisUserController::class, 'generate_transaction_reference'])->name('generate_transaction_reference');
+    Route::get('get_user_all_airtime_transactions/{user_id}/{status}', [ApisUserController::class, 'get_user_all_airtime_transactions']);
+    Route::get('get_user_data_transactions/{user_id}/{paginate}/{status}', [ApisUserController::class, 'get_user_data_transactions']);
+    Route::get('get_user_all_data_transactions/{user_id}/{status}', [ApisUserController::class, 'get_user_all_data_transactions']);
+    Route::get('get_user_power_transactions/{user_id}/{paginate}/{status}', [ApisUserController::class, 'get_user_power_transactions']);
+    Route::get('get_user_all_power_transactions/{user_id}/{status}', [ApisUserController::class, 'get_user_all_power_transactions']);
+    Route::get('get_user_tv_transactions/{user_id}/{paginate}/{status}', [ApisUserController::class, 'get_user_tv_transactions']);
+    Route::get('get_user_all_tv_transactions/{user_id}/{status}', [ApisUserController::class, 'get_user_all_tv_transactions']);
+    Route::get('user/all/bill-transactions/{user_id}/{bill}', [ApisUserController::class, 'allUsersBillTransaction']);
+    Route::get('generate_transaction_reference', [ApisUserController::class, 'generate_transaction_reference']);
+
+    Route::get('transaction_history_today/{user_id}', [ApisUserController::class, 'getTodayTransaction']);
+    Route::get('transaction_history_month/{user_id}/{month}', [ApisUserController::class, 'getMonthTransaction']);
+
+    Route::get('sent_transfer_history/{user_id}', [ApisUserController::class, 'sentTransferHistory']);
+    Route::get('transaction_history/{user_id}', [ApisUserController::class, 'getTransferTransactionHistory']);
+    Route::get('received_transfer_history/{user_id}', [ApisUserController::class, 'receivedTransferHistory']);
+    Route::get('verify_wallet_account_number/{account_number}', [ApisUserController::class, 'verifyWalletAccountNumber']);
+    Route::post('transfer_status', [ApisUserController::class, 'transferStatus'])->middleware('bvn');
+    Route::post('transfer_to_bank_acc', [ApisUserController::class, 'transferToBankAcc']);
+    Route::post('wallet/transfer', [ApisUserController::class, 'walletToWalletTransfer'])->middleware('bvn');
+    Route::post('wallet/multiple_transfer', [ApisUserController::class, 'multiWalletToWalletTransfer'])->middleware('bvn');
 
     Route::get('get_user_btc_address/{user_id}', [ApisUserController::class, 'get_user_btc_address']);
     Route::get('get_user_eth_address/{user_id}', [ApisUserController::class, 'get_user_eth_address']);

@@ -38,7 +38,7 @@ class DebitEmail extends Mailable
     public function build()
     {
         return $this
-            ->subject('TSN Transaction Alert ['.number_format($this->amount).']')
+            ->subject('TaheerXchange Transaction Alert ['.number_format($this->amount).']')
             ->markdown('emails.debit_email');
     }
 }

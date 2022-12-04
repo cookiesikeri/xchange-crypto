@@ -3,6 +3,12 @@
 namespace App\Repositories;
 
 use App\Interfaces\UserInterface;
+use App\Models\AirtimeTransaction;
+use App\Models\DataTransaction;
+use App\Models\PowerTransaction;
+use App\Models\TVTransaction;
+use Exception;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 
 class UserRepository implements UserInterface {
@@ -160,7 +166,7 @@ class UserRepository implements UserInterface {
 
     public function get_user_data_transactions($user_id, $paginate = 20, $status = 'all') {
         $data_transactions;
-        $user = $this->is_vendor($user_id);
+        $user = $this->is_user($user_id);
         if(!is_int($user)) {
             switch($status) {
                 case '0':
@@ -196,6 +202,85 @@ class UserRepository implements UserInterface {
             }
         }
         return $data_transactions;
+    }
+
+    public function get_user_power_transactions($user_id, $paginate = 20, $status = 'all') {
+        $power_transactions;
+        $user = $this->is_user($user_id);
+        if(!is_int($user)) {
+            switch($status) {
+                case '0':
+                case '1':
+                case '2':
+                case '3':
+                case '4':
+                    $power_transactions = \App\Models\PowerTransaction::on('mysql::read')->where('status', $status)->where('user_id', $user->id)->paginate($paginate);
+                    break;
+                case 'all':
+                    $power_transactions = \App\Models\PowerTransaction::on('mysql::read')->where('user_id', $user->id)->paginate($paginate);
+                    break;
+            }
+        }
+        return $power_transactions;
+    }
+
+    public function get_user_all_power_transactions($user_id, $status) {
+        $power_transactions;
+        $user = $this->is_user($user_id);
+        if(!is_int($user)) {
+            switch($status) {
+                case '0':
+                case '1':
+                case '2':
+                case '3':
+                case '4':
+                    $power_transactions = \App\Models\PowerTransaction::on('mysql::read')->where('status', $status)->where('user_id', $user->id)->get();
+                    break;
+                case 'all':
+                    $power_transactions = \App\Models\PowerTransaction::on('mysql::read')->where('user_id', $user->id)->get();
+                    break;
+            }
+        }
+        return $power_transactions;
+    }
+
+    public function get_user_tv_transactions($user_id, $paginate = 20, $status = 'all') {
+        $tv_transactions;
+        $user = $this->is_user($user_id);
+        if(!is_int($user)) {
+            switch($status) {
+                case '0':
+                case '1':
+                case '2':
+                case '3':
+                case '4':
+                    $tv_transactions = \App\Models\TVTransaction::on('mysql::read')->where('status', $status)->where('user_id', $user->id)->paginate($paginate);
+                    break;
+                case 'all':
+                    $tv_transactions = \App\Models\TVTransaction::on('mysql::read')->where('user_id', $user->id)->paginate($paginate);
+                    break;
+            }
+        }
+        return $tv_transactions;
+    }
+
+    public function get_user_all_tv_transactions($user_id, $status) {
+        $tv_transactions;
+        $user = $this->is_user($user_id);
+            switch($status) {
+                case '0':
+                case '1':
+                case '2':
+                case '3':
+                case '4':
+                    $tv_transactions = \App\Models\TVTransaction::on('mysql::read')->where('status', $status)->where('user_id', $user->id)->get();
+                    break;
+                case 'all':
+                    $tv_transactions = \App\Models\TVTransaction::on('mysql::read')->where('user_id', $user->id)->get();
+                    break;
+            }
+
+        return $tv_transactions;
     }
 
 
@@ -278,5 +363,31 @@ class UserRepository implements UserInterface {
             return response()->json(array(['status' => $verified, 'amount' => $amount]));
         }
         return array(['status' => $verified, 'amount' => $amount]);
+    }
+
+    public function allUsersBillTransaction($user_id, $bill)
+    {
+        try{
+            switch($bill){
+                case 'airtime':
+                    $history = AirtimeTransaction::on('mysql::read')->where('user_id', $user_id)->get();
+                    break;
+                case 'data':
+                    $history = DataTransaction::on('mysql::read')->where('user_id', $user_id)->get();
+                    break;
+                case 'power':
+                    $history = PowerTransaction::on('mysql::read')->where('user_id', $user_id)->get();
+                    break;
+                case 'tv':
+                    $history = TVTransaction::on('mysql::read')->where('user_id', $user_id)->get();
+                    break;
+                default:
+
+            }
+
+            return response()->json(['message'=> $bill.' transaction history retrieved.', 'transactions'=>$history]);
+        }catch(Exception $e){
+            return response()->json(['message'=>$e->getMessage()], 420);
+        }
     }
 }

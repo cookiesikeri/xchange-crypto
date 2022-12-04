@@ -14,9 +14,11 @@ use App\Mail\DebitEmail;
 use App\Mail\OtpMail;
 
 use App\Models\AirtimeTransaction;
+use App\Models\BankTransfer;
 use App\Models\DataTransaction;
 use App\Models\Models\OtpVerify;
 use App\Models\PaystackRefRecord;
+use App\Models\PowerTransaction;
 use App\Models\TVTransaction;
 use App\Models\User;
 use App\Models\UserSecretQAndA;
@@ -483,7 +485,35 @@ class UserController extends Controller
             return response()->json(['message'=>$e->getMessage()], 420);
         }
     }
+    public function get_user_power_transactions($user_id, $paginate, $status)
+    {
+        return response()->json($this->user->get_user_power_transactions($user_id, $paginate, $status));
+    }
 
+    public function get_user_tv_transactions($user_id, $paginate, $status)
+    {
+        return response()->json($this->user->get_user_tv_transactions($user_id, $paginate, $status));
+    }
+
+    public function get_user_all_power_transactions($user_id, $status)
+    {
+        try{
+            $history = PowerTransaction::on('mysql::read')->where([['user_id', $user_id], ['status', $status]])->get();
+            return response()->json(['message'=>'Power transaction history retrieved.', 'transactions'=>$history]);
+        }catch(Exception $e){
+            return response()->json(['message'=>$e->getMessage()], 420);
+        }
+    }
+
+    public function get_user_all_tv_transactions($user_id, $status)
+    {
+        try{
+            $history = TVTransaction::on('mysql::read')->where([['user_id', $user_id], ['status', $status]])->get();
+            return response()->json(['message'=>'TV transaction history retrieved.', 'transactions'=>$history]);
+        }catch(Exception $e){
+            return response()->json(['message'=>$e->getMessage()], 420);
+        }
+    }
 
     public function get_user_btc_address($user_id)
     {
@@ -547,15 +577,8 @@ class UserController extends Controller
             $user = User::on('mysql::read')->findOrFail($user_id);
             $transactions = array();
             $wallTr = WalletTransaction::on('mysql::read')->where([['wallet_id', $user->wallet->id], ['transfer', true]])->get();
-            /* foreach($wallTr as $trans){
-                $tDay = Carbon::parse($trans['created_at']);
-                $today = Carbon::now();
-                if($tDay == $today){
-                    $transactions[] = $trans;
-                }
-            } */
-//            dispatch(new PeaceAccountCreationJob($user));
-            return response()->json(['message'=>'Todays Transactions Retrieved Successfully', 'transactions'=>$wallTr], 200);
+
+            return response()->json(['message'=>'Transfer Transactions Retrieved Successfully', 'transactions'=>$wallTr], 200);
         }catch(Exception $e){
             return response()->json(['message'=>$e->getMessage()], 420);
         }
@@ -587,25 +610,471 @@ class UserController extends Controller
                     $transactions[] = $trans;
                 }
             }
-            return response()->json(['message'=>'Todays Transactions Retrieved Successfully', 'transactions'=>$wallTr], 200);
+            return response()->json(['message'=>'This  Transactions Retrieved Successfully', 'transactions'=>$wallTr], 200);
         }catch(Exception $e){
 
             return response()->json(['message'=>$e->getMessage()], 420);
         }
     }
 
-    public function index()
+    public function transferToBankAcc(Request $request)
     {
-        $users = User::select('users.name', 'users.email', 'users.phone', 'users.account_type_id AS kyc_level', 'account_numbers.account_number', 'wallets.balance', 'users.created_at', 'users.updated_at')
-            ->join('wallets', 'users.id', '=', 'wallets.user_id')->join('account_numbers', 'wallets.id', '=', 'account_numbers.wallet_id')->where('account_numbers.account_name', 'Wallet ID')->paginate(10);
-        return response()->json(['success'=>true, 'data' =>$users, 'message' => 'users fetched successfully']);
+        try{
+            $request->validate([
+                'amount'=>'required|numeric|gt:0',
+                'recipient'=>'required',
+                'reason'=>'nullable|string',
+                'user_id'=>'required',
+                'pin'=>'required|integer|numeric'
+            ]);
+        }catch(ValidationException $e){
+            return response()->json(['message'=>$e->getMessage(), 'errors'=>$e->errors()], 422);
+        }
+
+        $amount = $request->amount;
+        $amount = intval($amount) * 100;
+        $rep = $request->recipient;
+        $reason = $request->reason;
+        $userId = $request->user_id;
+        $pin = $request->pin;
+
+        try{
+            $user = User::on('mysql::read')->findOrFail($userId);
+        }catch(ModelNotFoundException $e){
+            return response()->json(['message'=>'User not found.'], 404);
+        }
+
+
+        if(empty($user->transaction_pin)){
+            return response()->json(['message'=>'Transaction Pin not set.'], 422);
+        }
+
+        if(!Hash::check($pin, $user->transaction_pin))
+        {
+            return response()->json(['message'=>'Incorrect Pin!'], 404);
+        }
+
+        if($user->wallet->balance < ($amount/100)){
+            return response()->json(['message'=>'Insufficient Balance.'], 420);
+        }
+
+        $res = $this->utility->paystackTransfer($amount, $rep, $reason);
+
+        //return $res;
+
+        if(!$res['error'])
+        {
+            //return $res['data']['data']['id'];
+            try{
+                $bnkTransfer = BankTransfer::on('mysql::write')->create([
+                    'sender'=>$user->wallet->id,
+                    'status'=> $res['data']['data']['status'],
+                    'transfer_code'=> $res['data']['data']['transfer_code'],
+                    'transfer_id'=>$res['data']['data']['id']
+                ]);
+            }catch(Exception $e){
+                return response()->json(['message'=>$e->getMessage()], 422);
+            }
+            return response()->json(['message'=>'Transfer Initiated Successfully.', 'details'=>$res['data']['data']], 200);
+        }else{
+            return response()->json(['message'=>$res['message']], 420);
+        }
+
     }
 
-    public function indexNull()
+    public function transferStatus(Request $request){
+        try{
+            $request->validate([
+                'id_or_code'=>'required',
+                'user_id'=>'required'
+            ]);
+        }catch(ValidationException $e){
+            return response()->json(['message'=>$e->getMessage(), 'errors'=>$e->errors()], 422);
+        }
+        $data = array();
+        $idOrCode = $request->id_or_code;
+        $userId = $request->user_id;
+        $msg = 'Could not fetch transfer.';
+
+        $url = 'https://api.paystack.co/transfer/'. $idOrCode;
+        //return $url;
+        //$url = urlencode($init_url);
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt(
+            $ch, CURLOPT_HTTPHEADER, ['Authorization: Bearer ' . env('PAYSTACK_SECRET_KEY')]
+        );
+        //curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
+        //curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
+        $request = curl_exec($ch);
+
+        //return $request;
+        if(curl_errno($ch)) {
+            $verified = curl_errno($ch);
+            //Log::info('cURL error occured while trying to verify payment.');
+            //Log::error(curl_error($ch));
+            $msg = curl_error($ch);
+            // verification failed
+            $verified = -1;
+            return response()->json(['message'=>$msg], 420);
+        }else {
+            //return $request;
+            if ($request) {
+                $msg = 'Transafer retrieved.';
+                $result = json_decode($request, true);
+
+                $data =  $result['data'];
+                //return $data;
+                try{
+                    $bnkTransfer = BankTransfer::on('mysql::write')->where([['transfer_id', $data['id']], ['transfer_code', $data['transfer_code']]])->get()->first();
+                }catch(ModelNotFoundException $e){
+                    curl_close($ch);
+                    return response()->json(['message'=>'Bank transfer record not found.'], 404);
+                }
+
+                if(!$bnkTransfer){
+                    curl_close($ch);
+                    return response()->json(['message'=>'Bank transfer record not found.'], 404);
+                }
+                $bnkTransfer->update(['status'=>$data['status']]);
+
+                if($data['status'] == 'success'){
+
+                    try{
+                        $user = User::on('mysql::write')->findOrFail($userId);
+                    }catch(ModelNotFoundException $e){
+                        curl_close($ch);
+                        return response()->json(['message'=>'User not found'],);
+                    }
+
+                    if(!$user){
+                        curl_close($ch);
+                        return response()->json(['message'=>'Could not find User.'], 404);
+                    }
+                    $amount = intval($data['amount'])/100;
+                    $newBal = $user->wallet->balance - $amount;
+
+                    $user->wallet()->update(['balance'=>$newBal]);
+
+                    $debit = WalletTransaction::on('mysql::write')->create(['wallet_id'=>$user->wallet->id, 'type'=>'Debit', 'amount'=>$amount]);
+                    $walTransfer = WalletTransfer::on('mysql::write')->create([
+                        'sender'=>$user->wallet->id,
+                        'receiver'=>$data['recipient']['details']['account_number'].'-'.$data['recipient']['details']['bank_name'],
+                        'amount'=>$data['amount'],
+                        'description'=>$data['reason'],
+                    ]);
+                    curl_close($ch);
+                    return response()->json(['message'=>'Transfer Successful.', 'data'=>$data], 200);
+
+                }elseif($data['status'] == 'otp'){
+                    $msg = 'OTP needed to complete transfer.';
+                }elseif($data['status'] == 'pending'){
+                    $msg = 'Transfer pending.';
+                }
+
+
+            } else {
+                // $resp['msg'] = 'Unable to verify transaction!';
+                $verified = 503;
+            }
+        }
+         curl_close($ch);
+        return response()->json(['message'=>$msg, 'data'=>$data]);
+    }
+
+    public function sentTransferHistory($user_id){
+        try{
+            $user = User::on('mysql::read')->findOrFail($user_id);
+
+            $sent = WalletTransaction::on('mysql::read')->where([['wallet_id', $user->wallet->id], ['type', 'Debit'], ['transfer', true]])->get();
+
+            if(!$sent){
+                return response()->json(['message'=>'Users transfer history not found.'], 404);
+            }
+
+            return response()->json(['message'=>'Users sent transfer history retrieved.', 'history'=>$sent], 200);
+        }catch(ModelNotFoundException $em){
+            return response()->json(['message'=>'User not found'], 404);
+        }catch(Exception $e){
+            return response()->json(['message'=>$e->getMessage()], 422);
+        }
+    }
+
+    public function receivedTransferHistory($user_id){
+        try{
+            $user = User::on('mysql::read')->findOrFail($user_id);
+
+            $sent = WalletTransaction::on('mysql::read')->where([['wallet_id', $user->wallet->id], ['type', 'Credit'], ['transfer', true]])->get();
+
+            if(!$sent){
+                return response()->json(['message'=>'Users transfer history not found.'], 404);
+            }
+
+            return response()->json(['message'=>'Users received transfer history retrieved.', 'history'=>$sent], 200);
+        }catch(ModelNotFoundException $em){
+            return response()->json(['message'=>'User not found'], 404);
+        }catch(Exception $e){
+            return response()->json(['message'=>$e->getMessage()], 422);
+        }
+    }
+
+    public function walletToWalletTransfer(Request $request)
     {
-        $users = User::select('users.name', 'users.email', 'users.phone', 'users.account_type_id AS kyc_level', 'account_numbers.account_number', 'wallets.balance', 'users.created_at', 'users.updated_at')
-            ->join('wallets', 'users.id', '=', 'wallets.user_id')->join('account_numbers', 'wallets.id', '=', 'account_numbers.wallet_id')->whereNull('Wallet ID')->paginate(10);
-        return response()->json(['success'=>true, 'data' =>$users, 'message' => 'users fetched successfully']);
+        try{
+            $validator = Validator::make($request->all(), [
+                'user_id'=>'required',
+                'account_number'=>'required',
+                'amount'=>'required|numeric|gt:0',
+                'description'=>'required',
+                'pin'=>'required',
+            ]);
+
+            if ($validator->fails()) {
+                return response()->json(['errors'=>$validator->errors()], 400);
+            }
+
+            //$userId = $request->user_id;
+            $userId = Auth::id();
+            $accNum = $request->account_number;
+            $desc = $request->description;
+            $amount = intval($request->amount);
+            $pin = $request->pin;
+
+            $transfer = $this->executeWalletTransfer($userId, $accNum, $desc, $amount, $pin);
+
+            return response()->json(['message'=>$transfer['message']], $transfer['status']);
+        }catch(Exception $e){
+            return response()->json(['message'=>$e->getMessage()], 422);
+        }
+
+    }
+
+
+    public function executeWalletTransfer($userId, $accNum, $desc, $amount, $pin){
+        try{
+            $user = User::on('mysql::write')->findOrFail($userId);
+        }catch(ModelNotFoundException $e){
+            return array('message'=>'User not found.', 'status'=> 404);
+        }
+
+        if(!$user)
+        {
+            return array('message'=>'User not found', 'status'=> 404);
+        }
+
+        try{
+            $userAcc = AccountNumber::on('mysql::read')->where([['wallet_id', $user->wallet->id], ['account_name', 'Wallet ID']])->get()->first();
+        }catch(ModelNotFoundException $e){
+            return array('message'=>'Senders Wallet not found.', 'status'=>404);
+        }
+
+        try{
+            $receiver = AccountNumber::on('mysql::write')->where('account_number', $accNum)->get()->first();
+        }catch(ModelNotFoundException $e){
+            return array('message'=>'Receivers Wallet not found.', 'status'=>404);
+        }
+
+        if(!$receiver)
+        {
+            return array('message'=>'Receiving account not found. Please check the Account Number and try again.','status'=>404);
+        }
+
+        if($receiver->wallet_id == $user->wallet->id){
+            return array('message'=>'You cannot transafer to your wallet', 'status'=>420);
+        }
+
+        $recWall = $receiver->wallet;
+        $recAcc = User::on('mysql::read')->find($recWall->user_id);
+        $recEmail = $recAcc->email;
+        if(!$recAcc){
+            $recAcc = User::on('mysql::read')->find($recWall->id);
+            $recEmail = $recAcc->user->email;
+            if(!$recAcc){
+                return array('message'=>'Account owner not found. Please check account number.', 'status'=>404);
+            }
+        }
+
+        $businessWT = WalletTransaction::on('mysql::write')->create([
+            'wallet_id'=>$user->wallet->id,
+            'type'=>'Debit',
+            'amount'=>$amount,
+            'sender_account_number'=> $userAcc->account_number,
+            'sender_name'=>$user->name,
+            'receiver_name'=>$recAcc->name,
+            'receiver_account_number'=>$receiver->account_number,
+            'description'=>$desc,
+            'bank_name'=>'Transave',
+            'transfer'=>true,
+            'transaction_type'=>'wallet'
+        ]);
+
+        //return $receiver->wallet;
+        if(empty($user->transaction_pin)){
+            $businessWT->update([
+                'status'=>'failed',
+            ]);
+            return array('message'=>'Transaction Pin not set.', 'status'=> 422);
+        }
+
+        if(!Hash::check($pin, $user->transaction_pin))
+        {
+            $businessWT->update([
+                'status'=>'failed',
+            ]);
+            return array('message'=>'Incorrect Pin!','status'=> 404);
+        }
+
+        if($user->wallet->balance < $amount || $amount <= 0){
+            $businessWT->update([
+                'status'=>'failed',
+            ]);
+            return array('message'=>'Insufficient balance.','status'=>420);
+        }
+
+        $senderNewBal = intval($user->wallet->balance) - $amount;
+        $user->wallet()->update(['balance'=>$senderNewBal]);
+        $recNewBal = intval($receiver->wallet->balance) + $amount;
+        $receiver->wallet()->update(['balance'=>$recNewBal]);
+        $wtw = WalletTransfer::on('mysql::write')->create(['sender'=>$user->wallet->id, 'receiver'=>$receiver->wallet->id, 'amount'=>$amount, 'description'=>$desc]);
+
+        $userWT = WalletTransaction::on('mysql::write')->create([
+            'wallet_id'=>$receiver->wallet->id,
+            'type'=>'Credit',
+            'amount'=>$amount,
+            'sender_account_number'=> $userAcc->account_number,
+            'sender_name'=>$user->name,
+            'receiver_name'=>$recAcc->name,
+            'receiver_account_number'=>$receiver->account_number,
+            'description'=>$desc,
+            'bank_name'=>'Transave',
+            'transfer'=>true,
+        ]);
+
+        $businessWT->update([
+            'status'=>'success',
+        ]);
+
+        Mail::to($user->email)->send(new DebitEmail($user->name,$amount, $businessWT,$user->wallet, $userAcc));
+        Mail::to($recEmail)->send(new TransactionMail($recAcc->name,$amount));
+
+        return array('message'=>'Transfer Successful.','status'=>200);
+    }
+
+    public function multiWalletToWalletTransfer(Request $request){
+
+        try{
+            $response = array();
+            $totalPaid = 0;
+            $validator = Validator::make($request->all(), [
+                'pin'=>'required|numeric',
+                'wallets'=>'required|array',
+            ]);
+
+            if ($validator->fails()) {
+                return response()->json(['errors'=>$validator->errors()], 400);
+            }
+
+            //$userId = $request->wallets[0]['user_id'];
+            $userId = Auth::id();
+            $pin = $request->pin;
+
+            $user = User::on('mysql::read')->findOrFail($userId);
+
+            if(empty($user->transaction_pin)){
+                return response()->json(['message'=>'Transaction Pin not set.', 'status'=> 422], 422);
+            }
+
+            if(!Hash::check($pin, $user->transaction_pin))
+            {
+                return response()->json(['message'=>'Incorrect Pin!','status'=> 420], 420);
+            }
+
+            $totalAmount = 0;
+            foreach($request->wallets as $wallet){
+                $totalAmount = $totalAmount + intval($wallet['amount']);
+            }
+
+            if($user->wallet->balance < $totalAmount || $totalAmount <= 0){
+                return response()->json(['message'=>'Insufficient funds!','status'=> 420], 420);
+            }
+
+            foreach($request->wallets as $wallet){
+                $userId = $wallet['user_id'];
+                $accNum = $wallet['account_number'];
+                $desc = $wallet['reason'];
+                $amount = intval($wallet['amount']);
+                $name = $wallet['account_name'];
+
+                $transfer = $this->executeWalletTransfer($userId, $accNum, $desc, $amount, $pin);
+                $transfer['account_number'] = $accNum;
+                $transfer['account_name'] = $name;
+                $transfer['sender'] = $userId;
+
+                $response[] = $transfer;
+
+            }
+
+            return response()->json(['message'=>'Successful','status'=>200, 'results'=>$response]);
+        }catch(Exception $e){
+            return response()->json(['message'=>$e->getMessage()], 422);
+        }
+
+    }
+
+    public function verifyWalletAccountNumber($account_number){
+        try{
+
+            $account = AccountNumber::on('mysql::read')->where('account_number', $account_number)->first();
+            if(!$account){
+                return response()->json(['message'=>'Account owner not found. Please check account number.'], 404);
+            }
+            $wallet = $account->wallet;
+
+            $user = User::on('mysql::read')->find($wallet->user_id);
+
+
+            return response()->json([ 'status' => true, 'message' => 'Account verified Successfully', 'user' => $user ], 200);
+
+        }catch(Exception $e){
+            return response()->json(['message'=>$e->getMessage()], 422);
+        }
+    }
+
+    public function verifyBVN($bvn, $acct, $code){
+        //return 'in pst';
+        $url = "https://api.paystack.co/bvn/match";
+        $fields = [
+            'bvn'=>$bvn,
+            'account_number'=>$acct,
+            'bank_code'=>$code,
+        ];
+        $fields_string = http_build_query($fields);
+        //open connection
+        $ch = curl_init();
+
+        //set the url, number of POST vars, POST data
+        curl_setopt($ch,CURLOPT_URL, $url);
+        curl_setopt($ch,CURLOPT_POST, true);
+        curl_setopt($ch,CURLOPT_POSTFIELDS, $fields_string);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, array(
+            "Authorization: Bearer ". env('PAYSTACK_SECRET_KEY'),
+        ));
+
+        //So that curl_exec returns the contents of the cURL; rather than echoing it
+        curl_setopt($ch,CURLOPT_RETURNTRANSFER, true);
+
+        //execute post
+        $result = curl_exec($ch);
+
+        if(curl_errno($ch)){
+            return array('message'=>curl_error($ch), 'error'=>true);
+        }
+
+        $res = json_decode($result, true);
+
+        curl_close($ch);
+        return array('error'=>false, 'data'=>$res);
     }
 
 

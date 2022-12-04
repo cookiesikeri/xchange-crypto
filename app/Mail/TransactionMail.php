@@ -34,7 +34,7 @@ class TransactionMail extends Mailable
     public function build()
     {
         return $this
-            ->subject('CREDIT Alert')
+            ->subject('TaheerXchange CREDIT Alert')
             ->markdown('emails.transaction_email');
     }
 }
