@@ -16,69 +16,6 @@ class VirtualAccountController extends Controller
 {
     use  ManagesResponse, ManagesUsers;
 
-    public function createAccount1(Request $request)
-    {
-        $user = Auth::user();
-
-        $validator = Validator::make($request->all(), [
-            'currency'=>'required|string'
-        ]);
-
-        if ($validator->fails()) {
-            return response()->json($validator->errors(), 422);
-        }
-
-        $curl = curl_init();
-
-        $payload = array(
-        "currency" => $request->currency,
-        "xpub" => $request->xpub
-        );
-
-        curl_setopt_array($curl, [
-        CURLOPT_HTTPHEADER => [
-            "Content-Type: application/json",
-            "x-api-key: ". env('TATUM_TEST_KEY')
-        ],
-        CURLOPT_POSTFIELDS => json_encode($payload),
-        CURLOPT_URL => "https://api.tatum.io/v3/ledger/account",
-        CURLOPT_RETURNTRANSFER => true,
-        CURLOPT_CUSTOMREQUEST => "POST",
-        ]);
-
-        $response = curl_exec($curl);
-        $error = curl_error($curl);
-
-        curl_close($curl);
-
-        if ($error) {
-       return $error;
-        } else {
-
-            VirtualAccount::on('mysql::write')->create([
-                'user_id' => auth()->user()->id,
-                'virtual_id' => $request->id,
-                // 'currency' => $request->currency,
-                // 'active' => $request->active,
-                // 'balance' => $request->balance,
-                // 'accountBalance' =>  $request->accountBalance,
-                // 'availableBalance' => $request->availableBalance,
-                // 'frozen' => $request->frozen,
-                // 'accountingCurrency' => $request->accountingCurrency,
-                'response' => $response
-
-
-
-            ], 201);
-
-
-            $this->saveUserActivity(ActivityType::CREATE_VIRTUAL_ACCOUNT, '', $user->id);
-
-            return response()->json([ 'status' => true, 'message' => 'Virtual account created successfully', 'response' => $response ], 201);
-        }
-    }
-
-
     public function createAccount(Request $request, $customer, $preferred_bank)
     {
         $url = "https://api.paystack.co/dedicated_account";
@@ -116,6 +53,63 @@ class VirtualAccountController extends Controller
 
         curl_close($ch);
         return array('error'=>false, 'data'=>$res);
+    }
+
+    public function CTG (Request $request)
+    {
+        $user = Auth::user();
+
+        $ref = '51' . substr(uniqid(mt_rand(), true), 0, 8);
+
+        $validator = Validator::make($request->all(), [
+            'email' => 'required|email',
+            'first_name' => 'required|string',
+            'middle_name' => 'nullable|string',
+            'last_name' => 'required|string',
+            'phone' => 'required|numeric|min:4',
+            'preferred_bank' => 'required',
+            'account_number' => 'required',
+            'bvn' => 'required',
+            'bank_code' => 'required'
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json($validator->errors(), 422);
+        }
+
+        $curl = curl_init();
+
+        curl_setopt_array($curl, array(
+        CURLOPT_URL => "https://api.paystack.co/dedicated_account/assign",
+        CURLOPT_RETURNTRANSFER => true,
+        CURLOPT_ENCODING => "",
+        CURLOPT_MAXREDIRS => 10,
+        CURLOPT_TIMEOUT => 0,
+        CURLOPT_FOLLOWLOCATION => true,
+        CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+        CURLOPT_CUSTOMREQUEST => "POST",
+        CURLOPT_POSTFIELDS => array(
+            "email" => $user->phone,
+            "first_name" => $request->first_name,
+            "middle_name" => $request->middle_name,
+            "last_name" => $request->last_name,
+            "phone" => $user->phone,
+            "preferred_bank" => $request->preferred_bank,
+            "country" => "NG",
+            "account_number" => $request->account_number,
+            "bvn" => $request->bvn,
+            "bank_code" => $request->bank_code
+        ),
+        CURLOPT_HTTPHEADER => array(
+            "Authorization: Bearer ". env('PAYSTACK_SECRET_KEY'),
+            "Content-Type: application/json"
+        ),
+        ));
+
+        $response = curl_exec($curl);
+
+        curl_close($curl);
+        echo $response;
     }
 
 
