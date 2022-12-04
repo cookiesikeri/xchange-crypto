@@ -16,7 +16,7 @@ class VirtualAccountController extends Controller
 {
     use  ManagesResponse, ManagesUsers;
 
-    public function createAccount(Request $request)
+    public function createAccount1(Request $request)
     {
         $user = Auth::user();
 
@@ -78,64 +78,48 @@ class VirtualAccountController extends Controller
         }
     }
 
-        public function getAccounts (){
 
+    public function createAccount(Request $request, $customer, $preferred_bank)
+    {
+        $url = "https://api.paystack.co/dedicated_account";
 
-        $curl = curl_init();
+        $fields = [
+          "customer" => $customer,
+          "preferred_bank" => $preferred_bank
+        ];
 
-        curl_setopt_array($curl, [
-        CURLOPT_HTTPHEADER => [
-            "x-api-key: ". env('TATUM_TEST_KEY')
-        ],
-        CURLOPT_URL => "https://api.tatum.io/v3/ledger/account",
-        CURLOPT_RETURNTRANSFER => true,
-        CURLOPT_CUSTOMREQUEST => "GET",
-        ]);
+        $fields_string = http_build_query($fields);
 
-        $response = curl_exec($curl);
-        $error = curl_error($curl);
+        //open connection
+        $ch = curl_init();
 
-        curl_close($curl);
+        //set the url, number of POST vars, POST data
+        curl_setopt($ch,CURLOPT_URL, $url);
+        curl_setopt($ch,CURLOPT_POST, true);
+        curl_setopt($ch,CURLOPT_POSTFIELDS, $fields_string);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, array(
+            "Authorization: Bearer ". env('PAYSTACK_SECRET_KEY'),
+          "Cache-Control: no-cache",
+        ));
 
-        if ($error) {
-        return $error;
-        } else {
-            return $response;
-            // return response()->json([ 'status' => true, 'message' => 'accounts fetched successfully', 'response' => $response ], 200);
-        }
-    }
+        //So that curl_exec returns the contents of the cURL; rather than echoing it
+        curl_setopt($ch,CURLOPT_RETURNTRANSFER, true);
 
-    public function getAccountsByCustomerId ($id){
+        //execute post
+        $result = curl_exec($ch);
 
-
-        $id = $id;
-        $query = array(
-        "pageSize" => "10"
-        );
-
-        $curl = curl_init();
-
-        curl_setopt_array($curl, [
-        CURLOPT_HTTPHEADER => [
-            "x-api-key: ". env('TATUM_TEST_KEY')
-        ],
-        CURLOPT_URL => "https://api.tatum.io/v3/ledger/account/customer/" . $id . "?" . http_build_query($query),
-        CURLOPT_RETURNTRANSFER => true,
-        CURLOPT_CUSTOMREQUEST => "GET",
-        ]);
-
-        $response = curl_exec($curl);
-        $error = curl_error($curl);
-
-        curl_close($curl);
-
-        if ($error) {
-            return $error;
-        } else {
-            return $response;
+        if(curl_errno($ch)){
+            return array('message'=>curl_error($ch), 'error'=>true);
         }
 
+        $res = json_decode($result, true);
+
+        curl_close($ch);
+        return array('error'=>false, 'data'=>$res);
     }
+
+
+
 
 
 }
