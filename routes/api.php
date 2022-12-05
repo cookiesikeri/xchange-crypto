@@ -230,6 +230,9 @@ Route::group(['prefix' => 'v1', 'middleware' => ['cors']], function(){
 
     //virual account
     Route::post('virtual/create/customer/individual', [VirtualAccountController::class, 'createAccountIND']);
+    Route::get('virtual/get/customer/{id}', [VirtualAccountController::class, 'GetCustomer']);
+    Route::get('local/get/customer/{id}', [VirtualAccountController::class, 'GetCustomerLocal']);
+    Route::post('update/virtual/account/individual/{id}/{user}', [VirtualAccountController::class, 'UpdateAccountIND']);
     Route::post('virtual/create/customer/card', [VirtualAccountController::class, 'createCard']);
     Route::post('virtual/create/customer/company', [VirtualAccountController::class, 'createAccountCOMP']);
 
