@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Enums\ActivityType;
+use App\Models\User;
 use App\Models\VirtualAccount;
 use App\Traits\ManagesUsers;
 use Illuminate\Support\Facades\Auth;
@@ -16,100 +17,105 @@ class VirtualAccountController extends Controller
 {
     use  ManagesResponse, ManagesUsers;
 
-    public function createAccount(Request $request, $customer, $preferred_bank)
+    /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+
+    public function index()
     {
-        $url = "https://api.paystack.co/dedicated_account";
+        $response = Http::get('https://jsonplaceholder.typicode.com/todos');
 
-        $fields = [
-          "customer" => $customer,
-          "preferred_bank" => $preferred_bank
-        ];
-
-        $fields_string = http_build_query($fields);
-
-        //open connection
-        $ch = curl_init();
-
-        //set the url, number of POST vars, POST data
-        curl_setopt($ch,CURLOPT_URL, $url);
-        curl_setopt($ch,CURLOPT_POST, true);
-        curl_setopt($ch,CURLOPT_POSTFIELDS, $fields_string);
-        curl_setopt($ch, CURLOPT_HTTPHEADER, array(
-            "Authorization: Bearer ". env('PAYSTACK_SECRET_KEY'),
-          "Cache-Control: no-cache",
-        ));
-
-        //So that curl_exec returns the contents of the cURL; rather than echoing it
-        curl_setopt($ch,CURLOPT_RETURNTRANSFER, true);
-
-        //execute post
-        $result = curl_exec($ch);
-
-        if(curl_errno($ch)){
-            return array('message'=>curl_error($ch), 'error'=>true);
-        }
-
-        $res = json_decode($result, true);
-
-        curl_close($ch);
-        return array('error'=>false, 'data'=>$res);
+        return $response->json();
     }
 
-    public function CTG (Request $request)
+    public function createAccountIND(Request $request)
     {
         $user = Auth::user();
 
-        $ref = '51' . substr(uniqid(mt_rand(), true), 0, 8);
+        $data = array(
+            'user_id' => auth()->user()->id,
+            'name'       => $request->name,
+            'number'      => $request->number,
+            'firstName'  => $request->firstName,
+            'lastName' => $request->lastName,
+            'otherNames' => $request->otherNames,
+            'dob' => $request->dob,
+            'line1' => $request->line1,
+            'line2' => $request->line2,
+            "city" => $request->city,
+            "state" => $request->state,
+            "postalCode" => $request->postalCode,
+            "country" => $request->country,
+            "phoneNumber" => $request->phoneNumber,
+            "emailAddress" => $request->emailAddress,
+            "status" => 1
 
-        $validator = Validator::make($request->all(), [
-            'email' => 'required|email',
-            'first_name' => 'required|string',
-            'middle_name' => 'nullable|string',
-            'last_name' => 'required|string',
-            'phone' => 'required|numeric|min:4',
-            'preferred_bank' => 'required',
-            'account_number' => 'required',
-            'bvn' => 'required',
-            'bank_code' => 'required'
-        ]);
+        );
 
-        if ($validator->fails()) {
-            return response()->json($validator->errors(), 422);
+
+        $base_url = 'https://api.sandbox.sudo.cards/customers';
+
+        $body = [
+            "type" => "individual",
+            "status" => "active",
+            "name" => $request->name,
+
+                "identity" => [
+                    "type" => $request->type,
+                    "number" => $request->number
+                ],
+                "individual" => [
+                    "firstName" => $request->firstName,
+                    "lastName" => $request->lastName,
+                    "otherNames" => $request->otherNames ? $request->otherNames : "string",
+                    "dob" => $request->dob
+                ],
+                "billingAddress" => [
+                    "line1" => $request->line1,
+                    "line2" => $request->line2 ? $request->line2 : null,
+                    "city" => $request->city,
+                    "state" => $request->state,
+                    "postalCode" => $request->postalCode,
+                    "country" => $request->country,
+                    "phoneNumber" => $request->phoneNumber,
+                    "emailAddress" => $request->emailAddress
+                ],
+
+            ];
+
+            $response = Http::withHeaders([
+                'Authorization' => 'Bearer '.env('SUDO_SANDBOX_KEY'),
+                'accept' => 'application/json',
+                'content-type' => 'application/json',
+            ])->post($base_url, $body);
+
+        $response = $response->getBody()->getContents();
+
+        $checkUser = VirtualAccount::where('phoneNumber', $request->phoneNumber)->first();
+
+        if ($checkUser) {
+            return Response::json([
+                'status' => false,
+                'message' => 'You already have an account created!'
+            ], 419);
         }
+        else {
+    $checkUser = VirtualAccount::on('mysql::write')->create($data);
+    $this->saveUserActivity(ActivityType::VIRTUALACCOUNT, '', $user->id);
 
-        $curl = curl_init();
+        return response()->json([
+            "message" => "Customer created successfully",
+            'data' => $response,
+            'status' => 'success',
+        ], 201);
+    }
+    }
 
-        curl_setopt_array($curl, array(
-        CURLOPT_URL => "https://api.paystack.co/dedicated_account/assign",
-        CURLOPT_RETURNTRANSFER => true,
-        CURLOPT_ENCODING => "",
-        CURLOPT_MAXREDIRS => 10,
-        CURLOPT_TIMEOUT => 0,
-        CURLOPT_FOLLOWLOCATION => true,
-        CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-        CURLOPT_CUSTOMREQUEST => "POST",
-        CURLOPT_POSTFIELDS => array(
-            "email" => $user->phone,
-            "first_name" => $request->first_name,
-            "middle_name" => $request->middle_name,
-            "last_name" => $request->last_name,
-            "phone" => $user->phone,
-            "preferred_bank" => $request->preferred_bank,
-            "country" => "NG",
-            "account_number" => $request->account_number,
-            "bvn" => $request->bvn,
-            "bank_code" => $request->bank_code
-        ),
-        CURLOPT_HTTPHEADER => array(
-            "Authorization: Bearer ". env('PAYSTACK_SECRET_KEY'),
-            "Content-Type: application/json"
-        ),
-        ));
+    public function createCard ()
+    {
 
-        $response = curl_exec($curl);
-
-        curl_close($curl);
-        echo $response;
     }
 
 

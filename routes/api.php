@@ -229,10 +229,9 @@ Route::group(['prefix' => 'v1', 'middleware' => ['cors']], function(){
 
 
     //virual account
-    Route::post('create/virtual/account/{customer}/{preferred_bank}', [VirtualAccountController::class, 'createAccount']);
-    Route::get('list/all/account', [VirtualAccountController::class, 'getAccounts']);
-    Route::post('create/account/test', [VirtualAccountController::class, 'CTG']);
-    Route::get('get/customer/account/{id}', [VirtualAccountController::class, 'getAccountsByCustomerId']);
+    Route::post('virtual/create/customer/individual', [VirtualAccountController::class, 'createAccountIND']);
+    Route::post('virtual/create/customer/card', [VirtualAccountController::class, 'createCard']);
+    Route::post('virtual/create/customer/company', [VirtualAccountController::class, 'createAccountCOMP']);
 
 
 
