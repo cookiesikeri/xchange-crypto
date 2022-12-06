@@ -363,32 +363,39 @@ public function createCard (Request $request)
         "status" => "active",
 
 
-  'body' => '{
-      "type":"virtual",
-      "currency":"NGN",
-      "issuerCountry":"NGA",
-      "status":"active",
-      "spendingControls":{"allowedCategories":["mcc"],
-        "blockedCategories":["mcc"],
-        "channels":{"atm":true,"pos":true,"web":true,
-            "mobile":true},
-            "spendingLimits":[{"interval":"daily",
-                "amount":1000}]},
-                "sendPINSMS":false,
-                "customerId":"638d50a8f174f799e2c948a1",
-                "brand":"Visa"}',
+        'body' => '{
+
+            "spendingControls":
+            {
+                "allowedCategories":[],
+                "blockedCategories":[],
+                "channels":{
+                    "atm":true,
+                    "pos":true,
+                    "web":true,
+                    "mobile":true},
+                "spendingLimits":[
+                        {"interval":"daily",
+                            "amount":5000}]},
+                            "sendPINSMS":false,
+                            "customerId":"638d50a8f174f799e2c948a1",
+                            "brand":"Visa"
+            }',
 
 
-            "identity" => [
-                "type" => $request->type,
-                "number" => $request->number
+            "spendingControls" => [
+                "allowedCategories" => $request->allowedCategories,
+                "blockedCategories" => $request->blockedCategories
             ],
-            "company" => [
-                "name" => $request->name
+            "channels" => [
+                "atm" => $request->atm,
+                "pos" => $request->pos,
+                "web" => $request->web,
+                "mobile" => $request->mobile
             ],
-            "officer" => [
-                "firstName" => $request->firstName,
-                "lastName" => $request->lastName,
+            "spendingLimits" => [
+                "interval" => $request->interval,
+                "amount" => $request->amount,
                 "otherNames" => $request->otherNames ? $request->otherNames : "string",
                 "dob" => $request->dob
             ],
