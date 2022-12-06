@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Enums\ActivityType;
 use App\Models\User;
 use App\Models\VirtualAccount;
+use App\Models\VirtualCard;
 use App\Traits\ManagesUsers;
 use Illuminate\Support\Facades\Auth;
 use App\Traits\ManagesResponse;
@@ -52,7 +53,9 @@ class VirtualAccountController extends Controller
             "country" => $request->country,
             "phoneNumber" => $request->phoneNumber,
             "emailAddress" => $request->emailAddress,
-            "status" => 1
+            "user_type" => "individual",
+            "status" => "active",
+            'id_type'      => $request->type
 
         );
 
@@ -73,6 +76,12 @@ class VirtualAccountController extends Controller
                     "lastName" => $request->lastName,
                     "otherNames" => $request->otherNames ? $request->otherNames : "string",
                     "dob" => $request->dob
+                ],
+                "documents" => [
+                    "idFrontUrl" => $request->idFrontUrl,
+                    "idBackUrl" => $request->idBackUrl,
+                    "incorporationCertificateUrl" => $request->incorporationCertificateUrl,
+                    "addressVerificationUrl" => $request->addressVerificationUrl
                 ],
                 "billingAddress" => [
                     "line1" => $request->line1,
@@ -108,7 +117,7 @@ class VirtualAccountController extends Controller
     $this->saveUserActivity(ActivityType::VIRTUALACCOUNT, '', $user->id);
 
         return response()->json([
-            "message" => "Customer created successfully",
+            "message" => "Individual Virtual account created successfully",
             'data' => $response,
             'status' => 'success',
         ], 201);
@@ -137,7 +146,7 @@ class VirtualAccountController extends Controller
     {
         try {
             $data = VirtualAccount::on('mysql::write')->where('user_id', $id)->orWhere('id', $id)->first();
-            $message = 'General details successfully fetched';
+            $message = 'data successfully fetched';
 
             return $this->sendResponse($data,$message);
         }catch (ModelNotFoundException $e) {
@@ -149,8 +158,6 @@ class VirtualAccountController extends Controller
 
     public function UpdateAccountIND(Request $request, $id, $user)
     {
-        // $user = Auth::user();
-
         $id = $id;
 
         $product = VirtualAccount::where('user_id', $user)->first();
@@ -169,7 +176,7 @@ class VirtualAccountController extends Controller
         $product->country = $request->country;
         $product->phoneNumber = $request->phoneNumber;
         $product->emailAddress = $request->emailAddress;
-        $product->status = 1;
+        $product->status = "active";
 
         $base_url = 'https://api.sandbox.sudo.cards/customers/'. $id;
 
@@ -187,6 +194,12 @@ class VirtualAccountController extends Controller
                     "lastName" => $request->lastName,
                     "otherNames" => $request->otherNames ? $request->otherNames : "string",
                     "dob" => $request->dob
+                ],
+                "documents" => [
+                    "idFrontUrl" => $request->idFrontUrl,
+                    "idBackUrl" => $request->idBackUrl,
+                    "incorporationCertificateUrl" => $request->incorporationCertificateUrl,
+                    "addressVerificationUrl" => $request->addressVerificationUrl
                 ],
                 "billingAddress" => [
                     "line1" => $request->line1,
@@ -216,7 +229,213 @@ class VirtualAccountController extends Controller
             "message" => "Customer profile updated successfully",
             'data' => $response,
             'status' => 'success',
-        ], 201);
+        ], 200);
+
+}
+
+public function createAccountCOMP(Request $request)
+{
+    $user = Auth::user();
+
+    $data = array(
+        'user_id' => auth()->user()->id,
+        'name'       => $request->name,
+        'id_type'      => $request->type,
+        'number'      => $request->number,
+        'firstName'  => $request->firstName,
+        'lastName' => $request->lastName,
+        'otherNames' => $request->otherNames,
+        'dob' => $request->dob,
+        'line1' => $request->line1,
+        'line2' => $request->line2,
+        "city" => $request->city,
+        "state" => $request->state,
+        "postalCode" => $request->postalCode,
+        "country" => $request->country,
+        "phoneNumber" => $request->phoneNumber,
+        "emailAddress" => $request->emailAddress,
+        "user_type" => "company",
+        "status" => "active"
+
+    );
+
+
+    $base_url = 'https://api.sandbox.sudo.cards/customers';
+
+    $body = [
+        "type" => "company",
+        "status" => "active",
+        "name" => $request->name,
+
+            "identity" => [
+                "type" => $request->type,
+                "number" => $request->number
+            ],
+            "company" => [
+                "name" => $request->name
+            ],
+            "officer" => [
+                "firstName" => $request->firstName,
+                "lastName" => $request->lastName,
+                "otherNames" => $request->otherNames ? $request->otherNames : "string",
+                "dob" => $request->dob
+            ],
+            "documents" => [
+                "idFrontUrl" => $request->idFrontUrl,
+                "idBackUrl" => $request->idBackUrl,
+                "incorporationCertificateUrl" => $request->incorporationCertificateUrl,
+                "addressVerificationUrl" => $request->addressVerificationUrl
+            ],
+            "billingAddress" => [
+                "line1" => $request->line1,
+                "line2" => $request->line2 ? $request->line2 : null,
+                "city" => $request->city,
+                "state" => $request->state,
+                "postalCode" => $request->postalCode,
+                "country" => $request->country,
+                "phoneNumber" => $request->phoneNumber,
+                "emailAddress" => $request->emailAddress
+            ],
+
+        ];
+
+        $response = Http::withHeaders([
+            'Authorization' => 'Bearer '.env('SUDO_SANDBOX_KEY'),
+            'accept' => 'application/json',
+            'content-type' => 'application/json',
+        ])->post($base_url, $body);
+
+    $response = $response->getBody()->getContents();
+
+    $checkUser = VirtualAccount::where('phoneNumber', $request->phoneNumber)->first();
+
+    if ($checkUser) {
+        return Response::json([
+            'status' => false,
+            'message' => 'You already have an account created!'
+        ], 419);
+    }
+    else {
+$checkUser = VirtualAccount::on('mysql::write')->create($data);
+$this->saveUserActivity(ActivityType::VIRTUALACCOUNT, '', $user->id);
+
+    return response()->json([
+        "message" => "Company Virtual account created successfully",
+        'data' => $response,
+        'status' => 'success',
+    ], 201);
+}
+}
+
+public function createCard (Request $request)
+{
+    $user = Auth::user();
+
+    // $data = array(
+    //     'user_id' => auth()->user()->id,
+    //     'name'       => $request->name,
+    //     'id_type'      => $request->type,
+    //     'number'      => $request->number,
+    //     'firstName'  => $request->firstName,
+    //     'lastName' => $request->lastName,
+    //     'otherNames' => $request->otherNames,
+    //     'dob' => $request->dob,
+    //     'line1' => $request->line1,
+    //     'line2' => $request->line2,
+    //     "city" => $request->city,
+    //     "state" => $request->state,
+    //     "postalCode" => $request->postalCode,
+    //     "country" => $request->country,
+    //     "phoneNumber" => $request->phoneNumber,
+    //     "emailAddress" => $request->emailAddress,
+    //     "user_type" => "company",
+    //     "status" => "active"
+
+    // );
+
+
+    $base_url = 'https://api.sandbox.sudo.cards/cards';
+
+    $body = [
+        "type" => "virtual",
+        "currency" => "NGN",
+        "issuerCountry" =>"NGA",
+        "status" => "active",
+
+
+  'body' => '{
+      "type":"virtual",
+      "currency":"NGN",
+      "issuerCountry":"NGA",
+      "status":"active",
+      "spendingControls":{"allowedCategories":["mcc"],
+        "blockedCategories":["mcc"],
+        "channels":{"atm":true,"pos":true,"web":true,
+            "mobile":true},
+            "spendingLimits":[{"interval":"daily",
+                "amount":1000}]},
+                "sendPINSMS":false,
+                "customerId":"638d50a8f174f799e2c948a1",
+                "brand":"Visa"}',
+
+
+            "identity" => [
+                "type" => $request->type,
+                "number" => $request->number
+            ],
+            "company" => [
+                "name" => $request->name
+            ],
+            "officer" => [
+                "firstName" => $request->firstName,
+                "lastName" => $request->lastName,
+                "otherNames" => $request->otherNames ? $request->otherNames : "string",
+                "dob" => $request->dob
+            ],
+            "documents" => [
+                "idFrontUrl" => $request->idFrontUrl,
+                "idBackUrl" => $request->idBackUrl,
+                "incorporationCertificateUrl" => $request->incorporationCertificateUrl,
+                "addressVerificationUrl" => $request->addressVerificationUrl
+            ],
+            "billingAddress" => [
+                "line1" => $request->line1,
+                "line2" => $request->line2 ? $request->line2 : null,
+                "city" => $request->city,
+                "state" => $request->state,
+                "postalCode" => $request->postalCode,
+                "country" => $request->country,
+                "phoneNumber" => $request->phoneNumber,
+                "emailAddress" => $request->emailAddress
+            ],
+
+        ];
+
+        $response = Http::withHeaders([
+            'Authorization' => 'Bearer '.env('SUDO_SANDBOX_KEY'),
+            'accept' => 'application/json',
+            'content-type' => 'application/json',
+        ])->post($base_url, $body);
+
+    $response = $response->getBody()->getContents();
+
+    // $checkUser = VirtualCard::where('number', $request->number)->first();
+
+    // if ($checkUser) {
+    //     return Response::json([
+    //         'status' => false,
+    //         'message' => 'You already have an account created!'
+    //     ], 419);
+    // }
+    // else {
+// $checkUser = VirtualCard::on('mysql::write')->create($data);
+// $this->saveUserActivity(ActivityType::VIRTUALCARD, '', $user->id);
+
+    return response()->json([
+        "message" => "Virtual card created successfully",
+        'data' => $response,
+        'status' => 'success',
+    ], 201);
 
 }
 

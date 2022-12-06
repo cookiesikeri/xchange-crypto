@@ -92,6 +92,9 @@ class User extends Authenticatable implements JWTSubject, Searchable
     public function secret_q_and_a(){
         return $this->hasOne(UserSecretQAndA::class);
     }
+    public function virtual_card(){
+        return $this->hasOne(VirtualCard::class);
+    }
     public function crypto_wallet(){
         return $this->hasOne(CryptoWallet::class);
     }

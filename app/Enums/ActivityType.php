@@ -58,5 +58,6 @@ final class ActivityType extends Enum
     const TV = 'TV decorder puchase';
     const VIRTUALACCOUNT = 'Create Virtual Account';
     const UPDATE_VIRTUALACCOUNT = 'Update Virtual Account';
+    const VIRTUALCARD = 'Create Virtual Card';
 
 }
