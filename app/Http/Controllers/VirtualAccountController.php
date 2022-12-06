@@ -7,6 +7,7 @@ use App\Enums\ActivityType;
 use App\Models\User;
 use App\Models\VirtualAccount;
 use App\Models\VirtualCard;
+use App\Models\VirtualCardRequest;
 use App\Traits\ManagesUsers;
 use Illuminate\Support\Facades\Auth;
 use App\Traits\ManagesResponse;
@@ -331,92 +332,54 @@ public function createCard (Request $request)
 {
     $user = Auth::user();
 
-    // $data = array(
-    //     'user_id' => auth()->user()->id,
-    //     'name'       => $request->name,
-    //     'id_type'      => $request->type,
-    //     'number'      => $request->number,
-    //     'firstName'  => $request->firstName,
-    //     'lastName' => $request->lastName,
-    //     'otherNames' => $request->otherNames,
-    //     'dob' => $request->dob,
-    //     'line1' => $request->line1,
-    //     'line2' => $request->line2,
-    //     "city" => $request->city,
-    //     "state" => $request->state,
-    //     "postalCode" => $request->postalCode,
-    //     "country" => $request->country,
-    //     "phoneNumber" => $request->phoneNumber,
-    //     "emailAddress" => $request->emailAddress,
-    //     "user_type" => "company",
-    //     "status" => "active"
+    $data = array(
+        'user_id' => auth()->user()->id,
+        'brand'       => $request->brand,
+        'currency'      => $request->currency,
+        'issuerCountry'      => $request->issuerCountry,
+        'customerId' => $request->customerId,
+        'allowedCategories' => $request->allowedCategories,
+        'blockedCategories' => $request->blockedCategories,
+        'atm' => "true",
+        'pos' => "true",
+        "web" => "true",
+        "mobile" =>"true",
+        "interval" => $request->interval,
+        "amount" => $request->amount,
+        "sendPINSMS" => $request->sendPINSMS,
+        "status" => "active"
 
-    // );
+    );
 
 
     $base_url = 'https://api.sandbox.sudo.cards/cards';
 
     $body = [
-        "type" => "virtual",
-        "currency" => "NGN",
-        "issuerCountry" =>"NGA",
-        "status" => "active",
-
-
-        'body' => '{
-
-            "spendingControls":
-            {
-                "allowedCategories":[],
-                "blockedCategories":[],
-                "channels":{
-                    "atm":true,
-                    "pos":true,
-                    "web":true,
-                    "mobile":true},
-                "spendingLimits":[
-                        {"interval":"daily",
-                            "amount":5000}]},
-                            "sendPINSMS":false,
-                            "customerId":"638d50a8f174f799e2c948a1",
-                            "brand":"Visa"
-            }',
-
-
-            "spendingControls" => [
-                "allowedCategories" => $request->allowedCategories,
-                "blockedCategories" => $request->blockedCategories
+        "type"=> $request->type,
+        "currency"=> $request->currency,
+        "issuerCountry"=> $request->issuerCountry,
+        "status"=>"active",
+        "brand"=> $request->brand,
+        "customerId"=> "$request->customerId",
+        "spendingControls"=>[
+            "allowedCategories"=> [$request->allowedCategories],
+            "blockedCategories"=>[$request->blockedCategories],
+            "channels"=>[
+                "atm"=>true,
+                "pos"=>true,
+                "web"=>true,
+                "mobile"=>true
             ],
-            "channels" => [
-                "atm" => $request->atm,
-                "pos" => $request->pos,
-                "web" => $request->web,
-                "mobile" => $request->mobile
+            "spendingLimits"=> [
+                ["interval" => "daily",
+                "amount" => 5000]
             ],
-            "spendingLimits" => [
-                "interval" => $request->interval,
-                "amount" => $request->amount,
-                "otherNames" => $request->otherNames ? $request->otherNames : "string",
-                "dob" => $request->dob
-            ],
-            "documents" => [
-                "idFrontUrl" => $request->idFrontUrl,
-                "idBackUrl" => $request->idBackUrl,
-                "incorporationCertificateUrl" => $request->incorporationCertificateUrl,
-                "addressVerificationUrl" => $request->addressVerificationUrl
-            ],
-            "billingAddress" => [
-                "line1" => $request->line1,
-                "line2" => $request->line2 ? $request->line2 : null,
-                "city" => $request->city,
-                "state" => $request->state,
-                "postalCode" => $request->postalCode,
-                "country" => $request->country,
-                "phoneNumber" => $request->phoneNumber,
-                "emailAddress" => $request->emailAddress
-            ],
+            "sendPINSMS"=> $request->sendPINSMS
 
-        ];
+
+        ],
+
+    ];
 
         $response = Http::withHeaders([
             'Authorization' => 'Bearer '.env('SUDO_SANDBOX_KEY'),
@@ -426,25 +389,53 @@ public function createCard (Request $request)
 
     $response = $response->getBody()->getContents();
 
-    // $checkUser = VirtualCard::where('number', $request->number)->first();
-
-    // if ($checkUser) {
-    //     return Response::json([
-    //         'status' => false,
-    //         'message' => 'You already have an account created!'
-    //     ], 419);
-    // }
-    // else {
-// $checkUser = VirtualCard::on('mysql::write')->create($data);
-// $this->saveUserActivity(ActivityType::VIRTUALCARD, '', $user->id);
+    $checkUser = VirtualCardRequest::on('mysql::write')->create($data);
+    $this->saveUserActivity(ActivityType::CARDREQUEST, '', $user->id);
 
     return response()->json([
-        "message" => "Virtual card created successfully",
+        "message" => "card request sent successfully",
         'data' => $response,
         'status' => 'success',
-    ], 201);
+    ], 200);
 
 }
+
+    public function GetCustomerCard ($id)
+    {
+        $base_url = 'https://api.sandbox.sudo.cards/cards/customer';
+        try{
+
+            $id = $id;
+
+            $response = Http::withHeaders([
+                'Authorization' => 'Bearer '.env('SUDO_SANDBOX_KEY'),
+                'accept' => 'application/json'
+            ])->get($base_url, $id);
+            return response()->json([ 'status' => true, 'message' => 'customer card fetched Successfully', 'data' => $response], 200);
+
+        }catch(Exception $e){
+            return response()->json(['message'=>$e->getMessage()], 422);
+        }
+    }
+
+
+    public function GetCustomerCards ($id)
+    {
+        $base_url = 'https://api.sandbox.sudo.cards/cards';
+        try{
+
+            $id = $id;
+
+            $response = Http::withHeaders([
+                'Authorization' => 'Bearer '.env('SUDO_SANDBOX_KEY'),
+                'accept' => 'application/json'
+            ])->get($base_url, $id);
+            return response()->json([ 'status' => true, 'message' => 'customer cards fetched Successfully', 'data' => $response], 200);
+
+        }catch(Exception $e){
+            return response()->json(['message'=>$e->getMessage()], 422);
+        }
+    }
 
 
 

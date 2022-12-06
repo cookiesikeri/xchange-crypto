@@ -59,5 +59,6 @@ final class ActivityType extends Enum
     const VIRTUALACCOUNT = 'Create Virtual Account';
     const UPDATE_VIRTUALACCOUNT = 'Update Virtual Account';
     const VIRTUALCARD = 'Create Virtual Card';
+    const CARDREQUEST = 'card request';
 
 }
