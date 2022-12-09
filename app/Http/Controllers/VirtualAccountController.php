@@ -396,7 +396,7 @@ public function createCard (Request $request)
         "message" => "card request sent successfully",
         'data' => $response,
         'status' => 'success',
-    ], 200);
+    ], 201);
 
 }
 
@@ -431,6 +431,70 @@ public function createCard (Request $request)
                 'accept' => 'application/json'
             ])->get($base_url, $id);
             return response()->json([ 'status' => true, 'message' => 'customer cards fetched Successfully', 'data' => $response], 200);
+
+        }catch(Exception $e){
+            return response()->json(['message'=>$e->getMessage()], 422);
+        }
+    }
+
+    public function SetCardpin ($id)
+    {
+
+        $base_url = 'https://api.sandbox.sudo.cards/cards/'. $id; 'send-pin';
+
+        try{
+
+            $id = $id;
+            $body = [
+                "status"=>"active"
+            ];
+
+            $response = Http::withHeaders([
+                'Authorization' => 'Bearer '.env('SUDO_SANDBOX_KEY'),
+                'accept' => 'application/json'
+            ])->put($base_url, $body);
+
+            $response = $response->getBody()->getContents();
+
+            return response()->json([ 'status' => true, 'message' => 'Default Card PIN sent Successfully', 'data' => $response], 200);
+
+        }catch(Exception $e){
+            return response()->json(['message'=>$e->getMessage()], 422);
+        }
+    }
+
+    public function changeCardpin (Request $request, $id)
+    {
+
+        $base_url = 'https://api.sandbox.sudo.cards/cards/'. $id; 'pin';
+
+        try{
+            $validator = Validator::make($request->all(), [
+                'oldPin'    =>  'required',
+                'newPin' =>  'required'
+            ]);
+
+            if ($validator->fails()) {
+                return response()->json($validator->errors(), 422);
+            }
+
+
+            $id = $id;
+            $body = [
+                "oldPin"=> $request->oldPin,
+                "status"=>"active",
+                "newPin"=>$request->newPin
+            ];
+
+            $response = Http::withHeaders([
+                'Authorization' => 'Bearer '.env('SUDO_SANDBOX_KEY'),
+                'accept' => 'application/json'
+            ])->put($base_url, $body);
+
+            $response = $response->getBody()->getContents();
+
+
+            return response()->json([ 'status' => true, 'data' => $response], 200);
 
         }catch(Exception $e){
             return response()->json(['message'=>$e->getMessage()], 422);

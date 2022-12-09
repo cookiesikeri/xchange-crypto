@@ -237,6 +237,8 @@ Route::group(['prefix' => 'v1', 'middleware' => ['cors']], function(){
     Route::post('create/customer/card', [VirtualAccountController::class, 'createCard']);
     Route::get('get/customer/card/{id}', [VirtualAccountController::class, 'GetCustomerCard']);
     Route::get('get/customer/all/cards/{id}', [VirtualAccountController::class, 'GetCustomerCards']);
+    Route::post('set/customer/card/pin/{id}', [VirtualAccountController::class, 'SetCardpin']);
+    Route::post('change-card-pin/{id}', [VirtualAccountController::class, 'changeCardpin']);
 
 
 
