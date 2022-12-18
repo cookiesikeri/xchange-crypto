@@ -245,7 +245,14 @@ Route::group(['prefix' => 'v1', 'middleware' => ['cors']], function(){
 
     //giftcard
 
-   Route::post('updace-card-pin/{id}', [GiftcardController::class, 'UpdateCardpin']);
+   Route::post('giftcard/create/customer', [GiftcardController::class, 'CreateCustomer']);
+   Route::get('giftcard/get/customer/details/{id}', [GiftcardController::class, 'CustomerDetails']);
+   Route::post('giftcard/update/customer/{id}/{user_id}', [GiftcardController::class, 'UpdateCustomerDetails']);
+   Route::post('create/create/gift/card', [GiftcardController::class, 'CreateGiftCard']);
+   Route::post('link/customer/gift/card/{id}', [GiftcardController::class, 'LINKGiftCard']);
+   Route::post('retrieve-gift-card-from-gan', [GiftcardController::class, 'RetrieveCardGAN']);
+   Route::post('retrieve-gift-card/{id}', [GiftcardController::class, 'RetrieveGIFTCard']);
+   Route::post('create-gift-card-activity', [GiftcardController::class, 'CreategiftCardActivity']);
 
 
 

@@ -62,4 +62,10 @@ final class ActivityType extends Enum
     const CARDREQUEST = 'card request';
     const UPDATECARD = 'update card';
 
+    const CREATEGIFTCARD_CUSTOMER = 'create giftcard customer';
+    const UPDATEGIFTCARD_CUSTOMER = 'update giftcard customer details';
+    const CREATEGIFTCARD = 'giftcard created';
+    const LINKGIFTCARD = 'link customer to giftcard';
+    const creategiftcardactivity = 'gift card activity changed';
+
 }

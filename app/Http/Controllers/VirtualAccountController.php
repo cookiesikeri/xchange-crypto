@@ -440,7 +440,7 @@ public function createCard (Request $request)
     public function SetCardpin ($id)
     {
 
-        $base_url = 'https://api.sandbox.sudo.cards/cards/'. $id; 'send-pin';
+        $base_url = 'https://api.sandbox.sudo.cards/cards/'. $id. '/send-pin';
 
         try{
 
@@ -466,7 +466,7 @@ public function createCard (Request $request)
     public function changeCardpin (Request $request, $id)
     {
 
-        $base_url = 'https://api.sandbox.sudo.cards/cards/'. $id; 'pin';
+        $base_url = 'https://api.sandbox.sudo.cards/cards/'. $id; '/pin';
 
         try{
             $validator = Validator::make($request->all(), [
