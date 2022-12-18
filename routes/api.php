@@ -13,6 +13,7 @@ use App\Http\Controllers\TransactionController;
 use App\Http\Controllers\BitconWalletController;
 use App\Http\Controllers\DogecoinController;
 use App\Http\Controllers\EtherumController;
+use App\Http\Controllers\GiftcardController;
 use App\Http\Controllers\LitecoinController;
 use App\Http\Controllers\PolygonController;
 use App\Http\Controllers\PowerController;
@@ -239,7 +240,12 @@ Route::group(['prefix' => 'v1', 'middleware' => ['cors']], function(){
     Route::get('get/customer/all/cards/{id}', [VirtualAccountController::class, 'GetCustomerCards']);
     Route::post('set/customer/card/pin/{id}', [VirtualAccountController::class, 'SetCardpin']);
     Route::post('change-card-pin/{id}', [VirtualAccountController::class, 'changeCardpin']);
+    Route::post('updace-card-pin/{id}', [VirtualAccountController::class, 'UpdateCardpin']);
 
+
+    //giftcard
+
+   Route::post('updace-card-pin/{id}', [GiftcardController::class, 'UpdateCardpin']);
 
 
 

@@ -478,7 +478,6 @@ public function createCard (Request $request)
                 return response()->json($validator->errors(), 422);
             }
 
-
             $id = $id;
             $body = [
                 "oldPin"=> $request->oldPin,
@@ -499,6 +498,80 @@ public function createCard (Request $request)
         }catch(Exception $e){
             return response()->json(['message'=>$e->getMessage()], 422);
         }
+    }
+
+    public function UpdateCardpin (Request $request, $id)
+    {
+
+        $product = VirtualAccount::where('user_id', $id)->first();
+        $user = Auth::user();
+
+        $data = array(
+            'user_id' => auth()->user()->id,
+            'brand'       => $request->brand,
+            'currency'      => $request->currency,
+            'issuerCountry'      => $request->issuerCountry,
+            'customerId' => $request->customerId,
+            'allowedCategories' => $request->allowedCategories,
+            'blockedCategories' => $request->blockedCategories,
+            'atm' => "true",
+            'pos' => "true",
+            "web" => "true",
+            "mobile" =>"true",
+            "interval" => $request->interval,
+            "amount" => $request->amount,
+            "sendPINSMS" => $request->sendPINSMS,
+            "status" => "active"
+
+        );
+
+
+        $base_url = 'https://api.sandbox.sudo.cards/cards/id';
+
+
+        $body = [
+            "type"=> $request->type,
+            "currency"=> $request->currency,
+            "issuerCountry"=> $request->issuerCountry,
+            "status"=>"active",
+            "brand"=> $request->brand,
+            "customerId"=> "$request->customerId",
+            "spendingControls"=>[
+                "allowedCategories"=> [$request->allowedCategories],
+                "blockedCategories"=>[$request->blockedCategories],
+                "channels"=>[
+                    "atm"=>true,
+                    "pos"=>true,
+                    "web"=>true,
+                    "mobile"=>true
+                ],
+                "spendingLimits"=> [
+                    ["interval" => "daily",
+                    "amount" => 5000]
+                ],
+                "sendPINSMS"=> $request->sendPINSMS
+
+
+            ],
+
+        ];
+
+            $response = Http::withHeaders([
+                'Authorization' => 'Bearer '.env('SUDO_SANDBOX_KEY'),
+                'accept' => 'application/json',
+                'content-type' => 'application/json',
+            ])->post($base_url, $body);
+
+        $response = $response->getBody()->getContents();
+
+        $checkUser = VirtualCardRequest::on('mysql::write')->create($data);
+        $this->saveUserActivity(ActivityType::UPDATECARD, '', $user->id);
+
+        return response()->json([
+            "message" => "card updated successfully",
+            'data' => $response,
+            'status' => 'success',
+        ], 201);
     }
 
 

@@ -65,6 +65,7 @@ class UserController extends Controller
             'email' => 'required|string|unique:users',
             'phone' => 'required|string|unique:users',
             'password' => 'required|string|min:4',
+            // 'password' => 'required_with:confirm_password|same:confirm_password'
         ]);
 
         if ($validator->fails()) {
