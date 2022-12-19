@@ -65,7 +65,7 @@ class GiftcardController extends Controller
             "note" => $request->note
         );
 
-        $base_url = 'https://connect.squareup.com/v2/customers';
+        $base_url = 'https://connect.squareupsandbox.com/v2/customers';
 
         $body = [
             "given_name" => $request->given_name,
@@ -117,7 +117,7 @@ class GiftcardController extends Controller
 
     public function CustomerDetails ($id)
     {
-        $base_url = 'https://connect.squareup.com/v2/customers/' .$id;
+        $base_url = 'https://connect.squareupsandbox.com/v2/customers/' .$id;
         try{
 
             $id = $id;
@@ -148,7 +148,7 @@ class GiftcardController extends Controller
         $product->note = $request->note;
 
 
-        $base_url = 'https://connect.squareup.com/v2/customers/' .$id;
+        $base_url = 'https://connect.squareupsandbox.com/v2/customers/' .$id;
 
         $body = [
             "phone_number" => $request->phone_number,
@@ -197,7 +197,7 @@ class GiftcardController extends Controller
         //     "note" => $request->note
         // );
 
-        $base_url = 'https://connect.squareup.com/v2/gift-cards';
+        $base_url = 'https://connect.squareupsandbox.com/v2/gift-cards';
 
         $body = [
             "idempotency_key" => $request->idempotency_key,
@@ -232,7 +232,7 @@ class GiftcardController extends Controller
 
         $id = $id;
 
-        $base_url = 'https://connect.squareup.com/v2/gift-cards/'.$id.'/link-customer';
+        $base_url = 'https://connect.squareupsandbox.com/v2/gift-cards/'.$id.'/link-customer';
 
         $body = [
             "customer_id" => $request->customer_id
@@ -257,7 +257,7 @@ class GiftcardController extends Controller
 
     public function RetrieveCardGAN (Request $request)
     {
-        $base_url = 'https://connect.squareup.com/v2/gift-cards/from-gan';
+        $base_url = 'https://connect.squareupsandbox.com/v2/gift-cards/from-gan';
         try{
 
             $body = [
@@ -279,7 +279,7 @@ class GiftcardController extends Controller
 
     public function RetrieveGIFTCard ($id)
     {
-        $base_url = 'https://connect.squareup.com/v2/gift-cards/' .$id;
+        $base_url = 'https://connect.squareupsandbox.com/v2/gift-cards/' .$id;
         try{
 
             $id = $id;
@@ -302,7 +302,7 @@ class GiftcardController extends Controller
 
         $user = Auth::user();
 
-        $base_url = 'https://connect.squareup.com/v2/gift-cards/activities';
+        $base_url = 'https://connect.squareupsandbox.com/v2/gift-cards/activities';
 
         $body = [
             "idempotency_key" => 'KEY' . $ref,
