@@ -72,14 +72,12 @@ class GiftcardController extends Controller
             "family_name" => $request->family_name,
             "email_address" => $request->email_address,
 
-                "address" => [
-                    "address_line_1" => $request->address_line_1,
-                    "address_line_2" => $request->address_line_2,
-                    "locality" => $request->locality,
-                    "administrative_district_level_1" => $request->administrative_district_level_1,
-                    "postal_code" => $request->postal_code,
-                    "country" => $request->country
-                ],
+                "address_line_1" => $request->address_line_1,
+                "address_line_2" => $request->address_line_2,
+                "locality" => $request->locality,
+                "administrative_district_level_1" => $request->administrative_district_level_1,
+                "postal_code" => $request->postal_code,
+                "country" => $request->country,
                 "phone_number" => $request->phone_number,
                 "reference_id" => 'REF' . $ref,
                 "note" => $request->note
