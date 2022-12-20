@@ -219,7 +219,6 @@ class UserController extends Controller
     {
         try{
             $validator = Validator::make($request->all(), [
-                'name' => 'string',
                 'phone' => 'string',
                 'email' => 'string|email',
                 'password' => 'nullable|string|min:4',
