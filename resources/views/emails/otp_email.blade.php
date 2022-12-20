@@ -9,4 +9,5 @@ thank you!
 
 Thanks,<br>
 {{ config('app.name') }}
+
 @endcomponent
