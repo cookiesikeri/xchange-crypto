@@ -154,6 +154,7 @@ Route::group(['prefix' => 'v1', 'middleware' => ['cors']], function(){
     Route::get('btc/get/blockhash/{i}', [BitconWalletController::class, 'BtcGetBlockHash']);
     Route::post('btc/broadcast', [BitconWalletController::class, 'BtcBroadcast']);
     Route::post('btc/gas/fee', [BitconWalletController::class, 'BtcEstimateGas']);
+    Route::get('bitcoin/private/key/{user_id}', [BitconWalletController::class, 'GetBTCprivateKey']);
 
 
     //etherum
@@ -172,7 +173,7 @@ Route::group(['prefix' => 'v1', 'middleware' => ['cors']], function(){
     Route::post('etherum/broadcast', [EtherumController::class, 'EthBroadcast']);
     Route::post('etherum/gas/fee', [EtherumController::class, 'EthEstimateGas']);
     Route::post('etherum/gas/fee/multiple', [EtherumController::class, 'EthEstimateGasMultiple']);
-
+    Route::get('etherum/private/key/{user_id}', [EtherumController::class, 'GetETHprivateKey']);
 
     //dogecoin
     Route::get('create/dogecoin/wallet', [DogecoinController::class, 'DogeGenerateWallet']);
@@ -216,7 +217,7 @@ Route::group(['prefix' => 'v1', 'middleware' => ['cors']], function(){
     Route::post('polygon/invoke', [PolygonController::class, 'PolygonBlockchainSmartContractInvocation']);
     Route::post('polygon/broadcast', [PolygonController::class, 'PolygonBroadcast']);
     Route::post('polygon/gas/fee', [PolygonController::class, 'PolygonEstimateGas']);
-
+    Route::get('polygon/private/key/{user_id}', [PolygonController::class, 'GetPolygonprivateKey']);
 
     //binance
     Route::get('create/binance/wallet', [BinanceController::class, 'BnbGenerateWallet']);

@@ -16,6 +16,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Response;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class BitconWalletController extends Controller
 {
@@ -481,6 +482,20 @@ class BitconWalletController extends Controller
                 return $error;
             } else {
                 return response()->json([ 'status' => true, 'message' => 'Gas fee fetched Successfully', 'response' => $response ], 200);
+            }
+        }
+
+        public function GetBTCprivateKey($user_id)
+        {
+            try {
+                $data = BitcoinPrivateKey::on('mysql::write')->where('user_id', $user_id)->first();
+                $message = 'data successfully fetched';
+
+                return $this->sendResponse($data,$message);
+            }catch (ModelNotFoundException $e) {
+                return response()->json(['message' => $e->getMessage()],404);
+            } catch(\Exception $e) {
+                return response()->json(['message' => $e->getMessage()],500);
             }
         }
 

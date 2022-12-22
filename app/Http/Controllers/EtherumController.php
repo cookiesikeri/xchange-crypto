@@ -15,6 +15,7 @@ use App\Traits\ManagesResponse;
 use Illuminate\Support\Facades\Response;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class EtherumController extends Controller
 {
@@ -596,6 +597,20 @@ class EtherumController extends Controller
             return $error;
         } else {
             return response()->json([ 'status' => true, 'message' => 'Gas fee fetched Successfully', 'response' => $response ], 200);
+        }
+    }
+
+    public function GetETHprivateKey($user_id)
+    {
+        try {
+            $data = EtherumPrivateKey::on('mysql::write')->where('user_id', $user_id)->first();
+            $message = 'data successfully fetched';
+
+            return $this->sendResponse($data,$message);
+        }catch (ModelNotFoundException $e) {
+            return response()->json(['message' => $e->getMessage()],404);
+        } catch(\Exception $e) {
+            return response()->json(['message' => $e->getMessage()],500);
         }
     }
 
