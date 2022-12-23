@@ -47,7 +47,7 @@ class BitconWalletController extends Controller
         return response()->json($error);
        }
        else {
-       $checkUser = BitcoinWalletPass::where('user_id', $request->user_id)->first();
+       $checkUser = BitcoinWalletPass::where('user_id', auth()->user()->id)->first();
 
        if ($checkUser) {
            return Response::json([
@@ -57,7 +57,7 @@ class BitconWalletController extends Controller
        }
        else {
         $checkUser = BitcoinWalletPass::on('mysql::write')->create([
-            'user_id' => $request->user_id,
+            'user_id' => auth()->user()->id,
             'mnemonic' => $response
         ]);
 
