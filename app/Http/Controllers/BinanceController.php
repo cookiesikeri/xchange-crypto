@@ -14,6 +14,8 @@ use App\Models\BinanceWallet;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Response;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
+
 
 class BinanceController extends Controller
 {
@@ -40,17 +42,27 @@ class BinanceController extends Controller
         curl_close($curl);
 
         if ($error) {
-            return $error;
+            return response()->json($error);
         } else {
-            BinanceWallet::on('mysql::write')->create([
-                'user_id' => auth()->user()->id,
-                'response' => $response
-            ]);
+            $checkUser = BinanceWallet::where('user_id', auth()->user()->id)->first();
+
+            if ($checkUser) {
+                return Response::json([
+                    'status' => false,
+                    'message' => 'You already have an account created!'
+                ], 419);
+            }
+            else {
+             $checkUser = BinanceWallet::on('mysql::write')->create([
+                 'user_id' => auth()->user()->id,
+                 'mnemonic' => $response
+             ]);
 
             $this->saveUserActivity(ActivityType::CREATE_POLYGON_WALLET, '', $user->id);
 
             return response()->json([ 'status' => true, 'message' => 'Wallet created Successfully', 'response' => $response ], 200);
         }
+    }
     }
 
         public function BnbGetCurrentBlock(){
@@ -306,6 +318,20 @@ class BinanceController extends Controller
         } else {
             $this->saveUserActivity(ActivityType::BROADCAST_BINANCE, '', $user->id);
             return response()->json([ 'status' => true, 'message' => 'Broadcasted Successful', 'response' => $response ], 201);
+        }
+    }
+
+    public function GetWalletDeatils()
+    {
+        try {
+            $data = BinanceWallet::on('mysql::write')->where('user_id', auth()->user()->id)->first();
+            $message = 'data successfully fetched';
+
+            return $this->sendResponse($data,$message);
+        }catch (ModelNotFoundException $e) {
+            return response()->json(['message' => $e->getMessage()],404);
+        } catch(\Exception $e) {
+            return response()->json(['message' => $e->getMessage()],500);
         }
     }
 

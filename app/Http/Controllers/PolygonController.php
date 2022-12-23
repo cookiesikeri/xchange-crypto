@@ -15,6 +15,7 @@ use App\Models\PolygonWallet;
 use App\Models\PolygonWalletAddress;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Response;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Facades\Validator;
 
 class PolygonController extends Controller
@@ -42,17 +43,26 @@ class PolygonController extends Controller
         curl_close($curl);
 
         if ($error) {
-            return $error;
+            return response()->json($error);
         } else {
-            PolygonWallet::on('mysql::write')->create([
-                'user_id' => auth()->user()->id,
-                'response' => $response
-            ]);
+            $checkUser = PolygonWallet::where('user_id', auth()->user()->id)->first();
 
+            if ($checkUser) {
+                return Response::json([
+                    'status' => false,
+                    'message' => 'You already have an account created!'
+                ], 419);
+            }
+            else {
+             $checkUser = PolygonWallet::on('mysql::write')->create([
+                 'user_id' => auth()->user()->id,
+                 'mnemonic' => $response
+             ]);
             $this->saveUserActivity(ActivityType::CREATE_POLYGON_WALLET, '', $user->id);
 
             return response()->json([ 'status' => true, 'message' => 'Wallet created Successfully', 'response' => $response ], 200);
         }
+    }
     }
 
     public function PolygonGenerateAddress($xpub){
@@ -501,6 +511,20 @@ public function PolygonBlockchainSmartContractInvocation(Request $request){
                 return $error;
             } else {
                 return response()->json([ 'status' => true, 'message' => 'Gas fee fetched Successfully', 'response' => $response ], 200);
+            }
+        }
+
+        public function GetWalletDeatils()
+        {
+            try {
+                $data = PolygonWallet::on('mysql::write')->where('user_id', auth()->user()->id)->first();
+                $message = 'data successfully fetched';
+
+                return $this->sendResponse($data,$message);
+            }catch (ModelNotFoundException $e) {
+                return response()->json(['message' => $e->getMessage()],404);
+            } catch(\Exception $e) {
+                return response()->json(['message' => $e->getMessage()],500);
             }
         }
 

@@ -16,6 +16,7 @@ use App\Models\LitecoinWalletAddress;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Response;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class LitecoinController extends Controller
 {
@@ -42,17 +43,27 @@ class LitecoinController extends Controller
         curl_close($curl);
 
         if ($error) {
-            return $error;
+            return response()->json($error);
         } else {
-            LitecoinWallet::on('mysql::write')->create([
-                'user_id' => auth()->user()->id,
-                'response' => $response
-            ]);
+            $checkUser = LitecoinWallet::where('user_id', auth()->user()->id)->first();
+
+            if ($checkUser) {
+                return Response::json([
+                    'status' => false,
+                    'message' => 'You already have an account created!'
+                ], 419);
+            }
+            else {
+             $checkUser = LitecoinWallet::on('mysql::write')->create([
+                 'user_id' => auth()->user()->id,
+                 'mnemonic' => $response
+             ]);
 
             $this->saveUserActivity(ActivityType::CREATE_LITECOIN_WALLET, '', $user->id);
 
             return response()->json([ 'status' => true, 'message' => 'wallet created successfully', 'response' => $response ], 200);
         }
+    }
     }
 
     public function LitecoinGenerateAddress($xpub){
@@ -498,5 +509,20 @@ class LitecoinController extends Controller
             return response()->json([ 'status' => true, 'message' => 'Gas fee fetched Successfully', 'response' => $response ], 200);
         }
     }
+
+    public function GetWalletDeatils()
+    {
+        try {
+            $data = LitecoinWallet::on('mysql::write')->where('user_id', auth()->user()->id)->first();
+            $message = 'data successfully fetched';
+
+            return $this->sendResponse($data,$message);
+        }catch (ModelNotFoundException $e) {
+            return response()->json(['message' => $e->getMessage()],404);
+        } catch(\Exception $e) {
+            return response()->json(['message' => $e->getMessage()],500);
+        }
+    }
+
 
 }

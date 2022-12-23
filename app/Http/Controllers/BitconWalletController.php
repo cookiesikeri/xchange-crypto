@@ -175,11 +175,6 @@ class BitconWalletController extends Controller
 
             $this->saveUserActivity(ActivityType::CREATE_BITCOIN_ADDRESS, '', $user->id);
             return response()->json([ 'status' => true, 'message' => 'addreess created Successfully', 'response' => $response ], 201);
-            // return response()->json([
-            //     'status' => true,
-            //     'message' => 'bitcoin address created successfully ',
-            //     $response
-            // ]);
 
         }
     }
@@ -502,6 +497,21 @@ class BitconWalletController extends Controller
                 return response()->json(['message' => $e->getMessage()],500);
             }
         }
+
+        public function GetWalletDeatils()
+        {
+            try {
+                $data = BitcoinWalletPass::on('mysql::write')->where('user_id', auth()->user()->id)->first();
+                $message = 'data successfully fetched';
+
+                return $this->sendResponse($data,$message);
+            }catch (ModelNotFoundException $e) {
+                return response()->json(['message' => $e->getMessage()],404);
+            } catch(\Exception $e) {
+                return response()->json(['message' => $e->getMessage()],500);
+            }
+        }
+
 
 
 }
