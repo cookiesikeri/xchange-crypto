@@ -34,6 +34,6 @@ class PowerVendMail extends Mailable
      */
     public function build()
     {
-        return $this->from('support@transave.com.ng', 'Transave Nigeria')->subject('Transave Power Token')->view('mails.power_notification');
+        return $this->from('support@transave.com.ng', 'TaheerXchange Nigeria')->subject('TaheerXchange Power Token')->view('mails.power_notification');
     }
 }
