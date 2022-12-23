@@ -45,23 +45,27 @@ class BitconWalletController extends Controller
         if ($error) {
         // echo "cURL Error #:" . $error;
         return response()->json($error);
-        } else {
-            $checkRef = BitcoinWalletPass::where('mnemonic', $response)->exists();
+       }
+       else {
+       $checkUser = BitcoinWalletPass::where('user_id', $request->user_id)->first();
 
-            if($checkRef && $checkRef->status >= 0){
-                return response()->json(['message'=>'Wallet already exist.'], 413);
-            }elseif (!$checkRef){
-                BitcoinWalletPass::on('mysql::write')->create([
-                    'user_id' => auth()->user()->id,
-                    'mnemonic' => $response
-                ]);
-            }
-            $this->saveUserActivity(ActivityType::CREATE_BITCOIN_WALLET, '', $user->id);
+       if ($checkUser) {
+           return Response::json([
+               'status' => false,
+               'message' => 'You already have an account created!'
+           ], 419);
+       }
+       else {
+        $checkUser = BitcoinWalletPass::on('mysql::write')->create([
+            'user_id' => $request->user_id,
+            'mnemonic' => $response
+        ]);
 
-            return response()->json([ 'status' => true, 'message' => 'Wallet created Successfully', 'response' => $response ], 201);
-
-        }
+    $this->saveUserActivity(ActivityType::CREATE_BITCOIN_WALLET, '', $user->id);
+    return response()->json([ 'status' => true, 'message' => 'Wallet created Successfully', 'response' => $response ], 201);
     }
+}
+}
 
 
     public function CreateBitcoinPrivateKey(Request $request){
