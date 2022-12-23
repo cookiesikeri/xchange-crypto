@@ -248,7 +248,7 @@ class EtherumController extends Controller
         if ($error) {
             return $error;
         } else {
-            return $response;
+            return response()->json([ 'status' => true, 'message' => 'Balance fetched successfully', 'response' => $response ], 200);
         }
     }
 
@@ -274,7 +274,7 @@ class EtherumController extends Controller
         if ($error) {
             return $error;
         } else {
-            return $response;
+            return response()->json([ 'status' => true, 'message' => 'Transaction by hash fetched successfully', 'response' => $response ], 200);
         }
 
     }
@@ -302,7 +302,7 @@ class EtherumController extends Controller
         if ($error) {
             return $error;
         } else {
-            return $response;
+            return response()->json([ 'status' => true, 'message' => 'Transactionby count fetched successfully', 'response' => $response ], 200);
         }
 
     }
@@ -332,7 +332,7 @@ class EtherumController extends Controller
         if ($error) {
             return $error;
         } else {
-            return $response;
+            return response()->json([ 'status' => true, 'message' => 'Transaction fetched successfully', 'response' => $response ], 200);
         }
     }
 
