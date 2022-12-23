@@ -108,7 +108,7 @@ class EtherumController extends Controller
                 ]);
             }
             $this->saveUserActivity(ActivityType::CREATE_ETH_ADDRESS, '', $user->id);
-            return $response;
+            return response()->json([ 'status' => true, 'message' => 'private key created Successfully', 'response' => $response ], 201);
         }
     }
 
@@ -392,7 +392,7 @@ class EtherumController extends Controller
             ], 201);
 
             $this->saveUserActivity(ActivityType::SEND_ETH, '', $user->id);
-            return $response;
+            return response()->json([ 'status' => true, 'message' => 'Blockchain sent Successfully', 'response' => $response ], 201);
         }
     }
 
