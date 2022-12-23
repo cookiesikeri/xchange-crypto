@@ -168,7 +168,8 @@ class EtherumController extends Controller
                 ]);
             }
             $this->saveUserActivity(ActivityType::ETHGenerateAddressPrivateKey, '', $user->id);
-            return $response;
+
+            return response()->json([ 'status' => true, 'message' => 'private key created Successfully', 'response' => $response ], 201);
         }
     }
 
