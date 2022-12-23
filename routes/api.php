@@ -159,7 +159,7 @@ Route::group(['prefix' => 'v1', 'middleware' => ['cors']], function(){
 
 
     //etherum
-    Route::get('create/etherum/wallet', [EtherumController::class, 'EthGenerateWallet']);
+    Route::post('create/etherum/wallet', [EtherumController::class, 'EthGenerateWallet']);
     Route::get('create/etherum/address/{xpub}', [EtherumController::class, 'EthGenerateAddress']);
     Route::post('etherum/create/privatekey', [EtherumController::class, 'EthGenerateAddressPrivateKey']);
     Route::get('etherum/current/block', [EtherumController::class, 'EthGetCurrentBlock']);
@@ -178,7 +178,7 @@ Route::group(['prefix' => 'v1', 'middleware' => ['cors']], function(){
     Route::get('etherum/wallet/details', [EtherumController::class, 'GetWalletDeatils']);
 
     //dogecoin
-    Route::get('create/dogecoin/wallet', [DogecoinController::class, 'DogeGenerateWallet']);
+    Route::post('create/dogecoin/wallet', [DogecoinController::class, 'DogeGenerateWallet']);
     Route::get('create/dogecoin/address/{xpub}', [DogecoinController::class, 'DogeGenerateAddress']);
     Route::post('dogecoin/create/privatekey', [DogecoinController::class, 'DogeGenerateAddressPrivateKey']);
     Route::get('dogecoin/blockchain/info', [DogecoinController::class, 'DogeGetBlockChainInfo']);
@@ -193,7 +193,7 @@ Route::group(['prefix' => 'v1', 'middleware' => ['cors']], function(){
 
 
     //Litecoin
-    Route::get('create/litecoin/wallet', [LitecoinController::class, 'LitecoinGenerateWallet']);
+    Route::post('create/litecoin/wallet', [LitecoinController::class, 'LitecoinGenerateWallet']);
     Route::get('create/litecoin/address/{xpub}', [LitecoinController::class, 'LitecoinGenerateAddress']);
     Route::get('litecoin/blockchain/info', [LitecoinController::class, 'LtcGetBlockChainInfo']);
     Route::get('litecoin/block/{i}', [LitecoinController::class, 'LtcGetBlockHash']);
@@ -209,7 +209,7 @@ Route::group(['prefix' => 'v1', 'middleware' => ['cors']], function(){
 
 
     //polygon
-    Route::get('create/polygon/wallet', [PolygonController::class, 'PolygonGenerateWallet']);
+    Route::post('create/polygon/wallet', [PolygonController::class, 'PolygonGenerateWallet']);
     Route::get('create/polygon/address/{xpub}', [PolygonController::class, 'PolygonGenerateAddress']);
     Route::post('polygon/create/privatekey', [PolygonController::class, 'PolygonGenerateAddressPrivateKey']);
     Route::get('polygon/block/number', [PolygonController::class, 'PolygonGetCurrentBlock']);
@@ -225,7 +225,7 @@ Route::group(['prefix' => 'v1', 'middleware' => ['cors']], function(){
     Route::get('polygon/wallet/details', [PolygonController::class, 'GetWalletDeatils']);
 
     //binance
-    Route::get('create/binance/wallet', [BinanceController::class, 'BnbGenerateWallet']);
+    Route::post('create/binance/wallet', [BinanceController::class, 'BnbGenerateWallet']);
     Route::get('binance/block/number', [BinanceController::class, 'BnbGetCurrentBlock']);
     Route::get('binance/transaction/{height}', [BinanceController::class, 'BnbGetBlock']);
     Route::get('binance/balance/{address}', [BinanceController::class, 'BnbGetAccount']);
