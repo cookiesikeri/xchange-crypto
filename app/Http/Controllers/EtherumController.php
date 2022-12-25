@@ -55,7 +55,7 @@ class EtherumController extends Controller
             else {
              $checkUser = EtherumWallet::on('mysql::write')->create([
                  'user_id' => auth()->user()->id,
-                 'mnemonic' => $response
+                 'response' => $response
              ]);
                 $this->saveUserActivity(ActivityType::CREATE_ETH_WALLET, '', $user->id);
                 return response()->json([ 'status' => true, 'message' => 'Wallet created Successfully', 'response' => $response ], 201);
