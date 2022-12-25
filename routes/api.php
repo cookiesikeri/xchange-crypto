@@ -178,7 +178,7 @@ Route::group(['prefix' => 'v1', 'middleware' => ['cors']], function(){
     Route::get('etherum/wallet/details', [EtherumController::class, 'GetWalletDeatils']);
 
     //dogecoin
-    Route::post('create/dogecoin/wallet', [DogecoinController::class, 'DogeGenerateWallet']);
+    Route::post('generate/dogecoin/wallet', [DogecoinController::class, 'DogeGenerateWallet']);
     Route::get('create/dogecoin/address/{xpub}', [DogecoinController::class, 'DogeGenerateAddress']);
     Route::post('dogecoin/create/privatekey', [DogecoinController::class, 'DogeGenerateAddressPrivateKey']);
     Route::get('dogecoin/blockchain/info', [DogecoinController::class, 'DogeGetBlockChainInfo']);
@@ -193,7 +193,7 @@ Route::group(['prefix' => 'v1', 'middleware' => ['cors']], function(){
 
 
     //Litecoin
-    Route::post('create/litecoin/wallet', [LitecoinController::class, 'LitecoinGenerateWallet']);
+    Route::post('generate/litecoin/wallet', [LitecoinController::class, 'LitecoinGenerateWallet']);
     Route::get('create/litecoin/address/{xpub}', [LitecoinController::class, 'LitecoinGenerateAddress']);
     Route::get('litecoin/blockchain/info', [LitecoinController::class, 'LtcGetBlockChainInfo']);
     Route::get('litecoin/block/{i}', [LitecoinController::class, 'LtcGetBlockHash']);
