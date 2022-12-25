@@ -160,7 +160,7 @@ Route::group(['prefix' => 'v1', 'middleware' => ['cors']], function(){
 
     //etherum
     Route::post('create/etherum/wallet', [EtherumController::class, 'EthGenerateWallet']);
-    Route::get('create/etherum/address/{xpub}', [EtherumController::class, 'EthGenerateAddress']);
+    Route::post('generate/etherum/address/{xpub}', [EtherumController::class, 'EthGenerateAddress']);
     Route::post('etherum/create/privatekey', [EtherumController::class, 'EthGenerateAddressPrivateKey']);
     Route::get('etherum/current/block', [EtherumController::class, 'EthGetCurrentBlock']);
     Route::get('etherum/block/{hash}', [EtherumController::class, 'EthGetBlockByHash']);
