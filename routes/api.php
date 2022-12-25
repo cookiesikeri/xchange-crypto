@@ -225,7 +225,7 @@ Route::group(['prefix' => 'v1', 'middleware' => ['cors']], function(){
     Route::get('polygon/wallet/details', [PolygonController::class, 'GetWalletDeatils']);
 
     //binance
-    Route::post('create/binance/wallet', [BinanceController::class, 'BnbGenerateWallet']);
+    Route::post('generate/binance/wallet', [BinanceController::class, 'BnbGenerateWallet']);
     Route::get('binance/block/number', [BinanceController::class, 'BnbGetCurrentBlock']);
     Route::get('binance/transaction/{height}', [BinanceController::class, 'BnbGetBlock']);
     Route::get('binance/balance/{address}', [BinanceController::class, 'BnbGetAccount']);
