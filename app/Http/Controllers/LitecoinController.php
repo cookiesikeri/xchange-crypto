@@ -56,7 +56,7 @@ class LitecoinController extends Controller
             else {
              $checkUser = LitecoinWallet::on('mysql::write')->create([
                  'user_id' => auth()->user()->id,
-                 'mnemonic' => $response
+                 'response' => $response
              ]);
 
             $this->saveUserActivity(ActivityType::CREATE_LITECOIN_WALLET, '', $user->id);
