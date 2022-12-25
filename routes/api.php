@@ -209,7 +209,7 @@ Route::group(['prefix' => 'v1', 'middleware' => ['cors']], function(){
 
 
     //polygon
-    Route::post('create/polygon/wallet', [PolygonController::class, 'PolygonGenerateWallet']);
+    Route::post('generate/polygon/wallet', [PolygonController::class, 'PolygonGenerateWallet']);
     Route::get('create/polygon/address/{xpub}', [PolygonController::class, 'PolygonGenerateAddress']);
     Route::post('polygon/create/privatekey', [PolygonController::class, 'PolygonGenerateAddressPrivateKey']);
     Route::get('polygon/block/number', [PolygonController::class, 'PolygonGetCurrentBlock']);
