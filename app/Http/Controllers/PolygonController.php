@@ -56,7 +56,7 @@ class PolygonController extends Controller
             else {
              $checkUser = PolygonWallet::on('mysql::write')->create([
                  'user_id' => auth()->user()->id,
-                 'mnemonic' => $response
+                 'response' => $response
              ]);
             $this->saveUserActivity(ActivityType::CREATE_POLYGON_WALLET, '', $user->id);
 
