@@ -36,10 +36,11 @@ use Illuminate\Validation\ValidationException;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
+use App\Traits\ManagesResponse;
 
 class UserController extends Controller
 {
-    use  ManagesUsers;
+    use  ManagesResponse, ManagesUsers;
 
     protected $user;
     protected $utility;
@@ -516,10 +517,25 @@ class UserController extends Controller
         }
     }
 
-    public function get_user_btc_address($user_id)
+    public function get_user_btc_address1($user_id)
     {
         return response()->json($this->user->get_user_btc_address($user_id));
     }
+
+    public function get_user_btc_address($user_id)
+    {
+        try {
+            $data = BitconWallet::on('mysql::write')->where('user_id', $user_id)->first();
+            $message = 'data successfully fetched';
+
+            return $this->sendResponse($data,$message);
+        }catch (ModelNotFoundException $e) {
+            return response()->json(['message' => $e->getMessage()],404);
+        } catch(\Exception $e) {
+            return response()->json(['message' => $e->getMessage()],500);
+        }
+    }
+
     public function get_user_eth_address($user_id)
     {
         return response()->json($this->user->get_user_eth_address($user_id));
