@@ -157,11 +157,11 @@ class EtherumController extends Controller
         if ($error) {
             return response()->json($error);
         } else {
-            $checkRef = EtherumPrivateKey::where('key', $response)->first();
+            $checkRef = EtherumPrivateKey::where('user_id', auth()->user()->id)->first();
 
-            if($checkRef && $checkRef->status == 0){
+            if($checkRef){
                 return response()->json(['message'=>'Private Key already exist.'], 413);
-            }elseif (!$checkRef){
+            }elseif ($checkRef){
                 EtherumPrivateKey::on('mysql::write')->create([
                     'user_id' => auth()->user()->id,
                     'key' => $response
