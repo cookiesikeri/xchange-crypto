@@ -46,12 +46,8 @@ class UserRepository implements UserInterface {
         if(!is_int($user)) {
             $btc_address = $user->bitcon_wallet->address;
             $btc_key = $user->bitcon_wallet->pub_key;
-
-        return response()->json([ 'status' => true, 'message' => 'data fetched successfully', 'address' => $btc_address, 'pubkey' => $btc_key ], 200);
-    }else{
-            return response()->json([ 'status' => false, 'message' => 'data not found'], 404);
         }
-
+        return response()->json([ 'status' => true, 'message' => 'data fetched successfully', 'address' => $btc_address, 'pubkey' => $btc_key ], 200);
     }
     public function get_user_eth_address($user_id) {
         $user = $this->is_user($user_id);
