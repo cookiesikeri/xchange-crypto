@@ -15,10 +15,19 @@ use App\Mail\OtpMail;
 
 use App\Models\AirtimeTransaction;
 use App\Models\BankTransfer;
+use App\Models\BinanceWallet;
 use App\Models\BitconWallet;
 use App\Models\DataTransaction;
+use App\Models\DogeCoinWallet;
+use App\Models\DogeCoinWalletAddress;
+use App\Models\EtherumWallet;
+use App\Models\EtherumWalletAdress;
+use App\Models\LitecoinWallet;
+use App\Models\LitecoinWalletAddress;
 use App\Models\Models\OtpVerify;
 use App\Models\PaystackRefRecord;
+use App\Models\PolygonWallet;
+use App\Models\PolygonWalletAddress;
 use App\Models\PowerTransaction;
 use App\Models\TVTransaction;
 use App\Models\User;
@@ -538,23 +547,68 @@ class UserController extends Controller
 
     public function get_user_eth_address($user_id)
     {
-        return response()->json($this->user->get_user_eth_address($user_id));
+        try {
+            $data = EtherumWalletAdress::on('mysql::write')->where('user_id', $user_id)->first();
+            $message = 'data successfully fetched';
+
+            return $this->sendResponse($data,$message);
+        }catch (ModelNotFoundException $e) {
+            return response()->json(['message' => $e->getMessage()],404);
+        } catch(\Exception $e) {
+            return response()->json(['message' => $e->getMessage()],500);
+        }
     }
     public function get_user_litecoin_address($user_id)
     {
-        return response()->json($this->user->get_user_litecoin_address($user_id));
+        try {
+            $data = LitecoinWalletAddress::on('mysql::write')->where('user_id', $user_id)->first();
+            $message = 'data successfully fetched';
+
+            return $this->sendResponse($data,$message);
+        }catch (ModelNotFoundException $e) {
+            return response()->json(['message' => $e->getMessage()],404);
+        } catch(\Exception $e) {
+            return response()->json(['message' => $e->getMessage()],500);
+        }
     }
     public function get_user_polygon_address($user_id)
     {
-        return response()->json($this->user->get_user_polygon_address($user_id));
+        try {
+            $data = PolygonWalletAddress::on('mysql::write')->where('user_id', $user_id)->first();
+            $message = 'data successfully fetched';
+
+            return $this->sendResponse($data,$message);
+        }catch (ModelNotFoundException $e) {
+            return response()->json(['message' => $e->getMessage()],404);
+        } catch(\Exception $e) {
+            return response()->json(['message' => $e->getMessage()],500);
+        }
     }
     public function get_user_bnb_address($user_id)
     {
-        return response()->json($this->user->get_user_bnb_address($user_id));
+        try {
+            $data = BinanceWallet::on('mysql::write')->where('user_id', $user_id)->first();
+            $message = 'data successfully fetched';
+
+            return $this->sendResponse($data,$message);
+        }catch (ModelNotFoundException $e) {
+            return response()->json(['message' => $e->getMessage()],404);
+        } catch(\Exception $e) {
+            return response()->json(['message' => $e->getMessage()],500);
+        }
     }
     public function get_user_dogecoin_address($user_id)
     {
-        return response()->json($this->user->get_user_dogecoin_address($user_id));
+        try {
+            $data = DogeCoinWalletAddress::on('mysql::write')->where('user_id', $user_id)->first();
+            $message = 'data successfully fetched';
+
+            return $this->sendResponse($data,$message);
+        }catch (ModelNotFoundException $e) {
+            return response()->json(['message' => $e->getMessage()],404);
+        } catch(\Exception $e) {
+            return response()->json(['message' => $e->getMessage()],500);
+        }
     }
     public function log_wallet_transaction($user, $amount_entered, $new_balance, $transaction_type, $description, $transaction_status, $transaction_reference)
     {
