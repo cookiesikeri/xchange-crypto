@@ -363,7 +363,7 @@ class LitecoinController extends Controller
 
             if($checkRef){
                 return response()->json(['message'=>'Private Key already exist.'], 413);
-            }elseif ($checkRef){
+            }else{
                 LitecoinPrivatekey::on('mysql::write')->create([
                     'user_id' => auth()->user()->id,
                     'response' => $response

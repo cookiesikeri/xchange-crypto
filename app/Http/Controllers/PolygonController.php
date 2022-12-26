@@ -161,11 +161,11 @@ class PolygonController extends Controller
         if ($error) {
             return response()->json($error);
         } else {
-            $checkRef = PolygonPrivateKey::where('key', $response)->first();
+            $checkRef = PolygonPrivateKey::where('user_id', auth()->user()->id)->first();
 
-            if($checkRef && $checkRef->status == 0){
+            if($checkRef){
                 return response()->json(['message'=>'Private Key already exist.'], 413);
-            }elseif (!$checkRef){
+            }else{
                 PolygonPrivateKey::on('mysql::write')->create([
                     'user_id' => auth()->user()->id,
                     'key' => $response

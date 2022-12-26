@@ -113,11 +113,11 @@ class BitconWalletController extends Controller
         if ($error) {
             return response()->json($error);
         } else {
-            $checkRef = BitcoinPrivateKey::where('key', $response)->first();
+            $checkRef = BitcoinPrivateKey::where('user_id', auth()->user()->id)->first();
 
-            if($checkRef && $checkRef->status == 0){
+            if($checkRef){
                 return response()->json(['message'=>'Private Key already exist.'], 413);
-            }elseif (!$checkRef){
+            }else{
                 BitcoinPrivateKey::on('mysql::write')->create([
                     'user_id' => auth()->user()->id,
                     'key' => $response
