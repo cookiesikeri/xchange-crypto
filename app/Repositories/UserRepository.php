@@ -91,7 +91,7 @@ class UserRepository implements UserInterface {
     public function get_user_bnb_address($user_id) {
 
         $user = $this->is_user($user_id);
-        if(!is_int($user)) {
+        if(($user)) {
             $btc_address = $user->binance_wallet->response;
         }
         return response()->json([ 'status' => true, 'message' => 'data fetched successfully', 'data' => $btc_address ], 200);

@@ -15,6 +15,7 @@ use App\Mail\OtpMail;
 
 use App\Models\AirtimeTransaction;
 use App\Models\BankTransfer;
+use App\Models\BitconWallet;
 use App\Models\DataTransaction;
 use App\Models\Models\OtpVerify;
 use App\Models\PaystackRefRecord;
@@ -1076,6 +1077,7 @@ class UserController extends Controller
         curl_close($ch);
         return array('error'=>false, 'data'=>$res);
     }
+
 
 
 }
