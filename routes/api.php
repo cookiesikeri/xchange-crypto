@@ -140,7 +140,6 @@ Route::group(['prefix' => 'v1', 'middleware' => ['cors']], function(){
     Route::get('get_user_dogecoin_address/{user_id}', [ApisUserController::class, 'get_user_dogecoin_address']);
 
 
-
      //bitcoin
     Route::post('generate/bitcoin/wallet', [BitconWalletController::class, 'CreateBitcoinWallet']);
     Route::get('generate/bitcoin/address/{xpub}', [BitconWalletController::class, 'CreateBitcoinAddress']);
