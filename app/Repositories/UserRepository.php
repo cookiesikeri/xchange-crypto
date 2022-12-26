@@ -10,6 +10,7 @@ use App\Models\TVTransaction;
 use Exception;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class UserRepository implements UserInterface {
 
@@ -41,13 +42,16 @@ class UserRepository implements UserInterface {
     }
 
     public function get_user_btc_address($user_id) {
-
+        try {
         $user = $this->is_user($user_id);
         if(!is_int($user)) {
             $btc_address = $user->bitcon_wallet->address;
             $btc_key = $user->bitcon_wallet->pub_key;
         }
         return response()->json([ 'status' => true, 'message' => 'data fetched successfully', 'address' => $btc_address, 'pubkey' => $btc_key ], 200);
+    } catch(\Exception $e) {
+        return response()->json(['message' => $e->getMessage()],500);
+    }
     }
     public function get_user_eth_address($user_id) {
         $user = $this->is_user($user_id);
