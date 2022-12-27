@@ -262,7 +262,7 @@ Route::group(['prefix' => 'v1', 'middleware' => ['cors']], function(){
    Route::post('giftcard/create/location', [GiftcardController::class, 'createLocation']);
    Route::get('giftcard/location/details/{id}', [GiftcardController::class, 'detailsLocation']);
 
-   Route::get('giftcard/list-customers/{id}', [GiftcardController::class, 'listcustomer']);
+   Route::get('giftcard/list-customers', [GiftcardController::class, 'listcustomer']);
    Route::post('giftcard/delete-customers/{id}', [GiftcardController::class, 'deletecustomer']);
 
 

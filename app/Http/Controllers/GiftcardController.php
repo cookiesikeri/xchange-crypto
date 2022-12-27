@@ -422,6 +422,42 @@ class GiftcardController extends Controller
         }
     }
 
+    public function deletecustomer ($id)
+    {
+        $base_url = 'https://connect.squareupsandbox.com/v2/customers/' .$id;
+        try{
+
+            $id = $id;
+
+            $response = Http::withHeaders([
+                'Square-Version' => '2022-12-14',
+                'Authorization' => 'Bearer '.env('SQAUREUP_SANDBOX_KEY'),
+                'content-type' => 'application/json'
+            ])->delete($base_url, $id);
+            return $response;
+
+        }catch(Exception $e){
+            return response()->json(['message'=>$e->getMessage()], 422);
+        }
+    }
+
+    public function listcustomer ()
+    {
+        $base_url = 'https://connect.squareupsandbox.com/v2/customers/';
+        try{
+
+            $response = Http::withHeaders([
+                'Square-Version' => '2022-12-14',
+                'Authorization' => 'Bearer '.env('SQAUREUP_SANDBOX_KEY'),
+                'content-type' => 'application/json'
+            ])->get($base_url);
+            return $response;
+
+        }catch(Exception $e){
+            return response()->json(['message'=>$e->getMessage()], 422);
+        }
+    }
+
 
 }
 
