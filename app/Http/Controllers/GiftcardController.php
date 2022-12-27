@@ -305,7 +305,7 @@ class GiftcardController extends Controller
         $body = [
             "idempotency_key" => Str::random(12),
             "gift_card_activity" => [
-                "gift_card_activity" => $request->gift_card_activity,
+                "gift_card_id" => $request->gift_card_id,
                 "type" =>  "ACTIVATE",
                 "location_id" => $request->location_id,
 
