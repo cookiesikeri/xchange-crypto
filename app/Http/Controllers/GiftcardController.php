@@ -179,7 +179,7 @@ class GiftcardController extends Controller
     }
 
 
-    public function CreateGiftCard (Request $request){
+    public function CreateGiftCard (Request $request, $location_id){
 
         $user = Auth::user();
 
@@ -187,7 +187,7 @@ class GiftcardController extends Controller
 
         $body = [
             "idempotency_key" => Str::random(12),
-            "location_id" => "L78J97E4QS0P6",
+            "location_id" => $location_id,
 
                 "gift_card" => [
                     "type" => "DIGITAL"
