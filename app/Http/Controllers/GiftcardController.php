@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Enums\ActivityType;
 use App\Models\GiftCard;
 use App\Models\Location;
+use App\Models\LocationResponse;
 use App\Models\User;
 use App\Traits\ManagesUsers;
 use Illuminate\Support\Facades\Auth;
@@ -349,18 +350,28 @@ class GiftcardController extends Controller
             'postal_code' => $request->postal_code
         );
 
+        $validator = Validator::make($data, [
+            'name'       => 'required|unique:locations'
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json($validator->errors());
+        }
+
         $base_url = 'https://connect.squareupsandbox.com/v2/locations';
 
         $body = [
-            "name" => $request->name,
-            "description" => $request->description,
 
+            "location" => [
+                "name" => $request->name,
+                "description" => $request->description,
                 "address" => [
                     "address_line_1" => $request->address_line_1,
                     "locality" => $request->locality,
                     "administrative_district_level_1" => $request->administrative_district_level_1,
                     "postal_code" => $request->postal_code
                 ],
+            ],
 
             ];
 
@@ -383,9 +394,14 @@ class GiftcardController extends Controller
         else {
     $checkUser = Location::on('mysql::write')->create($data);
 
+    LocationResponse::on('mysql::write')->create([
+        'user_id' => auth()->user()->id,
+        'response' => $response
+    ], 201);
+
         $this->saveUserActivity(ActivityType::CREATEGIFTCARD_LOCATION, '', $user->id);
         return response()->json([
-            "message" => "Location Customer account created successfully",
+            "message" => "Location created successfully",
             'data' => $response,
             'status' => 'success',
         ], 201);
