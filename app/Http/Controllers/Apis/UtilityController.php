@@ -17,6 +17,8 @@ class UtilityController extends Controller
 {
     use ManagesResponse, ManagesUsers;
 
+
+
     public function generateTransactionID($service)
     {
         $prefix = '';

@@ -137,10 +137,12 @@ class User extends Authenticatable implements JWTSubject, Searchable
     public function litecoin_wallet(){
         return $this->hasOne(LitecoinWallet::class);
     }
-
-
     public function location(){
-        return $this->hasOne(Location::class);
+        return $this->hasOne(LitecoinWallet::class);
+    }
+
+    public function location_respons(){
+        return $this->hasOne(LocationResponse::class);
     }
     public function _polygon_private_key(){
         return $this->hasOne(PolygonPrivateKey::class);

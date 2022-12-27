@@ -178,17 +178,6 @@ class GiftcardController extends Controller
 
     }
 
-    public function generateidempotency($length = 12)
-    {
-        $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
-        $string = '';
-
-        for ($i = 0; $i < $length; $i++) {
-            $string .= $characters[mt_rand(0, strlen($characters) - 1)];
-        }
-
-        return $string;
-    }
 
     public function CreateGiftCard (Request $request){
 
@@ -197,13 +186,13 @@ class GiftcardController extends Controller
         $data = array(
 
             "location_id" => $request->location_id,
-            "idempotency_key" => $this->generateidempotency
+            "idempotency_key" => Str::random(12)
         );
 
         $base_url = 'https://connect.squareupsandbox.com/v2/gift-cards';
 
         $body = [
-            "idempotency_key" => $this->generateidempotency,
+            "idempotency_key" => Str::random(12),
             "location_id" => $request->location_id,
 
                 "gift_card" => [
@@ -220,7 +209,7 @@ class GiftcardController extends Controller
 
         $response = $response->getBody()->getContents();
 
-    $checkUser = GiftCard::on('mysql::write')->create($data);
+    // $checkUser = GiftCard::on('mysql::write')->create($data);
         $this->saveUserActivity(ActivityType::CREATEGIFTCARD, '', $user->id);
         return response()->json([
             "message" => "Giftcard created successfully",
