@@ -298,23 +298,22 @@ class GiftcardController extends Controller
 
     public function CreategiftCardActivity(Request $request){
 
-        $ref = '51' . substr(uniqid(mt_rand(), true), 0, 8);
-
         $user = Auth::user();
 
         $base_url = 'https://connect.squareupsandbox.com/v2/gift-cards/activities';
 
         $body = [
-            "idempotency_key" => 'KEY' . $ref,
+            "idempotency_key" => Str::random(12),
             "gift_card_activity" => [
                 "gift_card_activity" => $request->gift_card_activity,
                 "type" =>  "ACTIVATE",
-                "location_id" => $request->location_id
-            ],
+                "location_id" => $request->location_id,
+
             "activate_activity_details" => [
                 "order_id" => $request->order_id,
                 "line_item_uid" => $request->line_item_uid
             ],
+        ],
         ];
 
             $response = Http::withHeaders([
