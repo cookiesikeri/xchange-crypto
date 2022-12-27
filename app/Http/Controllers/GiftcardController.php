@@ -6,6 +6,7 @@ use App\Models\GiftCardCustomer;
 use Illuminate\Http\Request;
 use App\Enums\ActivityType;
 use App\Models\GiftCard;
+use App\Models\Location;
 use App\Models\User;
 use App\Traits\ManagesUsers;
 use Illuminate\Support\Facades\Auth;
@@ -331,6 +332,64 @@ class GiftcardController extends Controller
             'data' => $response,
             'status' => 'success',
         ], 200);
+
+    }
+
+    public function createLocation (Request $request){
+
+        $user = Auth::user();
+
+        $data = array(
+            'user_id' => auth()->user()->id,
+            'name'       => $request->name,
+            'description'      => $request->description,
+            'address_line_1' => $request->address_line_1,
+            'locality' => $request->locality,
+            'administrative_district_level_1' => $request->administrative_district_level_1,
+            'postal_code' => $request->postal_code
+        );
+
+        $base_url = 'https://connect.squareupsandbox.com/v2/locations';
+
+        $body = [
+            "name" => $request->name,
+            "description" => $request->description,
+
+                "address" => [
+                    "address_line_1" => $request->address_line_1,
+                    "locality" => $request->locality,
+                    "administrative_district_level_1" => $request->administrative_district_level_1,
+                    "postal_code" => $request->postal_code
+                ],
+
+            ];
+
+            $response = Http::withHeaders([
+                'Square-Version' => '2022-12-14',
+                'Authorization' => 'Bearer '.env('SQAUREUP_SANDBOX_KEY'),
+                'content-type' => 'application/json'
+            ])->post($base_url, $body);
+
+        $response = $response->getBody()->getContents();
+
+        $checkUser = Location::where('user_id', auth()->user()->id)->first();
+
+        if ($checkUser) {
+            return Response::json([
+                'status' => false,
+                'message' => 'You already have an account created!'
+            ], 419);
+        }
+        else {
+    $checkUser = Location::on('mysql::write')->create($data);
+
+        $this->saveUserActivity(ActivityType::CREATEGIFTCARD_LOCATION, '', $user->id);
+        return response()->json([
+            "message" => "Location Customer account created successfully",
+            'data' => $response,
+            'status' => 'success',
+        ], 201);
+    }
 
     }
 
