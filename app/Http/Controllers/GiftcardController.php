@@ -424,7 +424,7 @@ class GiftcardController extends Controller
 
     public function deletecustomer ($id)
     {
-        $base_url = 'https://connect.squareupsandbox.com/v2/customers/' .$id;
+        $base_url = 'https://connect.squareupsandbox.com/v2/customers/'.$id;
         try{
 
             $id = $id;
@@ -433,7 +433,7 @@ class GiftcardController extends Controller
                 'Square-Version' => '2022-12-14',
                 'Authorization' => 'Bearer '.env('SQAUREUP_SANDBOX_KEY'),
                 'content-type' => 'application/json'
-            ])->delete($base_url, $id);
+            ])->delete($base_url);
             return $response;
 
         }catch(Exception $e){
