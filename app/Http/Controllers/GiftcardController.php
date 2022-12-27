@@ -51,6 +51,16 @@ class GiftcardController extends Controller
 
         $ref = '51' . substr(uniqid(mt_rand(), true), 0, 8);
 
+        $checkRef = GiftCardCustomer::where('user_id', auth()->user()->id)->first();
+
+        if($checkRef){
+            return Response::json([
+                'status' => false,
+                'message' => 'You already have an account created!'
+            ], 419);
+        }else{
+
+
         $data = array(
             'user_id' => auth()->user()->id,
             'given_name'       => $request->given_name,
@@ -96,16 +106,8 @@ class GiftcardController extends Controller
 
         $response = $response->getBody()->getContents();
 
-        $checkUser = GiftCardCustomer::where('email_address', $request->email_address)->first();
 
-        if ($checkUser) {
-            return Response::json([
-                'status' => false,
-                'message' => 'You already have an account created!'
-            ], 419);
-        }
-        else {
-    $checkUser = GiftCardCustomer::on('mysql::write')->create($data);
+        $checkUser = GiftCardCustomer::on('mysql::write')->create($data);
 
         $this->saveUserActivity(ActivityType::CREATEGIFTCARD_CUSTOMER, '', $user->id);
         return response()->json([
