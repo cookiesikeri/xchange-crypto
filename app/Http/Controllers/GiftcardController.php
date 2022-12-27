@@ -397,11 +397,8 @@ class GiftcardController extends Controller
     ], 201);
 
         $this->saveUserActivity(ActivityType::CREATEGIFTCARD_LOCATION, '', $user->id);
-        return response()->json([
-            "message" => "Location created successfully",
-            'data' => $response,
-            'status' => 'success',
-        ], 201);
+
+        return response()->json([ 'status' => true, 'message' => 'Location created Successfully', 'response' => $response ], 201);
     }
 
     }
