@@ -205,14 +205,14 @@ class GiftcardController extends Controller
 
         GiftCard::on('mysql::write')->create([
             'user_id' => auth()->user()->id,
-            'response' => $response
+            'response' => $response,
+            "location_id" => $location_id,
+            "idempotency_key" => Str::random(12)
         ]);
         $this->saveUserActivity(ActivityType::CREATEGIFTCARD, '', $user->id);
         return response()->json([
             "message" => "Giftcard created successfully",
-            'data' => $response,
-            "location_id" => $request->location_id,
-            "idempotency_key" => Str::random(12)
+            'data' => $response
         ], 201);
     }
 
