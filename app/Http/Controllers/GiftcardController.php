@@ -183,6 +183,12 @@ class GiftcardController extends Controller
 
         $user = Auth::user();
 
+        $checkRef = GiftCard::where('user_id', auth()->user()->id)->first();
+
+        if($checkRef){
+            return response()->json(['message'=>'giftcard already exist.'], 413);
+        }else{
+
         $base_url = 'https://connect.squareupsandbox.com/v2/gift-cards';
 
         $body = [
@@ -203,6 +209,7 @@ class GiftcardController extends Controller
 
         $response = $response->getBody()->getContents();
 
+
         GiftCard::on('mysql::write')->create([
             'user_id' => auth()->user()->id,
             'response' => $response,
@@ -215,6 +222,7 @@ class GiftcardController extends Controller
             'data' => $response
         ], 201);
     }
+}
 
     public function LINKGiftCard(Request $request, $id){
 
