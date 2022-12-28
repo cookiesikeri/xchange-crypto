@@ -69,4 +69,7 @@ final class ActivityType extends Enum
     const creategiftcardactivity = 'gift card activity changed';
     const CREATEGIFTCARD_LOCATION = 'gift-card | crete location';
 
+    const BUYGIFTCARD = 'Buygift-card';
+    const SELLGIFTCARD = 'Sell gift-card';
+
 }

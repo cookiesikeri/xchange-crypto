@@ -84,6 +84,9 @@ class User extends Authenticatable implements JWTSubject, Searchable
     public function virtual_card_requests() {
         return $this->hasMany(VirtualCardRequest::class);
     }
+    public function gift_card_activities() {
+        return $this->hasMany(GiftCardActivity::class);
+    }
     public function bitcoin_transactions() {
         return $this->hasMany(BitcoinTransaction::class);
     }

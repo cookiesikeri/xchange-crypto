@@ -6,6 +6,7 @@ use App\Models\GiftCardCustomer;
 use Illuminate\Http\Request;
 use App\Enums\ActivityType;
 use App\Models\GiftCard;
+use App\Models\GiftCardActivity;
 use App\Models\Location;
 use App\Models\LocationResponse;
 use App\Models\User;
@@ -251,6 +252,12 @@ class GiftcardController extends Controller
          ->update(['gitcard_id' => $id]);
 
         $this->saveUserActivity(ActivityType::LINKGIFTCARD, '', $user->id);
+
+        GiftCardActivity::on('mysql::write')->create([
+            'user_id' => auth()->user()->id,
+            'response' => $response
+        ]);
+
         return response()->json([
             "message" => "Giftcard Linked to customer successfully",
             'data' => $response,
@@ -367,6 +374,11 @@ class GiftcardController extends Controller
          ->update(['activate_response' => $response]);
         $this->saveUserActivity(ActivityType::creategiftcardactivity, '', $user->id);
 
+        GiftCardActivity::on('mysql::write')->create([
+            'user_id' => auth()->user()->id,
+            'response' => $response
+        ]);
+
         return response()->json([
             "message" => "Giftcard activity changed successfully",
             'data' => $response,
@@ -415,6 +427,11 @@ class GiftcardController extends Controller
                      'amount' => $request->amount
                      ]);
                 $this->saveUserActivity(ActivityType::creategiftcardactivity, '', $user->id);
+
+                GiftCardActivity::on('mysql::write')->create([
+                    'user_id' => auth()->user()->id,
+                    'response' => $response
+                ]);
 
                 return response()->json([
                     "message" => "Giftcard activity changed successfully",
@@ -471,7 +488,12 @@ class GiftcardController extends Controller
                          'amount' => $request->amount + $myGiftCard->amount
                      ]);
 
-                    $this->saveUserActivity(ActivityType::creategiftcardactivity, '', $user->id);
+                     GiftCardActivity::on('mysql::write')->create([
+                        'user_id' => auth()->user()->id,
+                        'response' => $response
+                    ]);
+
+                    $this->saveUserActivity(ActivityType::BUYGIFTCARD, '', $user->id);
                     return response()->json([
                         "message" => "Giftcard activity changed successfully",
                         'data' => $response,
@@ -526,7 +548,11 @@ class GiftcardController extends Controller
                          'amount' => $request->amount + $myGiftCard->amount
                      ]);
 
-                    $this->saveUserActivity(ActivityType::creategiftcardactivity, '', $user->id);
+                    $this->saveUserActivity(ActivityType::SELLGIFTCARD, '', $user->id);
+                    GiftCardActivity::on('mysql::write')->create([
+                        'user_id' => auth()->user()->id,
+                        'response' => $response
+                    ]);
                     return response()->json([
                         "message" => "Giftcard activity changed successfully",
                         'data' => $response,
@@ -543,7 +569,6 @@ class GiftcardController extends Controller
 
 
     }
-
 
     public function createLocation (Request $request){
 
