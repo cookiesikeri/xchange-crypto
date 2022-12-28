@@ -14,4 +14,10 @@ class GiftCard extends Model
     public function user(){
         return $this->belongsTo(User::class);
     }
+
+      public function myGiftCard($id){
+        return $this
+        //->select('type', 'state', 'amount', 'currency', 'gan', 'gitcard_id', 'status', 'response', 'location_id', 'idempotency_key')
+        ->where('user_id', $id)->first();
+    }
 }

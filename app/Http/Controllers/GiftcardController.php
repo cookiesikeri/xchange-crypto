@@ -221,7 +221,8 @@ class GiftcardController extends Controller
         $this->saveUserActivity(ActivityType::CREATEGIFTCARD, '', $user->id);
         return response()->json([
             "message" => "Giftcard created successfully",
-            'data' => $response
+            'data' => $response,
+            'status' => 'success',
         ], 201);
     }
 }
@@ -245,6 +246,9 @@ class GiftcardController extends Controller
             ])->post($base_url, $body);
 
         $response = $response->getBody()->getContents();
+
+        GiftCard::Where('user_id', $user->id)
+         ->update(['gitcard_id' => $id]);
 
         $this->saveUserActivity(ActivityType::LINKGIFTCARD, '', $user->id);
         return response()->json([
@@ -296,22 +300,58 @@ class GiftcardController extends Controller
         }
     }
 
+
+
+    public function RetrieveGIFTCardByUserID ($id)
+    {
+        $userID = (new GiftCard())->myGiftCard($id);
+        if($userID){
+        $base_url = 'https://connect.squareupsandbox.com/v2/gift-cards/' .$userID->gitcard_id;
+        try{
+            $response = Http::withHeaders([
+                'Square-Version' => '2022-12-14',
+                'Authorization' => 'Bearer '.env('SQAUREUP_SANDBOX_KEY'),
+                'content-type' => 'application/json'
+            ])->get($base_url, $userID->gitcard_id);
+             $response = $response->getBody()->getContents();
+            return response()->json([
+                'message'=> "Successful",
+                'data'=> $userID,
+                'main_data'=> $response,
+                "status" => true
+                ], 200);
+
+        }catch(Exception $e){
+            return response()->json([
+                'message'=>$e->getMessage(),
+                'status'=>false,
+            ], 422);
+        }
+
+        }
+
+        return response()->json([
+            'message'=> "Invalid user id",
+            "status" => false
+            ], 422);
+    }
+
+
+
     public function CreategiftCardActivity(Request $request){
-
         $user = Auth::user();
-
+        $myGiftCard = (new GiftCard())->myGiftCard($user->id);
         $base_url = 'https://connect.squareupsandbox.com/v2/gift-cards/activities';
-
         $body = [
             "idempotency_key" => Str::random(12),
             "gift_card_activity" => [
                 "gift_card_id" => $request->gift_card_id,
                 "type" =>  "ACTIVATE",
-                "location_id" => $request->location_id,
+                "location_id" => $myGiftCard->location_id,
 
             "activate_activity_details" => [
-                "order_id" => $request->order_id,
-                "line_item_uid" => $request->line_item_uid
+                "order_id" => Str::random(6),
+                "line_item_uid" => Str::random(6)
             ],
         ],
         ];
@@ -323,8 +363,10 @@ class GiftcardController extends Controller
             ])->post($base_url, $body);
 
         $response = $response->getBody()->getContents();
-
+         GiftCard::Where('user_id', $user->id)
+         ->update(['activate_response' => $response]);
         $this->saveUserActivity(ActivityType::creategiftcardactivity, '', $user->id);
+
         return response()->json([
             "message" => "Giftcard activity changed successfully",
             'data' => $response,
@@ -333,13 +375,183 @@ class GiftcardController extends Controller
 
     }
 
+
+
+    public function CreategiftCardActivity2(Request $request){
+
+        $user = Auth::user();
+        $myGiftCard = (new GiftCard())->myGiftCard($user->id);
+        $base_url = 'https://connect.squareupsandbox.com/v2/gift-cards/activities';
+
+
+        try{
+
+                $body = [
+                    "idempotency_key" => Str::random(12),
+                    "gift_card_activity" => [
+                        "gift_card_id" => $request->gift_card_id,
+                        "type" =>  "ACTIVATE",
+                        "location_id" => $myGiftCard->location_id,
+                        "activate_activity_details" => [
+                            "amount_money"=> [
+                              "amount"=>$request->amount,
+                              "currency"=> "USD"
+                              ],
+                              "buyer_payment_instrument_ids"=> [$user->id],
+                        ],
+                    ],
+                ];
+
+                    $response = Http::withHeaders([
+                        'Square-Version' => '2022-12-14',
+                        'Authorization' => 'Bearer '.env('SQAUREUP_SANDBOX_KEY'),
+                        'content-type' => 'application/json'
+                    ])->post($base_url, $body);
+
+                $response = $response->getBody()->getContents();
+                 GiftCard::Where('user_id', $user->id)
+                 ->update([
+                     'activate_response' => $response,
+                     'amount' => $request->amount
+                     ]);
+                $this->saveUserActivity(ActivityType::creategiftcardactivity, '', $user->id);
+
+                return response()->json([
+                    "message" => "Giftcard activity changed successfully",
+                    'data' => $response,
+                    'status' => true,
+                ], 200);
+
+        }catch(Exception $e){
+            return response()->json([
+                'message'=>$e->getMessage(),
+                  'status'=>false,
+                ], 422);
+        }
+
+    }
+
+
+
+    public function CreategiftCardActivityBuy(Request $request){
+
+        $user = Auth::user();
+        $myGiftCard = (new GiftCard())->myGiftCard($user->id);
+        $base_url = 'https://connect.squareupsandbox.com/v2/gift-cards/activities';
+
+
+        try{
+
+                     $body = [
+                        "idempotency_key" => Str::random(12),
+                        "gift_card_activity" => [
+                            "gift_card_gan" => $request->gan,
+                            "type" =>  "LOAD",
+                            "location_id" => $myGiftCard->location_id,
+                            "load_activity_details" => [
+                                "amount_money"=> [
+                                  "amount"=>$request->amount,
+                                  "currency"=> "USD"
+                                  ],
+                                  "buyer_payment_instrument_ids"=> [$user->id],
+                            ],
+                        ],
+                    ];
+
+                        $response = Http::withHeaders([
+                            'Square-Version' => '2022-12-14',
+                            'Authorization' => 'Bearer '.env('SQAUREUP_SANDBOX_KEY'),
+                            'content-type' => 'application/json'
+                        ])->post($base_url, $body);
+
+                    $response = $response->getBody()->getContents();
+                     GiftCard::Where('user_id', $user->id)
+                     ->update([
+                         'activate_response' => $response,
+                         'amount' => $request->amount + $myGiftCard->amount
+                     ]);
+
+                    $this->saveUserActivity(ActivityType::creategiftcardactivity, '', $user->id);
+                    return response()->json([
+                        "message" => "Giftcard activity changed successfully",
+                        'data' => $response,
+                        'status' => true,
+                    ], 200);
+
+
+        }catch(Exception $e){
+            return response()->json([
+                'message'=>$e->getMessage(),
+                  'status'=>false,
+                ], 422);
+        }
+
+
+    }
+
+
+    public function CreategiftCardActivitySell(Request $request){
+
+        $user = Auth::user();
+        $myGiftCard = (new GiftCard())->myGiftCard($user->id);
+        $base_url = 'https://connect.squareupsandbox.com/v2/gift-cards/activities';
+
+        try{
+
+                     $body = [
+                        "idempotency_key" => Str::random(12),
+                        "gift_card_activity" => [
+                            "gift_card_gan" => $request->gan,
+                            "type" =>  "REDEEM",
+                            "location_id" => $myGiftCard->location_id,
+                            "redeem_activity_details" => [
+                                "amount_money"=> [
+                                  "amount"=>$request->amount,
+                                  "currency"=> "USD"
+                                  ],
+                            ],
+                        ],
+                    ];
+
+                        $response = Http::withHeaders([
+                            'Square-Version' => '2022-12-14',
+                            'Authorization' => 'Bearer '.env('SQAUREUP_SANDBOX_KEY'),
+                            'content-type' => 'application/json'
+                        ])->post($base_url, $body);
+
+                    $response = $response->getBody()->getContents();
+                     GiftCard::Where('user_id', $user->id)
+                     ->update([
+                         'activate_response' => $response,
+                         'amount' => $request->amount + $myGiftCard->amount
+                     ]);
+
+                    $this->saveUserActivity(ActivityType::creategiftcardactivity, '', $user->id);
+                    return response()->json([
+                        "message" => "Giftcard activity changed successfully",
+                        'data' => $response,
+                        'status' => true,
+                    ], 200);
+
+
+        }catch(Exception $e){
+            return response()->json([
+                'message'=>$e->getMessage(),
+                  'status'=>false,
+                ], 422);
+        }
+
+
+    }
+
+
     public function createLocation (Request $request){
 
         $user = Auth::user();
 
         $data = array(
             'user_id' => auth()->user()->id,
-            'name'       => $request->name,
+            'name'=> $request->name,
             'description'      => $request->description,
             'address_line_1' => $request->address_line_1,
             'locality' => $request->locality,

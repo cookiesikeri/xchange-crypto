@@ -258,7 +258,13 @@ Route::group(['prefix' => 'v1', 'middleware' => ['cors']], function(){
    Route::post('link/customer/gift/card/{id}', [GiftcardController::class, 'LINKGiftCard']);
    Route::post('retrieve-gift-card-from-gan', [GiftcardController::class, 'RetrieveCardGAN']);
    Route::post('retrieve-gift-card/{id}', [GiftcardController::class, 'RetrieveGIFTCard']);
-   Route::post('create-gift-card-activity', [GiftcardController::class, 'CreategiftCardActivity']);
+   Route::post('retrieve-gift-card-by-userid/{id}', [GiftcardController::class, 'RetrieveGIFTCardByUserID']);
+
+  //activate , buy, sell
+   Route::post('create-gift-card-activity', [GiftcardController::class, 'CreategiftCardActivity2']);
+   Route::post('create-gift-card-activity-buy', [GiftcardController::class, 'CreategiftCardActivityBuy']);
+   Route::post('create-gift-card-activity-sell', [GiftcardController::class, 'CreategiftCardActivitySell']);
+
    Route::post('giftcard/create/location', [GiftcardController::class, 'createLocation']);
    Route::get('giftcard/location/details/{id}', [GiftcardController::class, 'detailsLocation']);
 
