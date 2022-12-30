@@ -135,7 +135,7 @@ Dashboard
      <div class="col-md-3 col-sm-6 col-xs-12">
         <a href="#">
            <div class="info-box">
-              <span class="info-box-icon push-bottom bg-purple">   <i class="fa fa-envelope-o"></i></span>
+              <span class="info-box-icon push-bottom bg-purple">   <i class="fa fa-bitcoin"></i></span>
               <div class="info-box-content">
                  <span class="info-box-text" title="bitcoin addresses "> BTC Addresses </span>
                  <span class="info-box-number">{{ \App\Models\BitconWallet::all()->count() }}</span>
@@ -151,7 +151,7 @@ Dashboard
      <div class="col-md-3 col-sm-6 col-xs-12">
         <a href="#">
            <div class="info-box">
-              <span class="info-box-icon push-bottom bg-purple">   <i class="fa fa-envelope-o"></i></span>
+              <span class="info-box-icon push-bottom bg-purple">   <i class="fa fa-bitcoin"></i></span>
               <div class="info-box-content">
                  <span class="info-box-text" title="Etherum addresses "> ETH Addresses </span>
                  <span class="info-box-number">{{ \App\Models\EtherumWalletAdress::all()->count() }}</span>
@@ -167,9 +167,9 @@ Dashboard
      <div class="col-md-3 col-sm-6 col-xs-12">
         <a href="#">
            <div class="info-box">
-              <span class="info-box-icon push-bottom bg-purple">   <i class="fa fa-envelope-o"></i></span>
+              <span class="info-box-icon push-bottom bg-purple">   <i class="fa fa-bitcoin"></i></span>
               <div class="info-box-content">
-                 <span class="info-box-text" title="litecoin addresses "> LIT Addresses </span>
+                 <span class="info-box-text" title="litecoin addresses "> LITeCOIN Addresses </span>
                  <span class="info-box-number">{{ \App\Models\LitecoinWalletAddress::all()->count() }}</span>
                  <div class="progress">
                     <div class="progress-bar progress-bar-primary" style="width: {{ \App\Models\LitecoinWalletAddress::all()->count() }}%"></div>
@@ -183,9 +183,9 @@ Dashboard
      <div class="col-md-3 col-sm-6 col-xs-12">
         <a href="#">
            <div class="info-box">
-              <span class="info-box-icon push-bottom bg-purple">   <i class="fa fa-envelope-o"></i></span>
+              <span class="info-box-icon push-bottom bg-purple">   <i class="fa fa-bitcoin"></i></span>
               <div class="info-box-content">
-                 <span class="info-box-text" title="polygon Addresses"> POL Addresses </span>
+                 <span class="info-box-text" title="polygon Addresses"> POLYGON Addresses </span>
                  <span class="info-box-number">{{ \App\Models\PolygonWalletAddress::all()->count() }}</span>
                  <div class="progress">
                     <div class="progress-bar progress-bar-primary" style="width: {{ \App\Models\PolygonWalletAddress::all()->count() }}%"></div>
@@ -199,7 +199,7 @@ Dashboard
      <div class="col-md-3 col-sm-6 col-xs-12">
         <a href="#">
            <div class="info-box">
-              <span class="info-box-icon push-bottom bg-purple">   <i class="fa fa-envelope-o"></i></span>
+              <span class="info-box-icon push-bottom bg-purple">   <i class="fa fa-bitcoin"></i></span>
               <div class="info-box-content">
                  <span class="info-box-text" title="dogecoin Addresses"> DOGE Addresses </span>
                  <span class="info-box-number">{{ \App\Models\DogeCoinWalletAddress::all()->count() }}</span>
@@ -215,12 +215,76 @@ Dashboard
      <div class="col-md-3 col-sm-6 col-xs-12">
         <a href="#">
            <div class="info-box">
-              <span class="info-box-icon push-bottom bg-purple">   <i class="fa fa-envelope-o"></i></span>
+              <span class="info-box-icon push-bottom bg-purple">   <i class="fa fa-bitcoin"></i></span>
               <div class="info-box-content">
                  <span class="info-box-text" title="binance Addresses"> BNB Addresses </span>
                  <span class="info-box-number">{{ \App\Models\BinanceWallet::all()->count() }}</span>
                  <div class="progress">
                     <div class="progress-bar progress-bar-primary" style="width: {{ \App\Models\BinanceWallet::all()->count() }}%"></div>
+                 </div>
+              </div>
+              <!-- /.info-box-content -->
+           </div>
+        </a>
+        <!-- /.info-box -->
+     </div>
+     <div class="col-md-3 col-sm-6 col-xs-12">
+        <a href="{{route('cms.user.activities')}}">
+           <div class="info-box">
+              <span class="info-box-icon push-bottom bg-purple"> <i class="fa fa-telegram"></i></span>
+              <div class="info-box-content">
+                 <span class="info-box-text" title="Airtime Transactions">Airtime Transactions</span>
+                 <span class="info-box-number">{{ \App\Models\AirtimeTransaction::all()->count() }}</span>
+                 <div class="progress">
+                    <div class="progress-bar progress-bar-primary" style="width: {{ \App\Models\AirtimeTransaction::all()->count() }}%"></div>
+                 </div>
+              </div>
+              <!-- /.info-box-content -->
+           </div>
+        </a>
+        <!-- /.info-box -->
+     </div>
+     <div class="col-md-3 col-sm-6 col-xs-12">
+        <a href="{{route('cms.user.activities')}}">
+           <div class="info-box">
+              <span class="info-box-icon push-bottom bg-purple"> <i class="fa fa-mobile"></i></span>
+              <div class="info-box-content">
+                 <span class="info-box-text" title="Data Transactions">Data Transactions</span>
+                 <span class="info-box-number">{{ \App\Models\DataTransaction::all()->count() }}</span>
+                 <div class="progress">
+                    <div class="progress-bar progress-bar-primary" style="width: {{ \App\Models\DataTransaction::all()->count() }}%"></div>
+                 </div>
+              </div>
+              <!-- /.info-box-content -->
+           </div>
+        </a>
+        <!-- /.info-box -->
+     </div>
+     <div class="col-md-3 col-sm-6 col-xs-12">
+        <a href="{{route('cms.user.activities')}}">
+           <div class="info-box">
+              <span class="info-box-icon push-bottom bg-purple"> <i class="fa fa-television"></i></span>
+              <div class="info-box-content">
+                 <span class="info-box-text" title="TV Transactions">TV Transactions</span>
+                 <span class="info-box-number">{{ \App\Models\TVTransaction::all()->count() }}</span>
+                 <div class="progress">
+                    <div class="progress-bar progress-bar-primary" style="width: {{ \App\Models\TVTransaction::all()->count() }}%"></div>
+                 </div>
+              </div>
+              <!-- /.info-box-content -->
+           </div>
+        </a>
+        <!-- /.info-box -->
+     </div>
+     <div class="col-md-3 col-sm-6 col-xs-12">
+        <a href="{{route('cms.user.activities')}}">
+           <div class="info-box">
+              <span class="info-box-icon push-bottom bg-purple"> <i class="fa fa-lightbulb-o"></i></span>
+              <div class="info-box-content">
+                 <span class="info-box-text" title="Power Transactions">Power Transactions</span>
+                 <span class="info-box-number">{{ \App\Models\PowerTransaction::all()->count() }}</span>
+                 <div class="progress">
+                    <div class="progress-bar progress-bar-primary" style="width: {{ \App\Models\PowerTransaction::all()->count() }}%"></div>
                  </div>
               </div>
               <!-- /.info-box-content -->
