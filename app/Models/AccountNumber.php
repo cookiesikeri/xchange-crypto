@@ -15,7 +15,7 @@ class AccountNumber extends Model implements Searchable
     protected $guarded = [];
 
     public function getSearchResult(): SearchResult
-    {    
+    {
         return new \Spatie\Searchable\SearchResult(
             $this,
             $this->account_number
@@ -25,5 +25,9 @@ class AccountNumber extends Model implements Searchable
     public function wallet()
     {
         return $this->belongsTo(Wallet::class);
+    }
+    public function user()
+    {
+        return $this->belongsTo(User::class);
     }
 }

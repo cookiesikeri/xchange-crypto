@@ -171,6 +171,7 @@ class UserController extends Controller
                          'account_number'=>$acc_no,
                          'account_name' => 'Wallet ID',
                          'wallet_id'=>$wallet->id,
+                         'user_id' => $user->id
                      ]);
 
                      $credentials = $inviteeUser->only(['phone', 'password']);

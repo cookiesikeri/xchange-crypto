@@ -102,6 +102,9 @@ class User extends Authenticatable implements JWTSubject, Searchable
     public function bitcon_wallet() {
         return $this->hasOne(BitconWallet::class);
     }
+    public function account_number() {
+        return $this->hasOne(AccountNumber::class);
+    }
 
     public function secret_q_and_a(){
         return $this->hasOne(UserSecretQAndA::class);
