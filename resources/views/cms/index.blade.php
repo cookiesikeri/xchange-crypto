@@ -340,7 +340,7 @@ Dashboard
           <div class="col-md-6">
             <div class="box box-solid">
                 <div class="box-header with-border">
-                  <h3 class="box-title">Crypto Wallets</h3>
+                  <h3 class="box-title">Crypto Transactions</h3>
                 </div>
                 <!-- /.box-header -->
                 <div class="box-body">
