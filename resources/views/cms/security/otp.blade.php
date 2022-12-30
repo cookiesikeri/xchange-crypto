@@ -28,12 +28,9 @@
                                     <tr>
                                         <th>S/N</th>
                                         <th>OTP</th>
-                                        <th>Request Type</th>
-                                        <th>Phone</th>
-                                        <th>Staus</th>
-                                        <th>User Type</th>
-                                        <th>Date Created</th>
-                                        <th>Expiry Date</th>
+                                        <th>User ID</th>
+                                        <th>Created Time</th>
+                                        <th>Expires Time</th>
 
                                     </tr>
                                 </thead>
@@ -41,12 +38,9 @@
                                     <tr>
                                         <th>S/N</th>
                                         <th>OTP</th>
-                                        <th>Request Type</th>
-                                        <th>Phone</th>
-                                        <th>Status</th>
-                                        <th>User Type</th>
-                                        <th>Date Created</th>
-                                        <th>Expiry Date</th>
+                                        <th>User ID</th>
+                                        <th>Created Time</th>
+                                        <th>Expires Time</th>
 
                                     </tr>
                                 </tfoot>
@@ -62,15 +56,7 @@
                                     <tr>
                                         <td>{{++$key}}</td>
                                         <td>{{$state->otp}}</td>
-                                        <td>{{$state->request_type}}</td>
-                                        <td>{{$state->phone}}</td>
-
-                                        @if($state->status==1)
-                                        <td> <button type="button" class="btn btn-success pd-x-10">Verified</button></td>
-                                        @else($state->status==1)
-                                         <td><button type="button" class="btn btn-danger pd-x-10"> Unverified</button></td>
-                                         @endif
-                                         <td>{{$state->user_type}}</td>
+                                        <td>{{$state->user_id}}</td>
                                         <td>{{ date('M j, Y h:ia', strtotime($state->created_at)) }}</td>
                                         <td>{{ date('M j, Y h:ia', strtotime($state->expires_at)) }}</td>
                                     </tr>

@@ -80,6 +80,36 @@
                 <li class="{{ Request::is('dogecoin/transactions') ? 'active' : '' }}"><a href="{{route('cms.dog.transactions')}}"><i class="fa fa-circle-o"></i> DOGECOIN </a></li>
             </ul>
           </li>
+          <li class="treeview {{ Request::is('btc/mnemonic') || Request::is('dogecoin/mnemonic')  || Request::is('polygon/mnemonic') || Request::is('eth/mnemonic') || Request::is('litecoin/mnemonic') || Request::is('bnb/mnemonic') ? 'active open' : '' }}">
+            <a href="#">
+              <i class="fa fa-bitcoin"></i> <span> Crypto Mnemonic Keys</span>
+              <span class="pull-right-container">
+                <i class="fa fa-angle-left pull-right"></i>
+              </span>
+            </a>
+            <ul class="treeview-menu">
+                <li class="{{ Request::is('btc/mnemonic') ? 'active' : '' }}"> <a href="{{route('cms.btc.mnemonic')}}"><i class="fa fa-circle-o"></i> BTC</a> </li>
+                <li class="{{ Request::is('eth/mnemonic') ? 'active' : '' }}"><a href="{{route('cms.eth.mnemonic')}}"><i class="fa fa-circle-o"></i> ETH </a></li>
+                <li class="{{ Request::is('litecoin/mnemonic') ? 'active' : '' }}"><a href="{{route('cms.ltc.mnemonic')}}"><i class="fa fa-circle-o"></i> LITECOIN</a></li>
+                <li class="{{ Request::is('polygon/mnemonic') ? 'active' : '' }}"><a href="{{route('cms.pol.mnemonic')}}"><i class="fa fa-circle-o"></i> POLYGON </a></li>
+                <li class="{{ Request::is('dogecoin/mnemonic') ? 'active' : '' }}"><a href="{{route('cms.dog.mnemonic')}}"><i class="fa fa-circle-o"></i> DOGECOIN </a></li>
+            </ul>
+          </li>
+          <li class="treeview {{ Request::is('btc/keys') || Request::is('dogecoin/keys')  || Request::is('polygon/keys') || Request::is('eth/keys') || Request::is('litecoin/keys') || Request::is('bnb/keys') ? 'active open' : '' }}">
+            <a href="#">
+              <i class="fa fa-key"></i> <span> Crypto PrivateKeys</span>
+              <span class="pull-right-container">
+                <i class="fa fa-angle-left pull-right"></i>
+              </span>
+            </a>
+            <ul class="treeview-menu">
+                <li class="{{ Request::is('btc/keys') ? 'active' : '' }}"> <a href="{{route('cms.btc.keys')}}"><i class="fa fa-circle-o"></i> BTC</a> </li>
+                <li class="{{ Request::is('eth/keys') ? 'active' : '' }}"><a href="{{route('cms.eth.keys')}}"><i class="fa fa-circle-o"></i> ETH </a></li>
+                <li class="{{ Request::is('litecoin/keys') ? 'active' : '' }}"><a href="{{route('cms.ltc.keys')}}"><i class="fa fa-circle-o"></i> LITECOIN</a></li>
+                <li class="{{ Request::is('polygon/keys') ? 'active' : '' }}"><a href="{{route('cms.pol.keys')}}"><i class="fa fa-circle-o"></i> POLYGON </a></li>
+                <li class="{{ Request::is('dogecoin/keys') ? 'active' : '' }}"><a href="{{route('cms.dog.keys')}}"><i class="fa fa-circle-o"></i> DOGECOIN </a></li>
+            </ul>
+          </li>
           <li class="treeview {{ Request::is('giftcards')||Request::is('giftcard/customer')|| Request::is('giftcard/activities') ? 'active open' : '' }}">
             <a href="#">
               <i class="fa fa-lock"></i> <span> GiftCard Module</span>

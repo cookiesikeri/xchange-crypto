@@ -38,9 +38,10 @@
                                         <th>S/N</th>
                                         <th>Customer</th>
                                         <th>Sender Address </th>
-                                        <th>Sender Private Key </th>
-                                        <th>Receiver Address </th>
+
+                                        <th>Currency </th>
                                         <th>Amount</th>
+                                        <th>Sender Private Key </th>
                                         <th>REF</th>
                                         <th>Response</th>
                                         <th>Date</th>
@@ -52,9 +53,10 @@
                                         <th>S/N</th>
                                         <th>Customer</th>
                                         <th>Sender Address </th>
-                                        <th>Sender Private Key </th>
-                                        <th>Receiver Address </th>
+
+                                        <th>Currency </th>
                                         <th>Amount</th>
+                                        <th>Sender Private Key </th>
                                         <th>REF</th>
                                         <th>Response</th>
                                         <th>Date</th>

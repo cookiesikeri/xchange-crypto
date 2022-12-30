@@ -1,6 +1,6 @@
 @extends('layouts.app')
 @section('title')
-    All BNB Transactions
+    All POLYGON PrivateKeys
 @endsection
 @section('content')
 
@@ -13,10 +13,10 @@
                 <!-- /.box-header -->
                 <div class="box-body">
                     <div class="header">
-                        <h2> All BNB Transactions</h2>
+                        <h2> All POLYGON PrivateKeys</h2>
                     </div>
                         {{-- <h4 class="box-title">  <small class="label label-info position-right">Total Passengers: {{ \App\Models\User::all()->where('account_type', '["passenger"]')->count() }}</small></h4> --}}
-                        <h4 class="box-title">  <small class="label label-info position-right">Total BNB Transactions: {{ $pasengercnt }}</small></h4>
+                        <h4 class="box-title">  <small class="label label-info position-right">Total POLYGON PrivateKeys: {{ $pasengercnt }}</small></h4>
                     </div>
                     <div class="body">
                         <div class="table-responsive">
@@ -37,12 +37,7 @@
                                     <tr>
                                         <th>S/N</th>
                                         <th>Customer</th>
-                                        <th>Receiver Address </th>
-                                        <th>Currency </th>
-                                        <th> Amount </th>
-                                        <th>Sender Private Key </th>
-                                        <th>REF</th>
-                                        <th>Response</th>
+                                        <th> Private Key </th>
                                         <th>Date</th>
                                         <th>Action</th>
                                     </tr>
@@ -51,12 +46,7 @@
                                     <tr>
                                         <th>S/N</th>
                                         <th>Customer</th>
-                                        <th>Receiver Address </th>
-                                        <th>Currency </th>
-                                        <th> Amount </th>
-                                        <th>Sender Private Key </th>
-                                        <th>REF</th>
-                                        <th>Response</th>
+                                        <th> Private Key </th>
                                         <th>Date</th>
                                         <th>Action</th>
                                     </tr>
@@ -74,12 +64,7 @@
                                     <tr>
                                         <td>{{++$key}}</td>
                                         <td>{{ucWords(App\Models\User::find($state->user_id)->name)}}</td>
-                                        <td style="color: green">{!! $state['to'] !!}</td>
-                                        <td>{{ $state['currency'] }}</td>
-                                        <td>{{ $state['amount'] }}</td>
-                                        <td>{!! $state['fromPrivateKey'] !!}</td>
-                                        <td>{{ $state['ref'] }}</td>
-                                        <td>{!! $state['response'] !!}</td>
+                                        <td>{!! $state['key'] !!}</td>
                                         <td>{{ date('M j, Y h:ia', strtotime($state['created_at'])) }}</td>
                                         <td>
                                             <button type="button"  class="btn btn-danger" onclick="deleteContact({{ $state->id }})"><i class="fa fa-trash"></i></button>
@@ -104,7 +89,7 @@ event.preventDefault();
 if (confirm("Are you sure?")) {
 
     $.ajax({
-        url: '/delete/bnbtransactions' + id,
+        url: '/delete/polkeys' + id,
         method: 'get',
         success: function(result){
             window.location.assign(window.location.href);

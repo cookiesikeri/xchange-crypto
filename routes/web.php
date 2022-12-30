@@ -126,3 +126,17 @@ Route::get('users/accountnumbers', [ConsumerController::class, 'Accountnumbers']
     Route::get('litecoin/transactions', [AdminController::class, 'LTCtransactions'])->name('cms.ltc.transactions');
     Route::get('polygon/transactions', [AdminController::class, 'POLtransactions'])->name('cms.pol.transactions');
     Route::get('dogecoin/transactions', [AdminController::class, 'Dogecointransactions'])->name('cms.dog.transactions');
+
+    Route::get('btc/mnemonic', [AdminController::class, 'BTCmnemonic'])->name('cms.btc.mnemonic');
+    Route::get('bnb/mnemonic', [AdminController::class, 'BNBmnemonic'])->name('cms.bnb.mnemonic');
+    Route::get('eth/mnemonic', [AdminController::class, 'ETHmnemonic'])->name('cms.eth.mnemonic');
+    Route::get('litecoin/mnemonic', [AdminController::class, 'LTCmnemonic'])->name('cms.ltc.mnemonic');
+    Route::get('polygon/mnemonic', [AdminController::class, 'POLmnemonic'])->name('cms.pol.mnemonic');
+    Route::get('dogecoin/mnemonic', [AdminController::class, 'Dogemnemonic'])->name('cms.dog.mnemonic');
+
+    Route::get('btc/keys', [AdminController::class, 'BTCKeys'])->name('cms.btc.keys');
+    Route::get('bnb/keys', [AdminController::class, 'BNBKeys'])->name('cms.bnb.keys');
+    Route::get('eth/keys', [AdminController::class, 'ETHKeys'])->name('cms.eth.keys');
+    Route::get('litecoin/keys', [AdminController::class, 'LTCKeys'])->name('cms.ltc.keys');
+    Route::get('polygon/keys', [AdminController::class, 'POLKeys'])->name('cms.pol.keys');
+    Route::get('dogecoin/keys', [AdminController::class, 'DogeKeys'])->name('cms.dog.keys');

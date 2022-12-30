@@ -29,6 +29,7 @@ use App\Models\AirtimeTransaction;
 use App\Models\Bank;
 use App\Models\BinanceTransaction;
 use App\Models\BinanceWallet;
+use App\Models\BitcoinPrivateKey;
 use App\Models\BitcoinTransaction;
 use App\Models\BitcoinWalletPass;
 use App\Models\BitconWallet;
@@ -44,8 +45,11 @@ use App\Models\DataBundle;
 use App\Models\DataEntry;
 use App\Models\DataTransaction;
 use App\Models\Devteam;
+use App\Models\DogecoinPrivateKey;
 use App\Models\DogecoinTransaction;
+use App\Models\DogeCoinWallet;
 use App\Models\DogeCoinWalletAddress;
+use App\Models\EtherumPrivateKey;
 use App\Models\EtherumWallet;
 use App\Models\EtherumWalletAdress;
 use App\Models\EthTransaction;
@@ -55,7 +59,9 @@ use App\Models\GiftCard;
 use App\Models\GiftCardActivity;
 use App\Models\GiftCardCustomer;
 use App\Models\Interest;
+use App\Models\LitecoinPrivateKey;
 use App\Models\LitecoinTransaction;
+use App\Models\LitecoinWallet;
 use App\Models\LitecoinWalletAddress;
 use App\Models\Logistic;
 use App\Models\Models\OtpVerify;
@@ -63,7 +69,9 @@ use App\Models\Order;
 use App\Models\OrderComplaint;
 use App\Models\OrderContent;
 use App\Models\Pegg;
+use App\Models\PolygonPrivateKey;
 use App\Models\PolygonTransaction;
+use App\Models\PolygonWallet;
 use App\Models\PolygonWalletAddress;
 use App\Models\PowerTransaction;
 use App\Models\Product;
@@ -538,14 +546,92 @@ class AdminController extends Controller
          $contacts = PolygonTransaction::orderBy('id', 'desc')->get();
          $pasengercnt = PolygonTransaction::all()->count();
 
-        return view('cms.ETHtransactions', compact(['contacts', 'pasengercnt']));
+        return view('cms.POLtransactions', compact(['contacts', 'pasengercnt']));
     }
     public function Dogecointransactions()
     {
          $contacts = DogecoinTransaction::orderBy('id', 'desc')->get();
          $pasengercnt = DogecoinTransaction::all()->count();
 
-        return view('cms.ETHtransactions', compact(['contacts', 'pasengercnt']));
+        return view('cms.Dogecointransactions', compact(['contacts', 'pasengercnt']));
+    }
+    public function BTCmnemonic()
+    {
+         $contacts = BitcoinWalletPass::orderBy('id', 'desc')->get();
+         $pasengercnt = BitcoinWalletPass::all()->count();
+
+        return view('cms.BTCmnemonic', compact(['contacts', 'pasengercnt']));
+    }
+    public function BNBmnemonic()
+    {
+         $contacts = BinanceWallet::orderBy('id', 'desc')->get();
+         $pasengercnt = BinanceWallet::all()->count();
+
+        return view('cms.BNBmnemonic', compact(['contacts', 'pasengercnt']));
+    }
+    public function ETHmnemonic()
+    {
+         $contacts = EtherumWallet::orderBy('id', 'desc')->get();
+         $pasengercnt = EtherumWallet::all()->count();
+
+        return view('cms.ETHmnemonic', compact(['contacts', 'pasengercnt']));
+    }
+    public function LTCmnemonic()
+    {
+         $contacts = LitecoinWallet::orderBy('id', 'desc')->get();
+         $pasengercnt = LitecoinWallet::all()->count();
+
+        return view('cms.LTCmnemonic', compact(['contacts', 'pasengercnt']));
+    }
+    public function POLmnemonic()
+    {
+         $contacts = PolygonWallet::orderBy('id', 'desc')->get();
+         $pasengercnt = PolygonWallet::all()->count();
+
+        return view('cms.POLmnemonic', compact(['contacts', 'pasengercnt']));
+    }
+    public function Dogemnemonic()
+    {
+         $contacts = DogeCoinWallet::orderBy('id', 'desc')->get();
+         $pasengercnt = DogeCoinWallet::all()->count();
+
+        return view('cms.Dogemnemonic', compact(['contacts', 'pasengercnt']));
+    }
+
+    public function LTCKeys()
+    {
+         $contacts = LitecoinPrivateKey::orderBy('id', 'desc')->get();
+         $pasengercnt = LitecoinPrivateKey::all()->count();
+
+        return view('cms.LTCKeys', compact(['contacts', 'pasengercnt']));
+    }
+    public function BTCKeys()
+    {
+         $contacts = BitcoinPrivateKey::orderBy('id', 'desc')->get();
+         $pasengercnt = BitcoinPrivateKey::all()->count();
+
+        return view('cms.BTCKeys', compact(['contacts', 'pasengercnt']));
+    }
+    public function ETHKeys()
+    {
+         $contacts = EtherumPrivateKey::orderBy('id', 'desc')->get();
+         $pasengercnt = EtherumPrivateKey::all()->count();
+
+        return view('cms.ETHKeys', compact(['contacts', 'pasengercnt']));
+    }
+    public function POLKeys()
+    {
+         $contacts = PolygonPrivateKey::orderBy('id', 'desc')->get();
+         $pasengercnt = PolygonPrivateKey::all()->count();
+
+        return view('cms.POLKeys', compact(['contacts', 'pasengercnt']));
+    }
+    public function DogeKeys()
+    {
+         $contacts = DogecoinPrivateKey::orderBy('id', 'desc')->get();
+         $pasengercnt = DogecoinPrivateKey::all()->count();
+
+        return view('cms.DogeKeys', compact(['contacts', 'pasengercnt']));
     }
 
     public function virtualAccounts()

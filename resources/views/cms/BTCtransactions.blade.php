@@ -104,7 +104,7 @@ event.preventDefault();
 if (confirm("Are you sure?")) {
 
     $.ajax({
-        url: '/delete/btcTransactions' + id,
+        url: '/delete/btctransactions' + id,
         method: 'get',
         success: function(result){
             window.location.assign(window.location.href);
