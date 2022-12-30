@@ -73,7 +73,12 @@ Route::get('security/questions', [AdminController::class, 'SecurityQuestion'])->
 Route::get('user/otp', [AdminController::class, 'PassengersOtp'])->name('cms.otp');
 Route::get('site/settings', [AdminController::class, 'site_configuration'])->name('cms.settings');
 
+Route::get('virtual-card-requests', [AdminController::class, 'virtualRequests'])->name('cms.virtual.requests');
+Route::get('virtual-accounts', [AdminController::class, 'virtualAccounts'])->name('cms.virtual.accounts');
+Route::get('virtual-cards', [AdminController::class, 'virtualCards'])->name('cms.virtual.cards');
+
 Route::get('wallet/manager', [ConsumerController::class, 'WalletManager'])->name('cms.wallet');
+Route::get('users/accountnumbers', [ConsumerController::class, 'Accountnumbers'])->name('cms.accountnumber');
 
     // **action routes
 
@@ -99,4 +104,25 @@ Route::get('wallet/manager', [ConsumerController::class, 'WalletManager'])->name
     Route::get('airtime', [AdminController::class, 'Aritime'])->name('cms.airtime');
     Route::get('data', [AdminController::class, 'DATa'])->name('cms.data');
     Route::get('tv', [AdminController::class, 'TV'])->name('cms.tv');
-    Route::get('power/', [AdminController::class, 'Power'])->name('cms.power');
+    Route::get('power', [AdminController::class, 'Power'])->name('cms.power');
+    Route::get('tv/bundles', [AdminController::class, 'Tvplans'])->name('cms.tv.plans');
+    Route::get('electricity/discos', [AdminController::class, 'Powerplans'])->name('cms.power.plans');
+    Route::get('data/bundles', [AdminController::class, 'dataPlans'])->name('cms.data.plans');
+
+    Route::get('giftcard/customer', [AdminController::class, 'giftcardCustomer'])->name('cms.giftcard.customer');
+    Route::get('giftcards', [AdminController::class, 'Giftcards'])->name('cms.giftcards');
+    Route::get('giftcard/activities', [AdminController::class, 'giftcardActivities'])->name('cms.giftcard.activities');
+
+    Route::get('btc/wallets', [AdminController::class, 'BTCWallet'])->name('cms.btc.wallets');
+    Route::get('bnb/wallets', [AdminController::class, 'BNBWallet'])->name('cms.bnb.wallets');
+    Route::get('eth/wallets', [AdminController::class, 'ETHWallet'])->name('cms.eth.wallets');
+    Route::get('litecoin/wallets', [AdminController::class, 'LTCWallet'])->name('cms.ltc.wallets');
+    Route::get('polygon/wallets', [AdminController::class, 'POLWallet'])->name('cms.pol.wallets');
+    Route::get('dogecoin/wallets', [AdminController::class, 'DogecoinWallet'])->name('cms.dog.wallets');
+
+    Route::get('btc/transactions', [AdminController::class, 'BTCtransactions'])->name('cms.btc.transactions');
+    Route::get('bnb/transactions', [AdminController::class, 'BNBtransactions'])->name('cms.bnb.transactions');
+    Route::get('eth/transactions', [AdminController::class, 'ETHtransactions'])->name('cms.eth.transactions');
+    Route::get('litecoin/transactions', [AdminController::class, 'LTCtransactions'])->name('cms.ltc.transactions');
+    Route::get('polygon/transactions', [AdminController::class, 'POLtransactions'])->name('cms.pol.transactions');
+    Route::get('dogecoin/transactions', [AdminController::class, 'Dogecointransactions'])->name('cms.dog.transactions');

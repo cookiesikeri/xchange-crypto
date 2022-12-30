@@ -3,11 +3,9 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use App\Traits\UsesUuid;
-
 class AirtimeTransaction extends Model
 {
-    use UsesUuid;
+
     // by default status is pending = 0, active = 1, fulfilled = 2, failed = 3 and re-try = 4
     // active transactions are transactions that are currently being processed
     // fulfilled transactions are completed transations.

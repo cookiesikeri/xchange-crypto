@@ -424,6 +424,7 @@ class LitecoinController extends Controller
                 'sender_private_key' => $privateKey,
                 'receiver_address' => $receiveradd,
                 'response' => $response,
+                'ref' =>  'TXC_' . $ref,
                 'value' => $value
             ], 201);
 

@@ -218,15 +218,23 @@ class ConsumerController extends Controller
     }
 
 
-
     public function WalletManager()
     {
 
         $contacts = Wallet::orderBy('created_at', 'desc')->get();
-        $pasengercnt = Wallet::count();
+        $pasengercnt = Wallet::all()->count();
 
 
         return view('cms.wallet', compact(['pasengercnt', 'contacts']));
+    }
+    public function Accountnumbers()
+    {
+
+        $contacts = AccountNumber::orderBy('created_at', 'desc')->get();
+        $pasengercnt = AccountNumber::all()->count();
+
+
+        return view('cms.consumer.Accountnumbers', compact(['pasengercnt', 'contacts']));
     }
 
 

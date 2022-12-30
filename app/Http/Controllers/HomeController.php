@@ -24,7 +24,7 @@ class HomeController extends Controller
 
     public function __construct()
     {
-        $this->middleware('guest:admin')->except('logout', 'index');
+        $this->middleware('guest:admin')->except('logout');
     }
 
     /**
@@ -75,6 +75,6 @@ class HomeController extends Controller
     public function logout()
     {
         Auth::guard('admin')->logout();
-        return redirect()->route('cms.login');
+        return redirect()->route('login');
     }
 }

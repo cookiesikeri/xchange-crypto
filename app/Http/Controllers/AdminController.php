@@ -27,6 +27,11 @@ use App\Models\AccountType;
 use App\Models\ActivityType;
 use App\Models\AirtimeTransaction;
 use App\Models\Bank;
+use App\Models\BinanceTransaction;
+use App\Models\BinanceWallet;
+use App\Models\BitcoinTransaction;
+use App\Models\BitcoinWalletPass;
+use App\Models\BitconWallet;
 use App\Models\Brand;
 use App\Models\Cart;
 use App\Models\Category;
@@ -35,18 +40,31 @@ use App\Models\Color;
 use App\Models\Country;
 use App\Models\Coupon;
 use App\Models\CustomerCare;
+use App\Models\DataBundle;
 use App\Models\DataEntry;
 use App\Models\DataTransaction;
 use App\Models\Devteam;
+use App\Models\DogecoinTransaction;
+use App\Models\DogeCoinWalletAddress;
+use App\Models\EtherumWallet;
+use App\Models\EtherumWalletAdress;
+use App\Models\EthTransaction;
 use App\Models\FAQs;
 use App\Models\GetUser;
+use App\Models\GiftCard;
+use App\Models\GiftCardActivity;
+use App\Models\GiftCardCustomer;
 use App\Models\Interest;
+use App\Models\LitecoinTransaction;
+use App\Models\LitecoinWalletAddress;
 use App\Models\Logistic;
 use App\Models\Models\OtpVerify;
 use App\Models\Order;
 use App\Models\OrderComplaint;
 use App\Models\OrderContent;
 use App\Models\Pegg;
+use App\Models\PolygonTransaction;
+use App\Models\PolygonWalletAddress;
 use App\Models\PowerTransaction;
 use App\Models\Product;
 use App\Models\ProductAttribute;
@@ -68,11 +86,15 @@ use App\Models\Shop;
 use App\Models\State;
 use App\Models\SubCategory;
 use App\Models\Transaction;
+use App\Models\TVBundle;
 use App\Models\TVTransaction;
 use App\Models\UserActivity;
 use App\Models\UserOTP;
 use App\Models\UserSecretQAndA;
 use App\Models\VideoTag;
+use App\Models\VirtualAccount;
+use App\Models\VirtualCard;
+use App\Models\VirtualCardRequest;
 use App\Models\Wallet;
 use Carbon\Carbon;
 use App\Traits\ManagesUploads;
@@ -418,6 +440,160 @@ class AdminController extends Controller
 
         return view('cms.bills.power_transaction', compact(['contacts', 'pasengercnt']));
     }
+    public function Tvplans()
+    {
+         $contacts = TVBundle::orderBy('id', 'desc')->get();
+         $pasengercnt = TVBundle::all()->count();
+
+        return view('cms.bills.Tvplans', compact(['contacts', 'pasengercnt']));
+    }
+    public function Powerplans()
+    {
+         $contacts = Service::where('service_type_id', 3)->orderBy('id', 'desc')->get();
+         $pasengercnt = Service::where('service_type_id', 3)->count();
+
+        return view('cms.bills.Powerplans', compact(['contacts', 'pasengercnt']));
+    }
+    public function BTCWallet()
+    {
+         $contacts = BitconWallet::orderBy('id', 'desc')->get();
+         $pasengercnt = BitconWallet::all()->count();
+
+        return view('cms.BTCWallet', compact(['contacts', 'pasengercnt']));
+    }
+    public function BNBWallet()
+    {
+         $contacts = BinanceWallet::orderBy('id', 'desc')->get();
+         $pasengercnt = BinanceWallet::all()->count();
+
+        return view('cms.BNBWallet', compact(['contacts', 'pasengercnt']));
+    }
+
+    public function ETHWallet()
+    {
+         $contacts = EtherumWalletAdress::orderBy('id', 'desc')->get();
+         $pasengercnt = EtherumWalletAdress::all()->count();
+
+        return view('cms.ETHWallet', compact(['contacts', 'pasengercnt']));
+    }
+    public function LTCWallet()
+    {
+         $contacts = LitecoinWalletAddress::orderBy('id', 'desc')->get();
+         $pasengercnt = LitecoinWalletAddress::all()->count();
+
+        return view('cms.LTCWallet', compact(['contacts', 'pasengercnt']));
+    }
+    public function POLWallet()
+    {
+         $contacts = PolygonWalletAddress::orderBy('id', 'desc')->get();
+         $pasengercnt = PolygonWalletAddress::all()->count();
+
+        return view('cms.POLWallet', compact(['contacts', 'pasengercnt']));
+    }
+    public function DogecoinWallet()
+    {
+         $contacts = DogeCoinWalletAddress::orderBy('id', 'desc')->get();
+         $pasengercnt = DogeCoinWalletAddress::all()->count();
+
+        return view('cms.DogecoinWallet', compact(['contacts', 'pasengercnt']));
+    }
+    public function dataPlans()
+    {
+         $contacts = DataBundle::orderBy('id', 'desc')->get();
+         $pasengercnt = DataBundle::all()->count();
+
+        return view('cms.bills.dataPlans', compact(['contacts', 'pasengercnt']));
+    }
+
+    public function BTCtransactions()
+    {
+         $contacts = BitcoinTransaction::orderBy('id', 'desc')->get();
+         $pasengercnt = BitcoinTransaction::all()->count();
+
+        return view('cms.BTCtransactions', compact(['contacts', 'pasengercnt']));
+    }
+    public function BNBtransactions()
+    {
+         $contacts = BinanceTransaction::orderBy('id', 'desc')->get();
+         $pasengercnt = BinanceTransaction::all()->count();
+
+        return view('cms.BNBtransactions', compact(['contacts', 'pasengercnt']));
+    }
+    public function ETHtransactions()
+    {
+         $contacts = EthTransaction::orderBy('id', 'desc')->get();
+         $pasengercnt = EthTransaction::all()->count();
+
+        return view('cms.ETHtransactions', compact(['contacts', 'pasengercnt']));
+    }
+    public function LTCtransactions()
+    {
+         $contacts = LitecoinTransaction::orderBy('id', 'desc')->get();
+         $pasengercnt = LitecoinTransaction::all()->count();
+
+        return view('cms.lthtransactions', compact(['contacts', 'pasengercnt']));
+    }
+    public function POLtransactions()
+    {
+         $contacts = PolygonTransaction::orderBy('id', 'desc')->get();
+         $pasengercnt = PolygonTransaction::all()->count();
+
+        return view('cms.ETHtransactions', compact(['contacts', 'pasengercnt']));
+    }
+    public function Dogecointransactions()
+    {
+         $contacts = DogecoinTransaction::orderBy('id', 'desc')->get();
+         $pasengercnt = DogecoinTransaction::all()->count();
+
+        return view('cms.ETHtransactions', compact(['contacts', 'pasengercnt']));
+    }
+
+    public function virtualAccounts()
+    {
+         $contacts = VirtualAccount::orderBy('id', 'desc')->get();
+         $pasengercnt = VirtualAccount::all()->count();
+
+        return view('cms.virtualAccounts', compact(['contacts', 'pasengercnt']));
+    }
+
+    public function virtualRequests()
+    {
+         $contacts = VirtualCardRequest::orderBy('id', 'desc')->get();
+         $pasengercnt = VirtualCardRequest::all()->count();
+
+        return view('cms.virtualRequests', compact(['contacts', 'pasengercnt']));
+    }
+
+    public function virtualCards()
+    {
+         $contacts = VirtualCard::orderBy('id', 'desc')->get();
+         $pasengercnt = VirtualCard::all()->count();
+
+        return view('cms.virtualCards', compact(['contacts', 'pasengercnt']));
+    }
+
+    public function giftcardCustomer()
+    {
+         $contacts = GiftCardCustomer::orderBy('id', 'desc')->get();
+         $pasengercnt = GiftCardCustomer::all()->count();
+
+        return view('cms.giftcardCustomer', compact(['contacts', 'pasengercnt']));
+    }
+    public function Giftcards()
+    {
+         $contacts = GiftCard::orderBy('id', 'desc')->get();
+         $pasengercnt = GiftCard::all()->count();
+
+        return view('cms.Giftcards', compact(['contacts', 'pasengercnt']));
+    }
+    public function giftcardActivities()
+    {
+         $contacts = GiftCardActivity::orderBy('id', 'desc')->get();
+         $pasengercnt = GiftCardActivity::all()->count();
+
+        return view('cms.giftcardActivities', compact(['contacts', 'pasengercnt']));
+    }
+
 
     public function AdminTermsofUse()
     {
@@ -434,26 +610,9 @@ class AdminController extends Controller
 
        public function destroy ($page, $id) {
 
-        if ($page == 'servicetype') {
+        if ($page == 'virtualaccount') {
 
-            $delete = ServiceType::find($id);
-
-            // @unlink($delete->icon);
-
-            if(!$delete)
-            {
-                abort(404);
-            }
-
-            $delete->delete();
-            Session::flash('success', 'ServiceType deleted successfully.');
-            return redirect()->back();
-
-        }
-
-        if ($page == 'videotag') {
-
-            $delete = VideoTag::find($id);
+            $delete = VirtualAccount::find($id);
 
             // @unlink($delete->icon);
 
@@ -463,14 +622,44 @@ class AdminController extends Controller
             }
 
             $delete->delete();
-            Session::flash('success', 'VideoTag deleted successfully.');
+            Session::flash('success', 'virtualaccount deleted successfully.');
             return redirect()->back();
 
         }
 
-        if ($page == 'customerservice') {
+        if ($page == 'power') {
 
-            $delete = CustomerCare::find($id);
+            $delete = PowerTransaction::find($id);
+
+            if(!$delete)
+            {
+                abort(404);
+            }
+
+            $delete->delete();
+            Session::flash('success', 'PowerTransaction deleted successfully.');
+            return redirect()->back();
+
+        }
+
+        if ($page == 'tv') {
+
+            $delete = TVTransaction::find($id);
+
+            if(!$delete)
+            {
+                abort(404);
+            }
+
+            $delete->delete();
+            Session::flash('success', 'TVTransaction deleted successfully.');
+            return redirect()->back();
+
+        }
+
+        if ($page == 'data') {
+
+            $delete = DataTransaction::find($id);
 
 
             if(!$delete)
@@ -479,14 +668,14 @@ class AdminController extends Controller
             }
 
             $delete->delete();
-            Session::flash('success', 'CustomerCare deleted successfully.');
+            Session::flash('success', 'DataTransaction deleted successfully.');
             return redirect()->back();
 
         }
 
-        if ($page == 'accountant') {
+        if ($page == 'power') {
 
-            $delete = Accountant::find($id);
+            $delete = PowerTransaction::find($id);
 
 
             if(!$delete)
@@ -495,14 +684,15 @@ class AdminController extends Controller
             }
 
             $delete->delete();
-            Session::flash('success', 'Accountant deleted successfully.');
+            Session::flash('success', 'PowerTransaction deleted successfully.');
             return redirect()->back();
 
         }
 
-        if ($page == 'dataentry') {
 
-            $delete = DataEntry::find($id);
+        if ($page == 'virtualrequest') {
+
+            $delete = VirtualCardRequest::find($id);
 
 
             if(!$delete)
@@ -511,15 +701,13 @@ class AdminController extends Controller
             }
 
             $delete->delete();
-            Session::flash('success', 'DataEntry deleted successfully.');
+            Session::flash('success', 'VirtualCardRequest deleted successfully.');
             return redirect()->back();
 
         }
+        if ($page == 'btcwallets') {
 
-
-        if ($page == 'brand') {
-
-            $delete = Brand::find($id);
+            $delete = BitconWallet::find($id);
 
 
             if(!$delete)
@@ -528,15 +716,14 @@ class AdminController extends Controller
             }
 
             $delete->delete();
-            Session::flash('success', 'Brand deleted successfully.');
+            Session::flash('success', 'BitconWallet deleted successfully.');
             return redirect()->back();
 
         }
 
-        if ($page == 'devteam') {
+        if ($page == 'virtualcards') {
 
-            $delete = Devteam::find($id);
-
+            $delete = VirtualCard::find($id);
 
             if(!$delete)
             {
@@ -544,15 +731,14 @@ class AdminController extends Controller
             }
 
             $delete->delete();
-            Session::flash('success', 'Devteam deleted successfully.');
+            Session::flash('success', 'VirtualCard deleted successfully.');
             return redirect()->back();
 
         }
 
-        if ($page == 'coupon') {
+        if ($page == 'powerplans') {
 
-            $delete = Coupon::find($id);
-
+            $delete = Service::find($id);
 
             if(!$delete)
             {
@@ -565,25 +751,9 @@ class AdminController extends Controller
 
         }
 
-        if ($page == 'shoesize') {
+        if ($page == 'tvplans') {
 
-            $delete = ShoeSize::find($id);
-
-
-            if(!$delete)
-            {
-                abort(404);
-            }
-
-            $delete->delete();
-            Session::flash('success', 'Shoe Size deleted successfully.');
-            return redirect()->back();
-
-        }
-
-        if ($page == 'clothsize') {
-
-            $delete = ClothSize::find($id);
+            $delete = TVBundle::find($id);
 
 
             if(!$delete)
@@ -592,15 +762,14 @@ class AdminController extends Controller
             }
 
             $delete->delete();
-            Session::flash('success', 'Cloth Size deleted successfully.');
+            Session::flash('success', ' TVBundle deleted successfully.');
             return redirect()->back();
 
         }
 
+        if ($page == 'dataplans') {
 
-        if ($page == 'faq') {
-
-            $delete = FAQs::find($id);
+            $delete = DataBundle::find($id);
 
 
             if(!$delete)
@@ -609,11 +778,58 @@ class AdminController extends Controller
             }
 
             $delete->delete();
-            Session::flash('success', 'FAQs  deleted successfully.');
+            Session::flash('success', 'DataBundle deleted successfully.');
             return redirect()->back();
 
         }
 
+
+        if ($page == 'giftcardcustomer') {
+
+            $delete = GiftCardCustomer::find($id);
+
+
+            if(!$delete)
+            {
+                abort(404);
+            }
+
+            $delete->delete();
+            Session::flash('success', 'GiftCardCustomer  deleted successfully.');
+            return redirect()->back();
+
+        }
+
+        if ($page == 'giftcards') {
+
+            $delete = GiftCard::find($id);
+
+
+            if(!$delete)
+            {
+                abort(404);
+            }
+
+            $delete->delete();
+            Session::flash('success', 'GiftCard  deleted successfully.');
+            return redirect()->back();
+
+        }
+        if ($page == 'giftcardactivities') {
+
+            $delete = GiftCardActivity::find($id);
+
+
+            if(!$delete)
+            {
+                abort(404);
+            }
+
+            $delete->delete();
+            Session::flash('success', 'GiftCardActivity  deleted successfully.');
+            return redirect()->back();
+
+        }
 
         if ($page == 'users') {
 
@@ -631,10 +847,9 @@ class AdminController extends Controller
 
         }
 
-        if ($page == 'colour') {
+        if ($page == 'btcTransactions') {
 
-            $delete = Color::find($id);
-
+            $delete = BitcoinTransaction::find($id);
 
             if(!$delete)
             {
@@ -642,7 +857,7 @@ class AdminController extends Controller
             }
 
             $delete->delete();
-            Session::flash('success', 'Colour deleted successfully.');
+            Session::flash('success', 'BitcoinTransaction deleted successfully.');
             return redirect()->back();
 
         }

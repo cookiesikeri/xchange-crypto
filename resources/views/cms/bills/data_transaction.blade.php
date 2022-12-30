@@ -48,6 +48,7 @@
                                         <th>Created Date</th>
                                         <th>Modified Date</th>
                                         <th>Network</th>
+                                        <th>Action</th>
                                     </tr>
                                 </thead>
                                 <tfoot>
@@ -68,6 +69,7 @@
                                         <th>Created Date</th>
                                         <th>Modified Date</th>
                                         <th>Network</th>
+                                        <th>Action</th>
                                     </tr>
                                 </tfoot>
                                 <tbody>
@@ -112,6 +114,9 @@
                                             <small class= "text-white label label-primary">9MOBILE</small>
                                         @endif
                                         </td>
+                                        <td>
+                                            <button type="button"  class="btn btn-danger" onclick="deleteContact({{ $state->id }})"><i class="fa fa-trash"></i></button>
+                                        </td>
                                     </tr>
                                     @endforeach
                                     @endif
@@ -125,5 +130,27 @@
     </div>
 </section>
 
+<script>
+    function deleteContact(id) {
 
+event.preventDefault();
+
+if (confirm("Are you sure?")) {
+
+    $.ajax({
+        url: '/delete/data/' + id,
+        method: 'get',
+        success: function(result){
+            window.location.assign(window.location.href);
+        }
+    });
+
+} else {
+
+    console.log('Delete process cancelled');
+
+}
+
+}
+</script>
 @endsection

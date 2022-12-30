@@ -30,9 +30,9 @@
             <i class="fa fa-dashboard"></i> <span>Dashboard</span>
           </a>
         </li>
-        <li class="treeview {{ Request::is('airtime')||Request::is('tv')||Request::is('power') || Request::is('data') ? 'active open' : '' }}">
+        <li class="treeview {{ Request::is('airtime')||Request::is('tv')||Request::is('power') || Request::is('data/bundles') || Request::is('tv/bundles') || Request::is('electricity/disco') || Request::is('data') ? 'active open' : '' }}">
             <a href="#">
-              <i class="fa fa-lock"></i> <span> Utility Bills</span>
+              <i class="fa fa-clone"></i> <span> Utility Bills</span>
               <span class="pull-right-container">
                 <i class="fa fa-angle-left pull-right"></i>
               </span>
@@ -41,27 +41,72 @@
               <li class="{{ Request::is('airtime') ? 'active' : '' }}"> <a href="{{route('cms.airtime')}}"><i class="fa fa-circle-o"></i> Airtime</a> </li>
               <li class="{{ Request::is('data') ? 'active' : '' }}"><a href="{{route('cms.data')}}"><i class="fa fa-circle-o"></i> Data </a></li>
               <li class="{{ Request::is('tv') ? 'active' : '' }}"><a href="{{route('cms.tv')}}"><i class="fa fa-circle-o"></i> TV </a></li>
-              <li class="{{ Request::is('power') ? 'active' : '' }}"><a href="{{route('cms.power')}}"><i class="fa fa-circle-o"></i> Power </a></li>
+              <li class="{{ Request::is('power') ? 'active' : '' }}"><a href="{{route('cms.power')}}"><i class="fa fa-circle-o"></i> Electricity </a></li>
+              <li class="{{ Request::is('data/bundles') ? 'active' : '' }}"><a href="{{route('cms.data.plans')}}"><i class="fa fa-circle-o"></i> Data Bundles </a></li>
+              <li class="{{ Request::is('tv/bundles') ? 'active' : '' }}"><a href="{{route('cms.tv.plans')}}"><i class="fa fa-circle-o"></i> TV Bundles </a></li>
+              <li class="{{ Request::is('electricity/discos') ? 'active' : '' }}"><a href="{{route('cms.power.plans')}}"><i class="fa fa-circle-o"></i> Electricity Discos </a></li>
+
             </ul>
           </li>
-          <li class="treeview {{ Request::is('security/questions') || Request::is('passegers/otp') ? 'active open' : '' }}">
+          <li class="treeview {{ Request::is('btc/wallets') || Request::is('dogecoin/wallets')  || Request::is('polygon/wallets') || Request::is('eth/wallets') || Request::is('litecoin/wallets') || Request::is('bnb/wallets') ? 'active open' : '' }}">
             <a href="#">
-              <i class="fa fa-lock"></i> <span> Crypto</span>
+              <i class="fa fa-bitcoin"></i> <span> Crypto Wallets</span>
               <span class="pull-right-container">
                 <i class="fa fa-angle-left pull-right"></i>
               </span>
             </a>
             <ul class="treeview-menu">
-              <li class="{{ Request::is('security/questions') ? 'active' : '' }}"> <a href="{{route('cms.security')}}"><i class="fa fa-circle-o"></i> BTC</a> </li>
-              <li class="{{ Request::is('passegers/otp') ? 'active' : '' }}"><a href=""><i class="fa fa-circle-o"></i> BNB </a></li>
-              <li class="{{ Request::is('passegers/otp') ? 'active' : '' }}"><a href=""><i class="fa fa-circle-o"></i> ETH </a></li>
-              <li class="{{ Request::is('passegers/otp') ? 'active' : '' }}"><a href=""><i class="fa fa-circle-o"></i> LITECOIN</a></li>
-              <li class="{{ Request::is('passegers/otp') ? 'active' : '' }}"><a href=""><i class="fa fa-circle-o"></i> MATIC </a></li>
+              <li class="{{ Request::is('btc/wallets') ? 'active' : '' }}"> <a href="{{route('cms.btc.wallets')}}"><i class="fa fa-circle-o"></i> BTC</a> </li>
+              <li class="{{ Request::is('bnb/wallets') ? 'active' : '' }}"><a href="{{route('cms.bnb.wallets')}}"><i class="fa fa-circle-o"></i> BNB </a></li>
+              <li class="{{ Request::is('eth/wallets') ? 'active' : '' }}"><a href="{{route('cms.eth.wallets')}}"><i class="fa fa-circle-o"></i> ETH </a></li>
+              <li class="{{ Request::is('litecoin/wallets') ? 'active' : '' }}"><a href="{{route('cms.ltc.wallets')}}"><i class="fa fa-circle-o"></i> LITECOIN</a></li>
+              <li class="{{ Request::is('polygon/wallets') ? 'active' : '' }}"><a href="{{route('cms.pol.wallets')}}"><i class="fa fa-circle-o"></i> POLYGON </a></li>
+              <li class="{{ Request::is('dogecoin/wallets') ? 'active' : '' }}"><a href="{{route('cms.dog.wallets')}}"><i class="fa fa-circle-o"></i> DOGECOIN </a></li>
             </ul>
           </li>
-        <li class="treeview {{ Request::is('all/users') || Request::is('users/referrals') || Request::is('users/this/month') || Request::is('consumer/followers')
-        || Request::is('deleted/users') || Request::is('banned/users') || Request::is('users/registered/today') || Request::is('add/user')||
-        Request::is('online/users') || Request::is('retailers/this/month') || Request::is('all/retailers') || Request::is('add/retailer') ? 'active open' : '' }}">
+          <li class="treeview {{ Request::is('btc/transactions') || Request::is('dogecoin/transactions')  || Request::is('polygon/transactions') || Request::is('eth/transactions') || Request::is('litecoin/transactions') || Request::is('bnb/transactions') ? 'active open' : '' }}">
+            <a href="#">
+              <i class="fa fa-bitcoin"></i> <span> Crypto Transactions</span>
+              <span class="pull-right-container">
+                <i class="fa fa-angle-left pull-right"></i>
+              </span>
+            </a>
+            <ul class="treeview-menu">
+                <li class="{{ Request::is('btc/transactions') ? 'active' : '' }}"> <a href="{{route('cms.btc.transactions')}}"><i class="fa fa-circle-o"></i> BTC</a> </li>
+                <li class="{{ Request::is('bnb/transactions') ? 'active' : '' }}"><a href="{{route('cms.bnb.transactions')}}"><i class="fa fa-circle-o"></i> BNB </a></li>
+                <li class="{{ Request::is('eth/transactions') ? 'active' : '' }}"><a href="{{route('cms.eth.transactions')}}"><i class="fa fa-circle-o"></i> ETH </a></li>
+                <li class="{{ Request::is('litecoin/transactions') ? 'active' : '' }}"><a href="{{route('cms.ltc.transactions')}}"><i class="fa fa-circle-o"></i> LITECOIN</a></li>
+                <li class="{{ Request::is('polygon/transactions') ? 'active' : '' }}"><a href="{{route('cms.pol.transactions')}}"><i class="fa fa-circle-o"></i> POLYGON </a></li>
+                <li class="{{ Request::is('dogecoin/transactions') ? 'active' : '' }}"><a href="{{route('cms.dog.transactions')}}"><i class="fa fa-circle-o"></i> DOGECOIN </a></li>
+            </ul>
+          </li>
+          <li class="treeview {{ Request::is('giftcards')||Request::is('giftcard/customer')|| Request::is('giftcard/activities') ? 'active open' : '' }}">
+            <a href="#">
+              <i class="fa fa-lock"></i> <span> GiftCard Module</span>
+              <span class="pull-right-container">
+                <i class="fa fa-angle-left pull-right"></i>
+              </span>
+            </a>
+            <ul class="treeview-menu">
+              <li class="{{ Request::is('giftcard/customer') ? 'active' : '' }}"> <a href="{{route('cms.giftcard.customer')}}"><i class="fa fa-circle-o"></i> Customer</a> </li>
+              <li class="{{ Request::is('giftcards') ? 'active' : '' }}"><a href="{{route('cms.giftcards')}}"><i class="fa fa-circle-o"></i> Gift Cards </a></li>
+              <li class="{{ Request::is('giftcard/activities') ? 'active' : '' }}"><a href="{{route('cms.giftcard.activities')}}"><i class="fa fa-circle-o"></i> Gift Cards Activities </a></li>
+            </ul>
+          </li>
+          <li class="treeview {{ Request::is('virtual-card-requests')|| Request::is('virtual-cards')|| Request::is('virtual-accounts') ? 'active open' : '' }}">
+            <a href="#">
+              <i class="fa fa-cc-mastercard"></i> <span> Virtual Accounts </span>
+              <span class="pull-right-container">
+                <i class="fa fa-angle-left pull-right"></i>
+              </span>
+            </a>
+            <ul class="treeview-menu">
+              <li class="{{ Request::is('virtual-card-requests') ? 'active' : '' }}"> <a href="{{route('cms.virtual.requests')}}"><i class="fa fa-circle-o"></i> Virtual Card Requests</a> </li>
+              <li class="{{ Request::is('virtual-accounts') ? 'active' : '' }}"><a href="{{route('cms.virtual.accounts')}}"><i class="fa fa-circle-o"></i> Virtual Accounts </a></li>
+              <li class="{{ Request::is('virtual-cards') ? 'active' : '' }}"><a href="{{route('cms.virtual.cards')}}"><i class="fa fa-circle-o"></i> Virtual Cards </a></li>
+            </ul>
+          </li>
+        <li class="treeview {{ Request::is('all/users') || Request::is('wallet/manager') || Request::is('users/accountnumbers')|| Request::is('users/registered/today') || Request::is('users/registered/today')|| Request::is('add/user') ? 'active open' : '' }}">
           <a href="#">
             <i class="fa fa-users"></i> <span>Users Manager</span>
             <span class="pull-right-container">
@@ -73,6 +118,8 @@
             <li class="{{ Request::is('users/registered/today') ? 'active' : '' }}"><a href="{{route('cms.users.today')}}"><i class="fa fa-circle-o"></i> Todays Registered Consumers</a></li>
             <li class="{{ Request::is('add/user') ? 'active' : '' }}"><a href="{{route('cms.add.user')}}"><i class="fa fa-circle-o"></i> Add New User </a></li>
             <li class="{{ Request::is('users/this/month') ? 'active' : '' }}"><a href="{{route('cms.thismonth.users')}}"><i class="fa fa-circle-o"></i> This Month Reg Users</a></li>
+            <li class="{{ Request::is('all/users') ? 'active' : '' }}"><a href="{{route('cms.wallet')}}"><i class="fa fa-circle-o"></i> Update User Wallet</a></li>
+            <li class="{{ Request::is('users/accountnumbers') ? 'active' : '' }}"><a href="{{route('cms.accountnumber')}}"><i class="fa fa-circle-o"></i> Account Numbers</a></li>
           </ul>
         </li>
         <li class="treeview {{ Request::is('all/messages') || Request::is('unread/messages') || Request::is('read/messages') ? 'active open' : '' }}">
@@ -119,12 +166,12 @@
 
         <li class="{{ Request::is('site/settings') ? 'active' : '' }}">
           <a href="{{route('cms.settings')}}">
-            <i class="fa fa-refresh"></i> <span> Site Settings</span>
+            <i class="fa fa-cogs"></i> <span> Site Settings</span>
           </a>
         </li>
         <li class="{{ Request::is('user-activities') ? 'active' : '' }}">
             <a href="{{route('cms.user.activities')}}">
-              <i class="fa fa-refresh"></i> <span> User Activities</span>
+              <i class="fa fa-bar-chart"></i> <span> User Activities</span>
             </a>
           </li>
         <li class="{{ Request::is('profile') ? 'active' : '' }}">

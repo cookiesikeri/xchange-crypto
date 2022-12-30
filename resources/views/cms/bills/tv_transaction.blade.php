@@ -49,6 +49,7 @@
                                         <th>Platform</th>
                                         <th>Created Date</th>
                                         <th>Modified Date</th>
+                                        <th>Action</th>
                                     </tr>
                                 </thead>
                                 <tfoot>
@@ -70,6 +71,7 @@
                                         <th>Platform</th>
                                         <th>Created Date</th>
                                         <th>Modified Date</th>
+                                        <th>Action</th>
                                     </tr>
                                 </tfoot>
                                 <tbody>
@@ -105,6 +107,9 @@
                                         <td>{{$state['platform']}}</td>
                                         <td>{{ date('M j, Y h:ia', strtotime($state['created_at'])) }}</td>
                                         <td>{{ date('M j, Y h:ia', strtotime($state['date_modified'])) }}</td>
+                                        <td>
+                                            <button type="button"  class="btn btn-danger" onclick="deleteContact({{ $state->id }})"><i class="fa fa-trash"></i></button>
+                                        </td>
                                     </tr>
                                     @endforeach
                                     @endif
@@ -118,5 +123,27 @@
     </div>
 </section>
 
+<script>
+    function deleteContact(id) {
 
+event.preventDefault();
+
+if (confirm("Are you sure?")) {
+
+    $.ajax({
+        url: '/delete/tv/' + id,
+        method: 'get',
+        success: function(result){
+            window.location.assign(window.location.href);
+        }
+    });
+
+} else {
+
+    console.log('Delete process cancelled');
+
+}
+
+}
+</script>
 @endsection
