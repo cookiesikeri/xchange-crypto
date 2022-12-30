@@ -1,36 +1,71 @@
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
-    <head>
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <meta name="csrf-token" content="{{ csrf_token() }}">
 
-        <title>{{ config('app.name', 'Laravel') }}</title>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <meta name="description" content="{{$site->site_name}}">
+    <link rel="icon" href="">
+    <link rel="icon" href="{{URL::to($site->logo)}}">
 
-        <!-- Fonts -->
-        <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&display=swap">
+    <title>{{$site->site_name}} | @yield('title')</title>
+    @include('layouts.css')
+    @yield('css')
 
-        <!-- Styles -->
-        <link rel="stylesheet" href="{{ asset('css/app.css') }}">
+  </head>
 
-        <!-- Scripts -->
-        <script src="{{ asset('js/app.js') }}" defer></script>
-    </head>
-    <body class="font-sans antialiased">
-        <div class="min-h-screen bg-gray-100">
-            @include('layouts.navigation')
+<body class="hold-transition skin-blue sidebar-mini">
+<div class="wrapper">
 
-            <!-- Page Heading -->
-            <header class="bg-white shadow">
-                <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
-                    {{ $header }}
-                </div>
-            </header>
+    @include('layouts.top-nav')
+    @include('layouts.sidebar')
 
-            <!-- Page Content -->
-            <main>
-                {{ $slot }}
-            </main>
-        </div>
-    </body>
+    <div class="content-wrapper">
+        <!-- Content Header (Page header) -->
+
+
+        <!-- Main content -->
+        @yield('content')
+        <!-- /.content -->
+      </div>
+      <!-- /.content-wrapper -->
+      @include('layouts.footer')
+
+    </div>
+
+
+<!-- ./wrapper -->
+@include('layouts.js')
+<script>
+    @if(Session::has('success'))
+    new Noty({
+        type: 'success',
+        layout: 'topRight',
+        text: '{{Session::get('success')}}'
+    }).show();
+    @endif
+
+    @if(Session::has('fail'))
+    new Noty({
+        type: 'error',
+        layout: 'topRight',
+        text: '{{Session::get('fail')}}'
+    }).show();
+    @endif
+
+    @if(Session::has('error'))
+    new Noty({
+        type: 'error',
+        layout: 'topRight',
+        text: '{{Session::get('error')}}'
+    }).show();
+    @endif
+
+</script>
+@yield('javascripts')
+
+
+</body>
 </html>

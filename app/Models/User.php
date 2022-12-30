@@ -78,6 +78,9 @@ class User extends Authenticatable implements JWTSubject, Searchable
     public function litecoin_transactions() {
         return $this->hasMany(LitecoinTransaction::class);
     }
+    public function dogecoin_transactions() {
+        return $this->hasMany(DogecoinTransaction::class);
+    }
     public function gift_card() {
         return $this->hasOne(GiftCard::class);
     }

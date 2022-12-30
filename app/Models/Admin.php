@@ -2,47 +2,44 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
-use Tymon\JWTAuth\Contracts\JWTSubject;
-use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-use App\Traits\UsesUuid;
-use Spatie\Permission\Traits\HasRoles;
-// use App\Traits\UsesUuid;
+use Illuminate\Foundation\Auth\User as Authenticatable;
 
 
-class Admin extends Authenticatable implements JWTSubject
+class Admin extends Authenticatable
 {
-    use HasFactory, Notifiable, UsesUuid, HasRoles;
+    use Notifiable;
 
-    protected $guard_name = 'api';
 
-    protected $guarded = [];
+    protected $connection = 'mysql';
 
-    protected $hidden = ['password', 'remember_token',];
 
-     /**
-     * Get the identifier that will be stored in the subject claim of the JWT.
+    protected $guard = 'admin';
+
+
+    /**
+     * The attributes that are mass assignable.
      *
-     * @return mixed
+     * @var array
      */
-    public function getJWTIdentifier()
-    {
-        return $this->getKey();
-    }
+    protected $fillable = [
+        'name', 'email', 'password', 'role_id','status', 'image'
+    ];
 
-    public function getJWTCustomClaims()
-    {
-        return [];
-    }
+    protected $with = [
+        'role'
+    ];
 
-    public function getAuthPassword()
-    {
-     return $this->password;
-    }
+    /**
+     * The attributes that should be hidden for arrays.
+     *
+     * @var array
+     */
+    protected $hidden = [
+        'password', 'remember_token',
+    ];
 
-    public function isAdmin(){
-        return $this->role == 'admin';
+    public function role() {
+        return $this->hasOne(Role::class, 'id', 'role_id');
     }
 }

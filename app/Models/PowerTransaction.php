@@ -17,6 +17,11 @@ class PowerTransaction extends Model
         'service'
     ];
 
+
+
+    CONST CREATED_AT = 'date_created';
+    CONST UPDATED_AT = 'date_modified';
+
     //CONST CREATED_AT = 'date_created';
     //CONST UPDATED_AT = 'date_modified';
 

@@ -2,12 +2,25 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use App\Traits\UsesUuid;
-use Spatie\Permission\Models\Role as ModelsRole;
 
-class Role extends ModelsRole
+class Role extends Model
 {
-    use HasFactory, UsesUuid;
+
+    protected $connection = 'mysql';
+
+    protected $guarded = [];
+
+    protected $table = "roles";
+
+
+    public function admins() {
+        return $this->hasMany(Admin::class, 'role_id');
+    }
+
+    public function permission() {
+        return $this->hasOne(Permission::class, 'id');
+    }
+
+
 }

@@ -2,12 +2,17 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Spatie\Permission\Models\Permission as ModelsPermission;
-use App\Traits\UsesUuid;
 
-class Permission extends ModelsPermission
+class Permission extends Model
 {
-    use HasFactory, UsesUuid;
+    protected $guarded = [];
+
+    protected $connection = 'mysql';
+    // protected $connection = 'mysql';
+
+    protected $table = "permissions";
+    public function role() {
+        return $this->belongsTo(Role::class);
+    }
 }
