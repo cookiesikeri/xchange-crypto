@@ -24,13 +24,11 @@ route::get('404', ['as'=> '404', 'uses' =>
 route::get('500', ['as'=> '505', 'uses' =>
 'ErrorController@fatal']);
 
-
 // Route::get('/', function () {
 //     return [
 //         'test' => "Welcome to Taheerxchange Nigeria System Api Live APP..."
 //     ];
 // });
-
 
 require __DIR__.'/auth.php';
 Route::get('/', [HomeController::class, 'index']);;
