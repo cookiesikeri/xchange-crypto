@@ -5,12 +5,12 @@ Edit Consumer
 @section('content')
 <section class="content-header">
     <h1>
-        Edit Consumer
+        Edit User
     </h1>
     <ol class="breadcrumb">
        <li><a href="{{route('dashboard')}}"><i class="fa fa-dashboard"></i> Home</a></li>
 
-       <li class="active"> Edit Consumer</li>
+       <li class="active"> Edit User</li>
     </ol>
  </section>
  <section class="content">
@@ -50,11 +50,19 @@ Edit Consumer
                             {{csrf_field()}}
                         </div>
                         <div class="row clearfix">
+                            <div class="col-sm-8">
+                                <div class="form-group">
+                                    <div class="form-line">
+                                        <label>User Name</label>
+                                        <input type="text" class="form-control" id="size" name="name" value="{{ $product->name }}">
+                                    </div>
+                                </div>
+                            </div>
                             <div class="col-sm-12">
                                 <div class="form-group">
                                     <div class="form-line">
-                                        <label>Retailer Name</label>
-                                        <input type="text" class="form-control" id="size" name="name" value="{{ $product->name }}">
+                                        <label>DOB </label>
+                                        <input type="date" class="form-control" id="size" name="email" value="{{ $product->dob }}">
                                     </div>
                                 </div>
                             </div>
@@ -68,8 +76,8 @@ Edit Consumer
                             </div>
                             <div class="col-sm-4">
                                 <div class="form-group">
-                                    <select class="form-control show-tick" name="gender">
-                                        <option value="{{ $product->gender }}">--{{ $product->gender }}--</option>
+                                    <select class="form-control show-tick" name="sex">
+                                        <option value="{{ $product->sex }}">--{{ $product->sex }}--</option>
                                         <option value="" disabled>--Select gender--</option>
                                         <option value="Male"> Male</option>
                                         <option value="Female">Female </option>
