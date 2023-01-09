@@ -106,6 +106,16 @@ class User extends Authenticatable implements JWTSubject, Searchable
         return $this->hasOne(AccountNumber::class);
     }
 
+
+    public function bank_account_detail() {
+        return $this->hasOne(BankAccountDetail::class);
+    }
+
+
+    public function bvn_detail() {
+        return $this->hasOne(BvnDetail::class);
+    }
+
     public function secret_q_and_a(){
         return $this->hasOne(UserSecretQAndA::class);
     }
@@ -196,5 +206,9 @@ class User extends Authenticatable implements JWTSubject, Searchable
         return $this->belongsTo(AccountType::class, 'account_type_id');
     }
 
+
+    public function myDetail($userId){
+        return $this->where('id', $userId)->first();
+    }
 
 }

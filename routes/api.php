@@ -95,6 +95,9 @@ Route::group(['prefix' => 'v1', 'middleware' => ['cors']], function(){
     Route::get('banks', [TransactionController::class, 'getBanksList']);
     Route::get('bank/resolve', [TransactionController::class, 'verifyAccountNumber']);
     Route::post('transferrecipient', [TransactionController::class, 'TransferRecipient']);
+    Route::post('register_bvn', [ApisUserController::class, 'registerBVN']);
+    Route::post('verify_bvn', [ApisUserController::class, 'verifyBVN']);
+    Route::post('update_bvn', [ApisUserController::class, 'updateBVN']);
 
     //users
     Route::post('/user/secret_question_and_answer', [ApisUserController::class, 'setSecretQandA']);

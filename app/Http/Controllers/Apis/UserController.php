@@ -31,6 +31,7 @@ use App\Models\PolygonWalletAddress;
 use App\Models\PowerTransaction;
 use App\Models\TVTransaction;
 use App\Models\User;
+use App\Models\BvnDetail;
 use App\Models\UserSecretQAndA;
 use App\Models\Wallet;
 use App\Models\WalletTransaction;
@@ -103,18 +104,25 @@ class UserController extends Controller
                 'user_id'=>'required',
             ]);
         }catch(ValidationException $exception){
-            return response()->json(['errors'=>$exception->errors(), 'message'=>$exception->getMessage()]);
+            return response()->json([
+                'status'=>false,
+                'errors'=>$exception->errors(),
+                'message'=>$exception->getMessage()
+                ]);
         }
 
         $paystack_payment_reference = $request->reference;
 
         $userId = Auth::id();
-
         if(!$userId){
-            return response()->json(['message'=>'Unauthenticated user. Kindly login.']);
+            return response()->json([
+                'status'=>false,
+            'message'=>'Unauthenticated user. Kindly login.'
+            ]);
         }
         //$key = config('app.paystack');
         $msg = '';
+        $status = false;
 
         // verify the payment
 
@@ -138,47 +146,180 @@ class UserController extends Controller
          //$reference ='WALLET-'. $this->user->generate_transaction_reference();
 
         $verification_status = $this->utility->verifyPaystackPayment($paystack_payment_reference);
-
         $amount = intval($verification_status['amount'])/100;
+        $transactionTax = (2.4388999/100) * $amount;
+        $tt = $amount - $transactionTax;
+        $newTT = 0;
+        if ($tt >= 2499) {
+            $newTT = round($tt - 100.5);
+        }else{
+            $newTT = round($tt);
+        }
+
+
         $acc = AccountNumber::on('mysql::read')->where([['wallet_id', $user->wallet->id], ['account_name', 'Wallet ID']])->first();
+
         $walTransaction = WalletTransaction::on('mysql::write')->create([
             'wallet_id'=>$user->wallet->id,
             'type'=>'Credit',
-            'amount'=>$amount,
+            'amount'=>$newTT,
             'description'=>'Deposit into wallet.',
-            'receiver_account_number'=>$acc->account_number,
+            //'receiver_account_number'=>$acc->account_number,
             'receiver_name'=>$user->name,
             'transfer'=>false,
             'transaction_ref'=>$paystack_payment_reference,
             'transaction_type'=>'card',
         ]);
-        if ($verification_status['status'] == -1) {
+        if ($verification_status['status_code'] == -1) {
+            $status  = false;
             // cURL error
             // log as failed transaction
             $msg = 'Paystack payment verification failed to verify wallet funding.';
-            $checkRef->update(['status'=>'failed']);
+            $checkRef->update(['status_code'=>'failed']);
             $walTransaction->update([
                 'status'=>'failed',
             ]);
-        } else if ($verification_status['status'] == 503) {
+        } else if ($verification_status['status_code'] == 503) {
+            $status  = false;
             $msg = 'Paystack payment verification was unable to confirm payment.';
             $checkRef->update(['status'=>'failed']);
             $walTransaction->update([
                 'status'=>'failed',
             ]);
-        } else if ($verification_status['status'] == 404) {
+        } else if ($verification_status['status_code'] == 404) {
             $msg = 'Unfortunately, transaction reference not found.';
             $checkRef->update(['status'=>'failed']);
             $walTransaction->update([
                 'status'=>'failed',
             ]);
-        }else if ($verification_status['status'] == 400) {
+        }else if ($verification_status['status_code'] == 400) {
+            $status  = false;
             $msg = 'Unfortunately, transaction failed.';
             $checkRef->update(['status'=>'failed']);
             $walTransaction->update([
                 'status'=>'failed',
             ]);
-        } else if ($verification_status['status'] == 100) {
+        } else if ($verification_status['status_code'] == 100) {
+            $status  = true;
+            $msg = 'Paystack payment verification successful. Wallet funded';
+            //return $user->wallet->id;
+            //$this->user->update_user_wallet_balance(($user->wallet->balance + $amount));
+            $newBal = $user->wallet->balance + $newTT;
+            $wallet = Wallet::on('mysql::write')->where('user_id',$user->id)->first();
+            $wallet->update(['balance' => $newBal]);
+            $walTransaction->update([
+                'status'=>'success',
+            ]);
+            $checkRef->update(['status'=>'success']);
+
+            Mail::to($user->email)
+                ->send(new TransactionMail($user->name,$newTT));
+        }
+
+        return response()->json([
+            'code'=>$verification_status['status_code'],
+            'status'=>$status,
+            'message'=>$msg,
+            'wallet'=>$wallet ?? null
+            ]);
+    }
+
+   public function init_transaction_bank(Request $request)
+    {
+        //return response()->json(['status'=>403, 'message'=>'Service Unavailable!'], 403);
+        try{
+            $request->validate([
+                'reference'=>'required',
+                'user_id'=>'required',
+            ]);
+        }catch(ValidationException $exception){
+            return response()->json([
+                'status'=>false,
+                'errors'=>$exception->errors(),
+                'message'=>$exception->getMessage()
+                ]);
+        }
+
+        $paystack_payment_reference = $request->reference;
+
+        $userId = Auth::id();
+        if(!$userId){
+            return response()->json([
+                'status'=>false,
+            'message'=>'Unauthenticated user. Kindly login.'
+            ]);
+        }
+        //$key = config('app.paystack');
+        $msg = '';
+        $status = false;
+
+        // verify the payment
+
+        $user = \App\Models\User::on('mysql::read')->where('id', $userId)->first();
+
+        if(!$user){
+            return response()->json(['message'=>'Could not find User.']);
+        }
+
+        $checkRef = PaystackRefRecord::where('ref', $paystack_payment_reference)->first();
+
+        if($checkRef && $checkRef->status == 'success'){
+            return response()->json(['message'=>'Already processed this transaction.']);
+        }elseif (!$checkRef){
+            $checkRef = PaystackRefRecord::create([
+                'ref'=>$paystack_payment_reference,
+                'status'=>'pending',
+            ]);
+        }
+
+         //$reference ='WALLET-'. $this->user->generate_transaction_reference();
+
+        $verification_status = $this->utility->verifyPaystackPayment($paystack_payment_reference);
+        $amount = intval($verification_status['amount'])/100;
+        $acc = AccountNumber::on('mysql::read')->where([['wallet_id', $user->wallet->id], ['account_name', 'Wallet ID']])->first();
+
+        $walTransaction = WalletTransaction::on('mysql::write')->create([
+            'wallet_id'=>$user->wallet->id,
+            'type'=>'Credit',
+            'amount'=>$amount,
+            'description'=>'Deposit into wallet.',
+            //'receiver_account_number'=>$acc->account_number,
+            'receiver_name'=>$user->name,
+            'transfer'=>false,
+            'transaction_ref'=>$paystack_payment_reference,
+            'transaction_type'=>'card',
+        ]);
+        if ($verification_status['status_code'] == -1) {
+            $status  = false;
+            // cURL error
+            // log as failed transaction
+            $msg = 'Paystack payment verification failed to verify wallet funding.';
+            $checkRef->update(['status_code'=>'failed']);
+            $walTransaction->update([
+                'status'=>'failed',
+            ]);
+        } else if ($verification_status['status_code'] == 503) {
+            $status  = false;
+            $msg = 'Paystack payment verification was unable to confirm payment.';
+            $checkRef->update(['status'=>'failed']);
+            $walTransaction->update([
+                'status'=>'failed',
+            ]);
+        } else if ($verification_status['status_code'] == 404) {
+            $msg = 'Unfortunately, transaction reference not found.';
+            $checkRef->update(['status'=>'failed']);
+            $walTransaction->update([
+                'status'=>'failed',
+            ]);
+        }else if ($verification_status['status_code'] == 400) {
+            $status  = false;
+            $msg = 'Unfortunately, transaction failed.';
+            $checkRef->update(['status'=>'failed']);
+            $walTransaction->update([
+                'status'=>'failed',
+            ]);
+        } else if ($verification_status['status_code'] == 100) {
+            $status  = true;
             $msg = 'Paystack payment verification successful. Wallet funded';
             //return $user->wallet->id;
             //$this->user->update_user_wallet_balance(($user->wallet->balance + $amount));
@@ -194,7 +335,12 @@ class UserController extends Controller
                 ->send(new TransactionMail($user->name,$amount));
         }
 
-        return response()->json(['message'=>$msg, 'wallet'=>$wallet]);
+        return response()->json([
+            'code'=>$verification_status['status_code'],
+            'status'=>$status,
+            'message'=>$msg,
+            'wallet'=>$wallet ?? null
+            ]);
     }
 
     public function fund_user_wallet_transfer(Request $request)
@@ -241,17 +387,17 @@ class UserController extends Controller
          //return $verification_status;
 
          $amount = intval($verification_status['amount']);
-        if ($verification_status['status'] == -1) {
+        if ($verification_status['status_code'] == -1) {
             // cURL error
             // log as failed transaction
             $msg = 'Transfer failed to verify wallet funding.';
-        } else if ($verification_status['status'] == 503) {
+        } else if ($verification_status['status_code'] == 503) {
             $msg = 'Transfer was unable to be confirm.';
-        } else if ($verification_status['status'] == 404) {
+        } else if ($verification_status['status_code'] == 404) {
             $msg = 'Unfortunately, transaction reference not found.';
-        }else if ($verification_status['status'] == 400) {
+        }else if ($verification_status['status_code'] == 400) {
             $msg = 'Unfortunately, transaction is pending.';
-        } else if ($verification_status['status'] == 100) {
+        } else if ($verification_status['status_code'] == 100) {
             $msg = 'Transfer verification successful.';
             //return $user->wallet->id;
             //$this->user->update_user_wallet_balance(($user->wallet->balance + $amount));
@@ -265,6 +411,32 @@ class UserController extends Controller
         return response()->json(['message'=>$msg]);
     }
 
+   public function checkTransactionPin(Request $request)
+   {
+           $validator = Validator::make($request->all(), [
+                'user_id' => 'required',
+            ]);
+
+            if ($validator->fails()) {
+                return response()->json([
+                    "error"=>$validator->errors(),
+                    "status"=>false
+                    ], 422);
+            }
+
+            $user = User::on('mysql::read')->where('id',$request->user_id)->whereNull('transaction_pin')->first();
+            if($user){
+                return response()->json([
+                    "message"=>"Pin has not been set yet",
+                    "status"=>false
+                    ], 404);
+            }
+            return response()->json([
+                    "message"=>"user has pin!",
+                    "status"=>true
+                    ], 200);
+
+        }
 
     public function setTransactionPin(Request $request){
         try{
@@ -275,18 +447,30 @@ class UserController extends Controller
             ]);
 
             if ($validator->fails()) {
-                return response()->json($validator->errors(), 422);
+                return response()->json(
+                    [
+                        "error"=>   $validator->errors(),
+                        "message"=> "field required's",
+                        "status"=> false
+                    ]
+                    , 422);
             }
 
             $pin = strval($request->transaction_pin);
             $user = User::on('mysql::write')->findOrFail($request->user_id);
 
             if(!empty($user->transaction_pin) || $user->transaction_pin != null){
-                return response()->json(['message'=>'Transaction Pin already set, kindly update it.'], 420);
+                return response()->json([
+                    'message'=>'Transaction Pin already set, kindly update it.',
+                    "status"=> true
+                    ], 420);
             }
 
             if (!$this->ownsRecord($request->get('user_id'))) {
-                return response()->json(['message'=>'You are not permitted to change this PIN'], 420);
+                return response()->json([
+                    'message'=>'You are not permitted to change this PIN',
+                     "status"=> true
+                    ], 420);
             }
 
             $hashPin = Hash::make($pin);
@@ -294,16 +478,34 @@ class UserController extends Controller
             $update = $user->update(['transaction_pin'=>$hashPin]);
 
             if(!$update){
-                return response()->json(['message'=>'Unable to set Transaction Pin. Please try again.'], 422);
+                return response()->json([
+                    'message'=>'Unable to set Transaction Pin. Please try again.',
+                    "status"=> false
+                    ], 422);
             }
 
-            return response()->json(['message'=>'Transaction Pin set successfully.', 'user'=>$user], 200);
+            return response()->json([
+                'message'=>'Transaction Pin set successfully.',
+                'user'=>$user,
+                        "status"=> true
+                ], 200);
+
         }catch(ValidationException $ve){
-            return response()->json(['message'=>$ve->getMessage(), 'errors'=>$ve->errors()], 422);
+            return response()->json([
+                'message'=>$ve->getMessage(),
+                'errors'=>$ve->errors(),
+                        "status"=> false
+                ], 422);
         }catch(ModelNotFoundException $me){
-            return response()->json(['message'=>'User not found.'], 404);
+            return response()->json([
+                'message'=>'User not found.',
+                        "status"=> false
+                ], 404);
         }catch(Exception $e){
-            return response()->json(['message'=>$e->getMessage()], 422);
+            return response()->json([
+                'message'=>$e->getMessage(),
+                        "status"=> false
+                ], 422);
         }
     }
 
@@ -647,11 +849,12 @@ class UserController extends Controller
         try{
             $user = User::on('mysql::read')->findOrFail($user_id);
             $transactions = array();
-            $wallTr = WalletTransaction::on('mysql::read')->where([['wallet_id', $user->wallet->id], ['transfer', true]])->get();
+            //$wallTr = WalletTransaction::on('mysql::read')->where([['wallet_id', $user->wallet->id], ['transfer', true]])->get();
+            $wallTr = WalletTransaction::on('mysql::read')->where('wallet_id', $user->wallet->id)->get();
 
-            return response()->json(['message'=>'Transfer Transactions Retrieved Successfully', 'transactions'=>$wallTr], 200);
+            return response()->json(['status'=> true,'message'=>'Transaction Successfully Completed', 'transactions'=>$wallTr], 200);
         }catch(Exception $e){
-            return response()->json(['message'=>$e->getMessage()], 420);
+            return response()->json(['status'=> false, 'message'=>$e->getMessage()], 420);
         }
     }
 
@@ -703,7 +906,6 @@ class UserController extends Controller
         }
 
         $amount = $request->amount;
-        $amount = intval($amount) * 100;
         $rep = $request->recipient;
         $reason = $request->reason;
         $userId = $request->user_id;
@@ -725,13 +927,16 @@ class UserController extends Controller
             return response()->json(['message'=>'Incorrect Pin!'], 404);
         }
 
-        if($user->wallet->balance < ($amount/100)){
+        if(($amount/100) > $user->wallet->balance){
             return response()->json(['message'=>'Insufficient Balance.'], 420);
         }
 
         $res = $this->utility->paystackTransfer($amount, $rep, $reason);
 
         //return $res;
+        if (!$res['status']){
+         return response()->json(['message'=>$res['message'], 'status'=> false, 'dt'=> $res], 404);
+        }
 
         if(!$res['error'])
         {
@@ -744,11 +949,11 @@ class UserController extends Controller
                     'transfer_id'=>$res['data']['data']['id']
                 ]);
             }catch(Exception $e){
-                return response()->json(['message'=>$e->getMessage()], 422);
+                return response()->json(['status'=> false, 'message'=>$e->getMessage()], 422);
             }
-            return response()->json(['message'=>'Transfer Initiated Successfully.', 'details'=>$res['data']['data']], 200);
+            return response()->json(['status'=> true,'message'=>'Transfer Initiated Successfully.', 'details'=>$res['data']['data']], 200);
         }else{
-            return response()->json(['message'=>$res['message']], 420);
+            return response()->json(['status'=> false,'message'=>$res['message']], 420);
         }
 
     }
@@ -816,7 +1021,7 @@ class UserController extends Controller
                         $user = User::on('mysql::write')->findOrFail($userId);
                     }catch(ModelNotFoundException $e){
                         curl_close($ch);
-                        return response()->json(['message'=>'User not found'],);
+                        return response()->json(['message'=>'User not found']);
                     }
 
                     if(!$user){
@@ -909,7 +1114,7 @@ class UserController extends Controller
             $userId = Auth::id();
             $accNum = $request->account_number;
             $desc = $request->description;
-            $amount = intval($request->amount);
+            $amount = $request->amount;
             $pin = $request->pin;
 
             $transfer = $this->executeWalletTransfer($userId, $accNum, $desc, $amount, $pin);
@@ -935,7 +1140,7 @@ class UserController extends Controller
         }
 
         try{
-            $userAcc = AccountNumber::on('mysql::read')->where([['wallet_id', $user->wallet->id], ['account_name', 'Wallet ID']])->get()->first();
+            $userAcc = AccountNumber::on('mysql::read')->where('wallet_id', $user->wallet->id)->get()->first();
         }catch(ModelNotFoundException $e){
             return array('message'=>'Senders Wallet not found.', 'status'=>404);
         }
@@ -946,13 +1151,15 @@ class UserController extends Controller
             return array('message'=>'Receivers Wallet not found.', 'status'=>404);
         }
 
+
+
         if(!$receiver)
         {
             return array('message'=>'Receiving account not found. Please check the Account Number and try again.','status'=>404);
         }
 
         if($receiver->wallet_id == $user->wallet->id){
-            return array('message'=>'You cannot transafer to your wallet', 'status'=>420);
+            return array('message'=>'You cannot transafer to your own wallet', 'status'=>420);
         }
 
         $recWall = $receiver->wallet;
@@ -965,6 +1172,7 @@ class UserController extends Controller
                 return array('message'=>'Account owner not found. Please check account number.', 'status'=>404);
             }
         }
+
 
         $businessWT = WalletTransaction::on('mysql::write')->create([
             'wallet_id'=>$user->wallet->id,
@@ -979,6 +1187,8 @@ class UserController extends Controller
             'transfer'=>true,
             'transaction_type'=>'wallet'
         ]);
+
+
 
         //return $receiver->wallet;
         if(empty($user->transaction_pin)){
@@ -996,11 +1206,11 @@ class UserController extends Controller
             return array('message'=>'Incorrect Pin!','status'=> 404);
         }
 
-        if($user->wallet->balance < $amount || $amount <= 0){
+        if($amount > $user->wallet->balance  || $amount <= 0){
             $businessWT->update([
                 'status'=>'failed',
             ]);
-            return array('message'=>'Insufficient balance.','status'=>420);
+            return array('message'=>'Insufficient balance.: '.$amount,'status'=>420);
         }
 
         $senderNewBal = intval($user->wallet->balance) - $amount;
@@ -1008,6 +1218,7 @@ class UserController extends Controller
         $recNewBal = intval($receiver->wallet->balance) + $amount;
         $receiver->wallet()->update(['balance'=>$recNewBal]);
         $wtw = WalletTransfer::on('mysql::write')->create(['sender'=>$user->wallet->id, 'receiver'=>$receiver->wallet->id, 'amount'=>$amount, 'description'=>$desc]);
+
 
         $userWT = WalletTransaction::on('mysql::write')->create([
             'wallet_id'=>$receiver->wallet->id,
@@ -1112,13 +1323,88 @@ class UserController extends Controller
         }
     }
 
-    public function verifyBVN($bvn, $acct, $code){
+
+ public function registerBVN(Request $request){
+     $validator = Validator::make($request->all(), [
+                'user_id'=>'required',
+                'bvn'=>'required',
+                'account_number'=>'required',
+                'bank_code'=>'required',
+            ]);
+
+            if ($validator->fails()) {
+                return response()->json(['status'=> false, 'message'=> 'required feild missing', 'errors'=>$validator->errors()], 422);
+            }
+
+        $bvnSt = (new BvnDetail())->bvnDetail($request->user_id);
+        if($bvnSt){
+            return response()->json(['status'=> false, 'message'=> 'BVN already registered'], 302);
+        }
+
+        BvnDetail::create([
+           'user_id'=> $request->user_id,
+            'bvn'=> $request->bvn,
+            'account_number'=> $request->account_number,
+            'bank_code'=> $request->bank_code,
+            ]);
+
+        return response()->json(['status'=> true, 'message'=> 'Detailed has now been registered'], 200);
+
+    }
+ public function updateBVN(Request $request){
+     $validator = Validator::make($request->all(), [
+                'user_id'=>'required',
+                'bvn'=>'required',
+                'account_number'=>'required',
+                'bank_code'=>'required',
+            ]);
+
+            if ($validator->fails()) {
+                return response()->json(['status'=> false, 'message'=> 'required feild missing', 'errors'=>$validator->errors()], 422);
+            }
+
+        $bvnSt = (new BvnDetail())->bvnDetail($request->user_id);
+        if(!$bvnSt){
+            return response()->json(['status'=> false, 'message'=> 'Detail not registered'], 404);
+        }
+        (new BvnDetail())->where('user_id', $request->user_id)
+        ->update([
+            'bvn'=>$request->bvn,
+            'account_number'=>$request->account_number,
+            'bank_code'=>$request->bank_code,
+            ]);
+
+        return response()->json(['status'=> true, 'message'=> 'Detail successfully updated'], 200);
+
+    }
+
+    public function verifyBVN(Request $request){
+
+         $validator = Validator::make($request->all(), [
+                'user_id'=>'required',
+            ]);
+
+            if ($validator->fails()) {
+                return response()->json(['status'=> false, 'message'=> 'required field missing', 'errors'=>$validator->errors()], 422);
+            }
+
+
+        $bvnSt = (new BvnDetail())->bvnDetailStatus($request->user_id, '1');
+        if($bvnSt){
+            return response()->json(['status'=> true, 'message'=> 'BVN already been verified'], 302);
+        }else{
+         $bvnSt = (new BvnDetail())->bvnDetail($request->user_id);
+            if(!$bvnSt){
+                return response()->json(['status'=> false, 'message'=> 'Detail cannot be found or detail has not been registered'], 422);
+            }
+        }
+
         //return 'in pst';
         $url = "https://api.paystack.co/bvn/match";
         $fields = [
-            'bvn'=>$bvn,
-            'account_number'=>$acct,
-            'bank_code'=>$code,
+            'bvn'=>$bvnSt->bvn,
+            'account_number'=>$bvnSt->account_number,
+            'bank_code'=>$bvnSt->bank_code,
         ];
         $fields_string = http_build_query($fields);
         //open connection
@@ -1139,15 +1425,87 @@ class UserController extends Controller
         $result = curl_exec($ch);
 
         if(curl_errno($ch)){
-            return array('message'=>curl_error($ch), 'error'=>true);
+           return response()->json(['status'=> false,'error'=>true,  'message'=> curl_error($ch)], 422);
         }
 
         $res = json_decode($result, true);
-
         curl_close($ch);
-        return array('error'=>false, 'data'=>$res);
+
+
+        $user = (new User())->myDetail($request->user_id);
+        $userAcc = (new AccountNumber())->where('wallet_id', $user->wallet->id)->first();
+
+
+         if(100 > $user->wallet->balance){
+            return response()->json(['status'=> false, 'message'=> 'Insufficient balance, please topup your wallet to complete this transaction'], 422);
+        }
+
+
+        if($res['status'] == false){
+            return response()->json(['status'=> false, 'message'=> $res['message']], 422);
+        }
+
+        if($res['is_blacklisted'] == true){
+            return response()->json(['status'=> false, 'message'=> $res['message']], 422);
+        }
+
+        $businessWT = WalletTransaction::on('mysql::write')->create([
+            'wallet_id'=>$user->wallet->id,
+            'type'=>'Debit',
+            'amount'=> 100,
+            'sender_account_number'=> $userAcc->account_number,
+            'sender_name'=>$user->name,
+            'receiver_name'=> 'TaheerExchange Inc.',
+            //'receiver_account_number'=> null,
+            'description'=>'For Bvn Verification',
+            'bank_name'=>'Transave',
+            'transfer'=>true,
+            'status'=>'success',
+            'transaction_type'=>'wallet'
+        ]);
+
+        $senderNewBal = $user->wallet->balance - 100;
+        $user->wallet()->update(['balance'=>$senderNewBal]);
+
+        Mail::to($user->email)->send(new DebitEmail($user->name, 100, $businessWT, $user->wallet, $userAcc));
+        Mail::to('taheerexchange@gmail.com')->send(new TransactionMail('Taheer Exchange INC.', 100));
+
+        (new BvnDetail())->where('user_id', $request->user_id)->update(['bvn_status'=>1]);
+
+        return response()->json(['status'=> true, 'message'=> 'BVN has now been successfully verified', 'data'=>$res,], 200);
     }
 
+    public function initializePaymentCharge(Request $request){
+         $url = env('PAYSTACK_BASE_URL')."/transaction/initialize";
 
+          $fields = [
+            'email' => $request->email,
+            'amount' => $request->amount,
+          ];
+
+          $fields_string = http_build_query($fields);
+
+          //open connection
+          $ch = curl_init();
+
+          //set the url, number of POST vars, POST data
+          curl_setopt($ch,CURLOPT_URL, $url);
+          curl_setopt($ch,CURLOPT_POST, true);
+          curl_setopt($ch,CURLOPT_POSTFIELDS, $fields_string);
+          curl_setopt($ch, CURLOPT_HTTPHEADER, array(
+            "Authorization: Bearer ".env('PAYSTACK_SECRET_KEY'),
+            "Cache-Control: no-cache",
+          ));
+
+          //So that curl_exec returns the contents of the cURL; rather than echoing it
+          curl_setopt($ch,CURLOPT_RETURNTRANSFER, true);
+
+          //execute post
+          $result = curl_exec($ch);
+          if(curl_errno($ch)){
+           return response()->json(['message'=>curl_error($ch), 'error'=>true, 'status'=>false]);
+          }
+          return response()->json(json_decode($result, true));
+    }
 
 }

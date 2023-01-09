@@ -18,10 +18,11 @@ class Functions{
 
     public function verifyPaystackPayment($ref){
         //Log::info('lets try to verify payment to fund wallet on paystack');
+        $status = false;
         $amount = 0;
         $verified = 0;
-        $result = array();
-        $cardDetails = array();
+        $result = [];
+        $cardDetails = [];
         $key = env('PAYSTACK_SECRET_KEY');
         /*if($mode == 2) {
             $key = env('PAYSTACK_LIVE_PRIVATE_KEY');
@@ -51,6 +52,7 @@ class Functions{
                 //Log::info($result);
                 if(isset($result["data"]) && $result["data"]["status"] == "success") {
                     // at this point, payment has been verified.
+                    $status = true;
                     $verified = 100;
                     $amount = $result["data"]["amount"];
                     $cardDetails = $result["data"]["authorization"];
@@ -68,7 +70,12 @@ class Functions{
         }
 
         curl_close($ch);
-        return array('status' => $verified, 'amount' => $amount,  'card'=>$cardDetails);
+        return [
+            'status' => $status,
+            'status_code' => $verified,
+            'amount' => $amount,
+            'card'=>$cardDetails
+        ];
     }
 
 
@@ -137,13 +144,13 @@ class Functions{
         $result = curl_exec($ch);
 
         if(curl_errno($ch)){
-            return array('message'=>curl_error($ch), 'error'=>true);
+            return array('status'=> false, 'message'=>curl_error($ch), 'error'=>true);
         }
 
         $res = json_decode($result, true);
 
         curl_close($ch);
-        return array('error'=>false, 'data'=>$res);
+        return array('status'=> true, 'error'=>false, 'data'=>$res);
     }
 
     public function insertIssueTracker($user_id, $support_id, $tracker)

@@ -108,7 +108,7 @@ class TVController extends Controller
             'amount'      => $request->amount,
             'smartcard_number'  => $request->smartcard_number,
             'service_id'  => $request->service_id,
-            'transaction_pin'  => $request->transaction_pin,
+            //'transaction_pin'  => $request->transaction_pin,
             'variation_id' => $request->variation_id,
             'transaction_id' => $this->utility->generateTransactionID(4),
         );
@@ -124,8 +124,8 @@ class TVController extends Controller
             ]);
 
 
-        $amountPaid         = $request->input('amount');
-        $pin = $request->input('transaction_pin');
+        $amountPaid         = $request->amount;
+        $pin = $request->transaction_pin;
 
         $username = env('VTU_DOT_NG_USERNAME');
         $password = env('VTU_DOT_NG_PASSWORD');
@@ -165,7 +165,7 @@ class TVController extends Controller
             return response()->json(['message'=>'Transaction Pin not set.'], 422);
         }
 
-        if(!Hash::check($data['transaction_pin'], $user->transaction_pin))
+        if(!Hash::check($transaction_pin, $user->transaction_pin))
         {
             return response()->json(['message'=>'Incorrect Pin!'], 404);
         }
@@ -196,6 +196,15 @@ class TVController extends Controller
             $response = Http::withHeaders([
                 'Content-Type' => "application/json"
             ])->get(env('VTU_DOT_NG_BASE_URL')."tv?username=$username&password=$password&phone=$user->phone&service_id=$service_id&smartcard_number=$smartcard_number&variation_id=$variation_id");
+
+
+            if(is_null(json_decode($response->getBody(), true))){
+                    return response()->json([
+                        "message" => "Transaction cannot be processed, sorry for inconvenience! Try again later",
+                        'status' => false,
+                    ], 413);
+            }
+
 
             $new_balance = $current_balance - intval($tvBundle->amount);
             $wallet->update(['balance' => $new_balance]);
@@ -240,7 +249,7 @@ class TVController extends Controller
 
 
         }catch(ValidationException $e){
-            return response()->json(['message'=>$e->getMessage(), 'errors'=>$e->errors()]);
+            return response()->json(['message'=>$e->getMessage(), 'errors'=>$e->errors(), 'status' => false]);
         }
     }
 
@@ -260,6 +269,5 @@ class TVController extends Controller
         }
     }
 }
-
 
 
