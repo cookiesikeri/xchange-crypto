@@ -44,7 +44,9 @@
     "config": {
         "optimize-autoloader": true,
         "preferred-install": "dist",
-        "sort-packages": true
+        "process-timeout": 600,
+        "sort-packages": true,
+        "github-protocols": ["https"]
     },
     "extra": {
         "laravel": {
