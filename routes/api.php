@@ -60,6 +60,7 @@ Route::group(['prefix' => 'v1', 'middleware' => ['signature']], function(){
     Route::post('send-otp', [UserController::class, 'sendOTP']);
     Route::post('verify-otp', [UserController::class, 'verifyOtp']);
     Route::post('resend-otp', [UserController::class, 'resendOtp']);
+    Route::get('all/airtime', [AirtimeController::class, 'allAirtime']);
 
     Route::post('login', [UserController::class, 'login']);
 
@@ -278,7 +279,7 @@ Route::group(['prefix' => 'v1', 'middleware' => ['cors']], function(){
 
     //airtime
     Route::post('get/airtime', [AirtimeController::class, 'GetAirtime']);
-    Route::get('all/airtime', [AirtimeController::class, 'allAirtime']);
+
 
     //data
     Route::get('data/bundles', [DataController::class, 'DataBundles']);

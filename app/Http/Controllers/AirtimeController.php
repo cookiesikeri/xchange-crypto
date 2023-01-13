@@ -180,7 +180,8 @@ class AirtimeController extends Controller
                 $data = AirtimeTransaction::on('mysql::read')->orderBy('id','asc')->get();
                 $message = 'data successfully fetched';
 
-                return $this->sendResponse($data,$message);
+                // return $this->sendResponse($data,$message);
+                return response()->json([ 'status' => true, 'message' => $message, 'response' => $data ], 200);
             }catch (ModelNotFoundException $e) {
                 return response()->json(['message' => $e->getMessage()],404);
             } catch(\Exception $e) {
