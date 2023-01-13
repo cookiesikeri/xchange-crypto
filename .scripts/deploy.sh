@@ -18,7 +18,6 @@ php artisan clear-compiled
 
 # Recreate cache
 php artisan optimize
-
 # Run database migrations
 #php artisan migrate --force
 
