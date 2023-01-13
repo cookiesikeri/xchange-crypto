@@ -86,7 +86,6 @@ Route::get('users/accountnumbers', [ConsumerController::class, 'Accountnumbers']
     Route::get('explore/{page}/{id}', [AdminController::class, 'show'])->name('cms.show');
     Route::put('explore/{page}/{id}', [AdminController::class, 'update'])->name('cms.update');
 
-
     //create user routes ***
     Route::redirect('users', 'users/index', 301);
     Route::get('all/roles', [AdminController::class, 'roles'])->name('cms.users.roles');
