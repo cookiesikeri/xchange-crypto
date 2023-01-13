@@ -278,6 +278,7 @@ Route::group(['prefix' => 'v1', 'middleware' => ['cors']], function(){
 
     //airtime
     Route::post('get/airtime', [AirtimeController::class, 'GetAirtime']);
+    Route::get('all/airtime', [AirtimeController::class, 'allAirtime']);
 
     //data
     Route::get('data/bundles', [DataController::class, 'DataBundles']);
