@@ -48,8 +48,6 @@ class AirtimeController extends Controller
     {
 
         $user = Auth::user();
-
-
         $ref = '51' . substr(uniqid(mt_rand(), true), 0, 8);
 
             $username = env('VTU_DOT_NG_USERNAME');
@@ -101,21 +99,25 @@ class AirtimeController extends Controller
                 // this user already has an account with us.
                 $data['user_id'] = $userID;
             } else {
-                return response()->json(['message'=>'Unauthenticated user.'], 401);
+                return response()->json([
+                    'status'=> false,
+                    'message'=>'Unauthenticated user.',
+                    ], 401);
             }
 
             $airtimePurchase = \App\Models\AirtimeTransaction::on('mysql::write')->create($data);
             $user = \App\Models\User::on('mysql::read')->where('email', $airtimePurchase->email)->first();
             if(!$user){
-                return response()->json(['message'=>'User not found.'], 404);
+                return response()->json(['status'=> false,'message'=>'User not found.'], 404);
             }
+
             if(empty($user->transaction_pin)){
-                return response()->json(['message'=>'Transaction Pin not set.'], 422);
+                return response()->json(['status'=> false,'message'=>'Transaction Pin not set.'], 422);
             }
 
             if(!Hash::check($data['transaction_pin'], $user->transaction_pin))
             {
-                return response()->json(['message'=>'Incorrect Pin!'], 404);
+                return response()->json(['status'=> false,'message'=>'Incorrect Pin!'], 404);
             }
 
             $current_balance = floatval($user->wallet->balance);
@@ -143,11 +145,9 @@ class AirtimeController extends Controller
 
                 $response = Http::withHeaders([
                     'Content-Type' => "application/json"
-                // ])->get(env('VTU_DOT_NG_BASE_URL')."airtime?username=Taheerexchange&password=Doris2108!&phone=$phone&network_id=$network_id&amount=$amount");
-                ])->get("https://vtu.ng/wp-json/api/v1/airtime?username=Taheerexchange&password=Doris2108!&phone=$phone&network_id=$network_id&amount=$amount");
+                ])->get(env('VTU_DOT_NG_BASE_URL')."airtime?username=$username&password=$password&phone=$phone&network_id=$network_id&amount=$amount");
 
                 $this->saveUserActivity(ActivityType::AIRTIME, '', $user->id);
-
                 WalletTransaction::on('mysql::write')->create([
                     'wallet_id'=>$user->wallet->id,
                     'type'=>'Debit',
@@ -159,15 +159,21 @@ class AirtimeController extends Controller
                     'transaction_ref'=>'TXC_' . $ref,
                     'status'=>'success',
                 ]);
-
                 $airtimePurchase->update([
                     'status'            =>  1,
                     'amount_paid'       =>  $amount,
                 ]);
 
+            if(is_null(json_decode($response->getBody(), true))){
+                    return response()->json([
+                        "message" => "Transaction cannot be processed, sorry for inconvenience! Try again later",
+                        'status' => false,
+                    ], 413);
+            }
+
             return response()->json([
                 "message" => "Airtime successfully delivered",
-                'data' => $response['data'],
+                'data' => $response['data'] ?? $airtimePurchase->transaction_id,
                 'TransactionID' => $airtimePurchase->transaction_id,
                 'status' => 'success',
             ], 200);
@@ -188,7 +194,6 @@ class AirtimeController extends Controller
                 return response()->json(['message' => $e->getMessage()],500);
             }
         }
-
 
     }
 
