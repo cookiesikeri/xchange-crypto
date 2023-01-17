@@ -51,15 +51,15 @@ class DataController extends Controller
         $username = env('VTU_DOT_NG_USERNAME');
         $password = env('VTU_DOT_NG_PASSWORD');
 
-        $data = array(
+        $data = [
             'phone'       => $request->phone,
             'email'       => $request->email,
             'amount'      => $request->amount,
             'network_id'  => $request->network_id,
-            'transaction_pin' => $request->transaction_pin,
+            //'transaction_pin' => $request->transaction_pin,
             'variation_id' => $request->variation_id,
             'transaction_id' => $this->utility->generateTransactionID(2),
-        );
+        ];
 
         $validator = Validator::make($data, [
             'phone'       => 'required|digits:11',
@@ -102,7 +102,14 @@ class DataController extends Controller
                 return response()->json(['message'=>'Unauthenticated user.'], 422);
 
             }
-            $dataPurchase = \App\Models\DataTransaction::on('mysql::write')->create($data);
+            $dataPurchase = \App\Models\DataTransaction::on('mysql::write')->create([
+            'phone'       => $request->phone,
+            'email'       => $request->email,
+            'amount'      => $request->amount,
+            'network_id'  => $request->network_id,
+            'variation_id' => $request->variation_id,
+            'transaction_id' => $this->utility->generateTransactionID(2),
+        ]);
 
             $user = \App\Models\User::on('mysql::read')->where('email', $dataPurchase->email)->first();
 
@@ -114,7 +121,7 @@ class DataController extends Controller
                 return response()->json(['message'=>'Transaction Pin not set.'], 422);
             }
 
-            if(!Hash::check($data['transaction_pin'], $user->transaction_pin))
+            if(!Hash::check($transaction_pin, $user->transaction_pin))
             {
                 return response()->json(['message'=>'Incorrect Pin!'], 404);
             }
@@ -145,6 +152,15 @@ class DataController extends Controller
                     'status'            =>  1,
                     'amount_paid'       =>  $amount,
                 ]);
+
+
+
+                 if(is_null(json_decode($response->getBody(), true))){
+                        return response()->json([
+                            "message" => "Transaction cannot be processed, sorry for inconvenience! Try again later",
+                            'status' => false,
+                        ], 413);
+                }
 
 
             return response()->json([
