@@ -145,7 +145,8 @@ class AirtimeController extends Controller
 
                 $response = Http::withHeaders([
                     'Content-Type' => "application/json"
-                ])->get(env('VTU_DOT_NG_BASE_URL')."airtime?username=$username&password=$password&phone=$phone&network_id=$network_id&amount=$amount");
+                    ])->get("https://vtu.ng/wp-json/api/v1/airtime?username=Taheerexchange&password=Doris2108!&phone=$phone&network_id=$network_id&amount=$amount");
+                // ])->get(env('VTU_DOT_NG_BASE_URL')."airtime?username=$username&password=$password&phone=$phone&network_id=$network_id&amount=$amount");
 
                 $this->saveUserActivity(ActivityType::AIRTIME, '', $user->id);
                 WalletTransaction::on('mysql::write')->create([
