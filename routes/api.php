@@ -61,6 +61,8 @@ Route::group(['prefix' => 'v1', 'middleware' => ['signature']], function(){
     Route::post('verify-otp', [UserController::class, 'verifyOtp']);
     Route::post('resend-otp', [UserController::class, 'resendOtp']);
     Route::get('all/airtime', [AirtimeController::class, 'allAirtime']);
+    Route::get('test/redis/{id}', [ApiController::class, 'AllIn']);
+    Route::get('redis', [ApiController::class, 'AllCont']);
 
     Route::post('login', [UserController::class, 'login']);
 

@@ -22,10 +22,62 @@ use Illuminate\Support\Facades\Response;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
-
+use Illuminate\Support\Facades\Redis;
 class ApiController extends Controller
 {
     use ManagesResponse;
+
+
+    public function AllIn($id) {
+
+        $cachedBlog = Redis::get('blog_' . $id);
+
+
+        if(isset($cachedBlog)) {
+            $blog = json_decode($cachedBlog, FALSE);
+
+            return response()->json([
+                'status_code' => 201,
+                'message' => 'Fetched from redis',
+                'data' => $blog,
+            ]);
+        }else {
+            $blog = Country::find($id);
+            Redis::set('blog_' . $id, $blog);
+
+            return response()->json([
+                'status_code' => 201,
+                'message' => 'Fetched from database',
+                'data' => $blog,
+            ]);
+        }
+      }
+
+
+      public function AllCont() {
+
+        $cachedBlog = Redis::get('blog_' );
+
+
+        if(isset($cachedBlog)) {
+            $blog = json_decode($cachedBlog, FALSE);
+
+            return response()->json([
+                'status_code' => 201,
+                'message' => 'Fetched from redis',
+                'data' => $blog,
+            ]);
+        }else {
+            $blog = Country::all();
+            Redis::set('blog_', $blog);
+
+            return response()->json([
+                'status_code' => 201,
+                'message' => 'Fetched from database',
+                'data' => $blog,
+            ]);
+        }
+      }
 
     public function Country()
     {

@@ -31,7 +31,7 @@ route::get('500', ['as'=> '505', 'uses' =>
 // });
 
 require __DIR__.'/auth.php';
-Route::get('/', [HomeController::class, 'index']);;
+Route::get('/', [HomeController::class, 'index']);
 Route::get('/login', [HomeController::class, 'login'])->name('login');
 Route::get('/logout', [HomeController::class, 'logout'])->name('logout');
 Route::post('/login', [HomeController::class, 'loginSubmit'])->name('login.submit');
